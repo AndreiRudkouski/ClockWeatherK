@@ -1,0 +1,86 @@
+<resources>
+	<string name="app_name">Часы &amp; Погода K</string>
+	<string name="weather_image_description">Погода</string>
+	<string name="toolbar_image_forecast_description">Текущая погода</string>
+	<string name="default_clock">00:00</string>
+	<string name="default_day">Вт, 22 Мар</string>
+	<string name="default_location">Неизвестно</string>
+	<string name="default_weather">Нет данных</string>
+	<string name="choose_location">Выберите местоположение</string>
+	<string name="degree">\u00B0C</string>
+
+	<string name="update_weather">ОТПУСТИТЬ ДЛЯ ОБНОВЛЕНИЯ</string>
+	<string name="update">обновление…</string>
+
+	<string name="current_location">Текущее местоположение</string>
+	<string name="amsterdam">Амстердам</string>
+	<string name="zaslavl">Заславль</string>
+	<string name="minsk">Минск</string>
+
+	<string name="menu_location">Изменить местоположение</string>
+	<string name="menu_text">Жирный/Нормальный виджет</string>
+
+	<string name="apply">Время</string>
+	<string name="wind_direction">Направл. ветра, \u00B0</string>
+	<string name="wind_chill">Тем-ра ветра, \u00B0C</string>
+	<string name="wind_speed">Скор. ветра, км/ч</string>
+	<string name="humidity">Влажность, %</string>
+	<string name="pressure">Давление, гПа</string>
+	<string name="rising">Изменение</string>
+	<string name="visibility">Видимость, км</string>
+	<string name="sunrise">Восход</string>
+	<string name="sunset">Закат</string>
+
+	<string name="pressure_steady">постоянно</string>
+	<string name="pressure_rising">растет</string>
+	<string name="pressure_falling">падает</string>
+
+	<string name="tornado">Торнадо</string>
+	<string name="tropical_storm">Тропическая буря</string>
+	<string name="hurricane">Ураган</string>
+	<string name="severe_thunderstorms">Сильные грозы</string>
+	<string name="thunderstorms">Грозы</string>
+	<string name="mixed_rain_and_snow">Дождь со снегом</string>
+	<string name="mixed_rain_and_sleet">Дождь/мокрый снег</string>
+	<string name="mixed_snow_and_sleet">Снег/мокрый снег</string>
+	<string name="freezing_drizzle">Изморозь</string>
+	<string name="drizzle">Изморось</string>
+	<string name="freezing_rain">Ледяной дождь</string>
+	<string name="showers_1">Ливни</string>
+	<string name="showers_2">Ливни</string>
+	<string name="snow_flurries">Метели</string>
+	<string name="light_snow_showers">Легкий снег</string>
+	<string name="blowing_snow">Легкие метели</string>
+	<string name="snow">Снег</string>
+	<string name="hail">Град</string>
+	<string name="sleet">Мокрый снег</string>
+	<string name="dust">Пыль</string>
+	<string name="foggy">Туман</string>
+	<string name="haze">Мгла</string>
+	<string name="smoky">Дымка</string>
+	<string name="blustery">Сильный ветер</string>
+	<string name="windy">Ветренно</string>
+	<string name="cold">Холодно</string>
+	<string name="cloudy">Облачно</string>
+	<string name="mostly_cloudy_night">Облачно с прояснениями</string>
+	<string name="mostly_cloudy_day">Облачно с прояснениями</string>
+	<string name="partly_cloudy_night">Переменная облачность</string>
+	<string name="partly_cloudy_day">Переменная облачность</string>
+	<string name="clear_night">Ясно</string>
+	<string name="sunny">Солнечно</string>
+	<string name="fair_night">Малооблачно</string>
+	<string name="fair_day">Малооблачно</string>
+	<string name="mixed_rain_and_hail">Дождь с градом</string>
+	<string name="hot">Жарко</string>
+	<string name="isolated_thunderstorms">Местами грозы</string>
+	<string name="scattered_thunderstorms_1">Повсеместно грозы</string>
+	<string name="scattered_thunderstorms_2">Повсеместно грозы</string>
+	<string name="scattered_showers">Повсеместно ливни</string>
+	<string name="heavy_snow_1">Снегопад</string>
+	<string name="heavy_snow_2">Снегопад</string>
+	<string name="scattered_snow_showers">Повсеместно снег</string>
+	<string name="partly_cloudy">Переменная облачность</string>
+	<string name="thundershowers">Грозы</string>
+	<string name="snow_showers">Снегопады</string>
+	<string name="isolated_thundershowers">Местами гром</string>
+</resources>

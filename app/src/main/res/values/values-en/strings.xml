@@ -1,0 +1,86 @@
+<resources>
+	<string name="app_name">Clock &amp; Weather K</string>
+	<string name="weather_image_description">Weather</string>
+	<string name="toolbar_image_forecast_description">Current weather</string>
+	<string name="default_clock">00:00</string>
+	<string name="default_day">Tue, 22 Mar</string>
+	<string name="default_location">Unknown</string>
+	<string name="default_weather">No data</string>
+	<string name="choose_location">Choose location</string>
+	<string name="degree">\u00B0C</string>
+
+	<string name="update_weather">RELEASE FOR UPDATE</string>
+	<string name="update">updating…</string>
+
+	<string name="current_location">Current location</string>
+	<string name="amsterdam">Amsterdam</string>
+	<string name="zaslavl">Zaslavl</string>
+	<string name="minsk">Minsk</string>
+
+	<string name="menu_location">Change location</string>
+	<string name="menu_text">Bold/Normal widget</string>
+
+	<string name="apply">Time</string>
+	<string name="wind_direction">Wind direction, \u00B0</string>
+	<string name="wind_chill">Wind chill, \u00B0C</string>
+	<string name="wind_speed">Wind speed, km/h</string>
+	<string name="humidity">Humidity, %</string>
+	<string name="pressure">Pressure, hpa</string>
+	<string name="rising">Change</string>
+	<string name="visibility">Visibility, km</string>
+	<string name="sunrise">Sunrise</string>
+	<string name="sunset">Sunset</string>
+
+	<string name="pressure_steady">steady</string>
+	<string name="pressure_rising">rising</string>
+	<string name="pressure_falling">falling</string>
+
+	<string name="tornado">Tornado</string>
+	<string name="tropical_storm">Tropical storm</string>
+	<string name="hurricane">Hurricane</string>
+	<string name="severe_thunderstorms">Severe thunderstorms</string>
+	<string name="thunderstorms">Thunderstorms</string>
+	<string name="mixed_rain_and_snow">Mixed rain and snow</string>
+	<string name="mixed_rain_and_sleet">Mixed rain and sleet</string>
+	<string name="mixed_snow_and_sleet">Mixed snow and sleet</string>
+	<string name="freezing_drizzle">Freezing drizzle</string>
+	<string name="drizzle">Drizzle</string>
+	<string name="freezing_rain">Freezing rain</string>
+	<string name="showers_1">Showers</string>
+	<string name="showers_2">Showers</string>
+	<string name="snow_flurries">Snow flurries</string>
+	<string name="light_snow_showers">Light snow showers</string>
+	<string name="blowing_snow">Blowing snow</string>
+	<string name="snow">Snow</string>
+	<string name="hail">Hail</string>
+	<string name="sleet">Sleet</string>
+	<string name="dust">Dust</string>
+	<string name="foggy">Foggy</string>
+	<string name="haze">Haze</string>
+	<string name="smoky">Smoky</string>
+	<string name="blustery">Blustery</string>
+	<string name="windy">Windy</string>
+	<string name="cold">Cold</string>
+	<string name="cloudy">Cloudy</string>
+	<string name="mostly_cloudy_night">Mostly cloudy</string>
+	<string name="mostly_cloudy_day">Mostly cloudy</string>
+	<string name="partly_cloudy_night">Partly cloudy</string>
+	<string name="partly_cloudy_day">Partly cloudy</string>
+	<string name="clear_night">Clear</string>
+	<string name="sunny">Sunny</string>
+	<string name="fair_night">Fair</string>
+	<string name="fair_day">Fair</string>
+	<string name="mixed_rain_and_hail">Mixed rain and hail</string>
+	<string name="hot">Hot</string>
+	<string name="isolated_thunderstorms">Isolated thunderstorms</string>
+	<string name="scattered_thunderstorms_1">Scattered thunderstorms</string>
+	<string name="scattered_thunderstorms_2">Scattered thunderstorms</string>
+	<string name="scattered_showers">Scattered showers</string>
+	<string name="heavy_snow_1">Heavy snow</string>
+	<string name="heavy_snow_2">Heavy snow</string>
+	<string name="scattered_snow_showers">Scattered snow showers</string>
+	<string name="partly_cloudy">Partly cloudy</string>
+	<string name="thundershowers">Thundershowers</string>
+	<string name="snow_showers">Snow showers</string>
+	<string name="isolated_thundershowers">Isolated thundershowers</string>
+</resources>

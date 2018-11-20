@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/widget_margin"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:background="@color/colorPrimaryDark">
+
+    <TextView
+        android:id="@+id/clock_widget"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/default_clock"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/clock_text_size"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_weather_height"
+        android:layout_marginTop="@dimen/widget_vertical_margin">
+
+        <TextView
+            android:id="@+id/location_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@+id/weather_image_widget"
+            android:gravity="end"
+            android:paddingTop="@dimen/top_padding"
+            android:text="@string/default_location"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="@string/minsk"/>
+
+        <TextView
+            android:id="@+id/date_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/location_widget"
+            android:layout_toStartOf="@+id/weather_image_widget"
+            android:text="@string/default_day"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"/>
+
+        <ImageView
+            android:id="@+id/weather_image_widget"
+            android:layout_width="@dimen/image_width"
+            android:layout_height="@dimen/image_height"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/weather_image_description"
+            tools:src="@mipmap/mostly_cloudy_night"/>
+
+        <TextView
+            android:id="@+id/degrees_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/weather_image_widget"
+            android:paddingTop="@dimen/top_padding"
+            android:text="@string/default_weather"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="20\u00B0C"/>
+
+        <TextView
+            android:id="@+id/description_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/degrees_widget"
+            android:layout_toEndOf="@+id/weather_image_widget"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="@string/mostly_cloudy_night"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<by.rudkouski.clockWeatherK.view.forecast.ForecastItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/forecast_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/card_view_height"
+        app:cardCornerRadius="@dimen/widget_margin"
+        app:cardElevation="@dimen/widget_margin"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="true">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <ImageView
+                android:id="@+id/weather_image_forecast"
+                android:layout_width="@dimen/image_width"
+                android:layout_height="@dimen/image_height"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/forecast_padding"
+                android:layout_marginStart="@dimen/forecast_padding"
+                android:contentDescription="@string/weather_image_description"
+                tools:src="@mipmap/mostly_cloudy_night"/>
+
+            <TextView
+                android:id="@+id/date_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_toEndOf="@+id/weather_image_forecast"
+                android:paddingEnd="@dimen/forecast_padding"
+                android:paddingStart="0dp"
+                android:text="@string/default_day"
+                android:textColor="@color/colorForecast"
+                android:textSize="@dimen/big_text_size"/>
+
+            <TextView
+                android:id="@+id/description_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/date_forecast"
+                android:layout_gravity="center_vertical"
+                android:layout_toEndOf="@+id/weather_image_forecast"
+                android:paddingEnd="@dimen/forecast_padding"
+                android:paddingStart="0dp"
+                android:textColor="@color/colorForecast"
+                android:textSize="@dimen/middle_text_size"
+                tools:text="@string/mostly_cloudy_night"/>
+
+            <TextView
+                android:id="@+id/degrees_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/date_forecast"
+                android:gravity="end"
+                android:paddingEnd="@dimen/forecast_padding"
+                android:paddingStart="0dp"
+                android:textColor="@color/colorForecast"
+                android:textSize="@dimen/big_text_size"
+                tools:text="20\u00B0C/-10\u00B0C"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</by.rudkouski.clockWeatherK.view.forecast.ForecastItemView>

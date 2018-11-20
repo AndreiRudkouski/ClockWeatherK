@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<by.rudkouski.clockWeatherK.view.weather.WeatherItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/current_weather"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/weather_margin_top"
+    android:orientation="horizontal"
+    tools:background="@color/colorPrimaryDark">
+
+    <LinearLayout
+        android:layout_width="@dimen/weather_temperature_width"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:layout_marginEnd="@dimen/location_name_padding"
+        android:layout_marginStart="@dimen/weather_margin"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image_current_weather"
+            android:layout_width="@dimen/image_width"
+            android:layout_height="@dimen/image_height"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/weather_image_description"
+            tools:src="@mipmap/mostly_cloudy_night"/>
+
+        <TextView
+            android:id="@+id/description_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_horizontal"
+            android:text="@string/default_weather"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/big_text_size"
+            tools:text="@string/mostly_cloudy_night"/>
+
+        <TextView
+            android:id="@+id/degrees_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/weather_degree_size"
+            tools:text="20\u00B0C"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/weather_margin"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end">
+
+            <TextView
+                android:id="@+id/create_current_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/small_text_size"
+                tools:text="Time: 09 Apr, 5:00PM"/>
+
+            <TextView
+                android:id="@+id/update_current_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:scaleY="0"
+                android:text="@string/update_weather"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/very_small_text_size"/>
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/direction_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Wind direction, \u00B0: 180"/>
+
+        <TextView
+            android:id="@+id/speed_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Wind speed, km/h: 21"/>
+
+        <TextView
+            android:id="@+id/humidity_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Humidity, %: 22"/>
+
+        <TextView
+            android:id="@+id/pressure_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Pressure, hpa: 987"/>
+
+        <TextView
+            android:id="@+id/rising_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Change: steady"/>
+
+        <TextView
+            android:id="@+id/visibility_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Visibility, km: 16"/>
+
+        <TextView
+            android:id="@+id/sunrise_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Sunrise: 6:22 AM"/>
+
+        <TextView
+            android:id="@+id/sunset_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Sunset: 8:01 PM"/>
+
+    </LinearLayout>
+
+</by.rudkouski.clockWeatherK.view.weather.WeatherItemView>
