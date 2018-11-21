@@ -13,7 +13,6 @@ import android.text.format.DateUtils.SECOND_IN_MILLIS
 import by.rudkouski.clockWeatherK.app.App
 import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
-import by.rudkouski.clockWeatherK.service.WidgetUpdateService
 import java.util.*
 import java.util.Calendar.*
 
@@ -48,7 +47,7 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (ACTION_BOOT_COMPLETED == intent.action || ACTION_LOCKED_BOOT_COMPLETED == intent.action) {
             startScheduledWeatherUpdate()
-            WidgetUpdateService.startService()
+            WidgetUpdateBroadcastReceiver.registerReceiver()
             locationChangeListener.startLocationUpdate()
             WidgetProvider.updateWidgetPendingIntent(context).send()
             WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(context).send()

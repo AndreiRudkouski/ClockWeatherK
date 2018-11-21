@@ -9,7 +9,7 @@ import by.rudkouski.clockWeatherK.app.App
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import java.util.concurrent.atomic.AtomicBoolean
 
-class WidgetUpdateBroadcastReceiver private constructor() : BroadcastReceiver() {
+object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private val intentFilter: IntentFilter = IntentFilter()
     private val isRegistered = AtomicBoolean(false)
@@ -21,10 +21,6 @@ class WidgetUpdateBroadcastReceiver private constructor() : BroadcastReceiver() 
         intentFilter.addAction(ACTION_DATE_CHANGED)
         intentFilter.addAction(ACTION_SCREEN_ON)
         intentFilter.addAction(ACTION_LOCALE_CHANGED)
-    }
-
-    companion object {
-        val INSTANCE = WidgetUpdateBroadcastReceiver()
     }
 
     fun registerReceiver() {

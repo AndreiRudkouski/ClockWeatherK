@@ -30,7 +30,7 @@ import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
-import by.rudkouski.clockWeatherK.service.WidgetUpdateService
+import by.rudkouski.clockWeatherK.receiver.WidgetUpdateBroadcastReceiver
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
 import by.rudkouski.clockWeatherK.view.location.LocationActivity
 import by.rudkouski.clockWeatherK.view.weather.WeatherCode
@@ -190,13 +190,13 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
-        WidgetUpdateService.startService()
+        WidgetUpdateBroadcastReceiver.registerReceiver()
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         RebootBroadcastReceiver.stopScheduledWeatherUpdate()
-        WidgetUpdateService.stopService()
+        WidgetUpdateBroadcastReceiver.unregisterReceiver()
         locationChangeListener.stopLocationUpdate()
     }
 
