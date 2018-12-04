@@ -20,7 +20,7 @@ class LocationItemView : LinearLayout {
     fun updateLocationItemView(location: Location, isSelectedLocation: Boolean) {
         val view = findViewById<View>(R.id.location_item)
         if (isSelectedLocation) {
-            view.setBackgroundResource(R.color.colorSelectedLocation)
+            view.setBackgroundResource(R.color.colorShadow)
         }
         val locationTextView = view.findViewById<TextView>(R.id.location_name)
         locationTextView.text = getLocationItemName(location)

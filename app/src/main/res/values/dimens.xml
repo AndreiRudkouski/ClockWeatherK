@@ -24,6 +24,13 @@
     <dimen name="weather_temperature_width">180dp</dimen>
     <dimen name="weather_degree_size">40sp</dimen>
 
+    <dimen name="shadow_x">12</dimen>
+    <dimen name="shadow_y">12</dimen>
+    <dimen name="shadow_radius">9</dimen>
+    <dimen name="shadow_small_x">8</dimen>
+    <dimen name="shadow_small_y">8</dimen>
+    <dimen name="shadow_small_radius">5</dimen>
+
     <dimen name="appBar_height">290dp</dimen>
     <dimen name="toolBar_height">40dp</dimen>
 </resources>

@@ -2,6 +2,6 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorSelectedLocation">#99424242</color>
+    <color name="colorShadow">#99424242</color>
     <color name="colorForecast">#60000000</color>
 </resources>
