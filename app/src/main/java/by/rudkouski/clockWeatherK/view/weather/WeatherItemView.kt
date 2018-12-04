@@ -9,6 +9,7 @@ import android.widget.TextView
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -29,8 +30,7 @@ class WeatherItemView : LinearLayout {
         private const val TIME_FORMAT_24 = "H:mm"
         private const val FULL_TIME_FORMAT_12 = "h:mm a"
         private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
-        private const val KM_IN_MILE = 1.60934
-        private const val ACCURACY = 100 / 100.0
+        private const val KM_IN_MILE = 1.609344
         private const val hPa_IN_Hg = 33.8639
     }
 
@@ -103,57 +103,57 @@ class WeatherItemView : LinearLayout {
 
     private fun setWindDirectionText(view: View, weather: Weather?) {
         val description = context.getString(R.string.wind_direction)
-        val value = weather!!.windDirection.toString()
+        val value = if (isActualWeather) weather!!.windDirection.toString() else null
         setDataToView(view, R.id.direction_current_weather, description, value)
     }
 
     private fun setWindSpeedText(view: View, weather: Weather?) {
         val description = context.getString(R.string.wind_speed)
-        val value = weather!!.windSpeed.toString()
+        val value = if (isActualWeather) convertWindSpeed(weather!!.windSpeed).toString() else null
         setDataToView(view, R.id.speed_current_weather, description, value)
     }
 
     private fun setHumidityText(view: View, weather: Weather?) {
         val description = context.getString(R.string.humidity)
-        val value = weather!!.humidity.toString()
+        val value = if (isActualWeather) weather!!.humidity.toString() else null
         setDataToView(view, R.id.humidity_current_weather, description, value)
     }
 
     private fun setPressureText(view: View, weather: Weather?) {
         val description = context.getString(R.string.pressure)
-        val value = weather!!.pressure.toString()
+        val value = if (isActualWeather) convertPressure(weather!!.pressure).toString() else null
         setDataToView(view, R.id.pressure_current_weather, description, value)
     }
 
     private fun setPressureRisingText(view: View, weather: Weather?) {
         val description = context.getString(R.string.rising)
-        val value = weather!!.pressureRising.toString()
+        val value = if (isActualWeather) convertPressureRising(weather!!.pressureRising) else null
         setDataToView(view, R.id.rising_current_weather, description, value)
     }
 
     private fun setVisibilityText(view: View, weather: Weather?) {
         val description = context.getString(R.string.visibility)
-        val value = weather!!.visibility.toString()
+        val value = if (isActualWeather) convertVisibility(weather!!.visibility).toString() else null
         setDataToView(view, R.id.visibility_current_weather, description, value)
     }
 
     private fun setSunriseText(view: View, weather: Weather?) {
         val description = context.getString(R.string.sunrise)
-        val value = getFormatTime(weather!!.sunrise)
+        val value = if (isActualWeather) getFormatTime(weather!!.sunrise) else null
         setDataToView(view, R.id.sunrise_current_weather, description, value)
     }
 
     private fun setSunsetText(view: View, weather: Weather?) {
         val description = context.getString(R.string.sunset)
-        val value = getFormatTime(weather!!.sunset)
+        val value = if (isActualWeather) getFormatTime(weather!!.sunset) else null
         setDataToView(view, R.id.sunset_current_weather, description, value)
     }
 
-    private fun setDataToView(view: View, identifier: Int, description: String, value: String) {
+    private fun setDataToView(view: View, identifier: Int, description: String, value: String?) {
         val textView = view.findViewById<TextView>(identifier)
         if (isActualWeather) {
             textView.visibility = VISIBLE
-            textView.text = convertToDeterminationPattern(description, value)
+            textView.text = convertToDeterminationPattern(description, value!!)
         } else {
             textView.visibility = INVISIBLE
         }
@@ -163,24 +163,26 @@ class WeatherItemView : LinearLayout {
         return String.format(Locale.getDefault(), DETERMINATION_PATTERN, param1, param2)
     }
 
-    private fun convertWindSpeed(speed: Double): Int {
-        return (speed / KM_IN_MILE * ACCURACY).toInt()
+    private fun convertWindSpeed(speed: Double): Long {
+        return Math.round(speed / KM_IN_MILE)
     }
 
-    private fun convertPressure(pressure: Double): Int {
-        return (pressure / hPa_IN_Hg).toInt()
+    private fun convertPressure(pressure: Double): Long {
+        return Math.round(pressure / hPa_IN_Hg)
     }
 
     private fun convertPressureRising(rising: Int): String {
         return context.getString(
-            if (rising == 0)
-                R.string.pressure_steady
-            else if (rising == 1) R.string.pressure_rising else R.string.pressure_falling
+            when (rising) {
+                0 -> R.string.pressure_steady
+                1 -> R.string.pressure_rising
+                else -> R.string.pressure_falling
+            }
         )
     }
 
-    private fun convertVisibility(visibility: Double): Int {
-        return (visibility / KM_IN_MILE * ACCURACY).toInt()
+    private fun convertVisibility(visibility: Double): Double {
+        return (visibility / KM_IN_MILE).roundTo2DecimalPlaces()
     }
 
     private fun getFormatTime(date: Date): String {
@@ -188,4 +190,6 @@ class WeatherItemView : LinearLayout {
         val dateFormat = SimpleDateFormat(timeFormat, Locale.getDefault())
         return dateFormat.format(date)
     }
+
+    private fun Double.roundTo2DecimalPlaces() = BigDecimal(this).setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
 }
