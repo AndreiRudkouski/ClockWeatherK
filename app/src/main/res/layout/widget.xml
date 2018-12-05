@@ -12,8 +12,11 @@
 
     <TextView
         android:id="@+id/clock_widget"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/widget_width"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingTop="@dimen/top_padding"
+        android:includeFontPadding="false"
         android:shadowColor="@color/colorShadow"
         android:shadowDx="@dimen/shadow_x"
         android:shadowDy="@dimen/shadow_y"
@@ -23,40 +26,9 @@
         android:textSize="@dimen/clock_text_size"/>
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/widget_width"
         android:layout_height="@dimen/widget_weather_height"
         android:layout_marginTop="@dimen/widget_vertical_margin">
-
-        <TextView
-            android:id="@+id/location_widget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_toStartOf="@+id/weather_image_widget"
-            android:gravity="end"
-            android:paddingTop="@dimen/top_padding"
-            android:shadowColor="@color/colorShadow"
-            android:shadowDx="@dimen/shadow_small_x"
-            android:shadowDy="@dimen/shadow_small_y"
-            android:shadowRadius="@dimen/shadow_small_radius"
-            android:text="@string/default_location"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/small_text_size"
-            tools:text="@string/minsk"/>
-
-        <TextView
-            android:id="@+id/date_widget"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/location_widget"
-            android:layout_toStartOf="@+id/weather_image_widget"
-            android:shadowColor="@color/colorShadow"
-            android:shadowDx="@dimen/shadow_small_x"
-            android:shadowDy="@dimen/shadow_small_y"
-            android:shadowRadius="@dimen/shadow_small_radius"
-            android:text="@string/default_day"
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/small_text_size"/>
 
         <ImageView
             android:id="@+id/weather_image_widget"
@@ -68,9 +40,47 @@
             tools:src="@mipmap/mostly_cloudy_night"/>
 
         <TextView
+            android:id="@+id/location_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="end"
+            android:paddingTop="@dimen/top_padding"
+            android:paddingEnd="@dimen/top_padding"
+            android:layout_toStartOf="@+id/weather_image_widget"
+            android:shadowColor="@color/colorShadow"
+            android:shadowDx="@dimen/shadow_small_x"
+            android:shadowDy="@dimen/shadow_small_y"
+            android:shadowRadius="@dimen/shadow_small_radius"
+            android:text="@string/default_location"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="@string/minsk" tools:ignore="RtlSymmetry"/>
+
+        <TextView
+            android:id="@+id/date_widget"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:gravity="end"
+            android:layout_alignParentBottom="true"
+            android:paddingEnd="@dimen/top_padding"
+            android:layout_below="@id/location_widget"
+            android:layout_toStartOf="@+id/weather_image_widget"
+            android:shadowColor="@color/colorShadow"
+            android:shadowDx="@dimen/shadow_small_x"
+            android:shadowDy="@dimen/shadow_small_y"
+            android:shadowRadius="@dimen/shadow_small_radius"
+            android:text="@string/default_day"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size" tools:ignore="RtlSymmetry"/>
+
+        <TextView
             android:id="@+id/degrees_widget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="start"
             android:layout_toEndOf="@+id/weather_image_widget"
             android:paddingTop="@dimen/top_padding"
             android:shadowColor="@color/colorShadow"
@@ -80,12 +90,14 @@
             android:text="@string/default_weather"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="20\u00B0C"/>
+            tools:text="20\u00B0C" tools:ignore="RtlSymmetry"/>
 
         <TextView
             android:id="@+id/description_widget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="start"
             android:layout_alignParentBottom="true"
             android:layout_below="@+id/degrees_widget"
             android:layout_toEndOf="@+id/weather_image_widget"
@@ -95,7 +107,7 @@
             android:shadowRadius="@dimen/shadow_small_radius"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="@string/mostly_cloudy_night"/>
+            tools:text="@string/mostly_cloudy_night" tools:ignore="RtlSymmetry"/>
 
     </RelativeLayout>
 
