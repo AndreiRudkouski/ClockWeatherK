@@ -17,10 +17,9 @@ import android.view.View
 import android.widget.ListView
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
-import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
+import by.rudkouski.clockWeatherK.receiver.LocationChangeChecker
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WeatherUpdateBroadcastReceiver
 import kotlin.Int.Companion.MIN_VALUE
@@ -28,7 +27,6 @@ import kotlin.Int.Companion.MIN_VALUE
 class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationItemClickListener {
 
     private val dbHelper = INSTANCE
-    private val locationChangeListener = LocationChangeListener
     private var widgetId: Int = 0
 
     companion object {
@@ -88,7 +86,7 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun activitiesForCurrentLocation() {
-        if (locationChangeListener.isPermissionsGranted()) {
+        if (LocationChangeChecker.isPermissionsGranted()) {
             updateLocationAndWeather()
         } else {
             ActivityCompat.requestPermissions(this,
@@ -98,7 +96,6 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun activitiesForNonCurrentLocation() {
-        stopLocationChangeListener()
         updateWidgetAndWeather()
         setResultIntent()
     }
@@ -115,15 +112,8 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun updateLocationAndWeather() {
-        locationChangeListener.startLocationUpdate()
-        updateWidgetAndWeather()
-        setResultIntent()
-    }
-
-    private fun stopLocationChangeListener() {
-        if (!dbHelper.getLocationIdsContainedInAllWidgets().contains(Location.CURRENT_LOCATION_ID)) {
-            locationChangeListener.stopLocationUpdate()
-        }
+        LocationChangeChecker.startLocationUpdate()
+        activitiesForNonCurrentLocation()
     }
 
     private fun updateWidgetAndWeather() {

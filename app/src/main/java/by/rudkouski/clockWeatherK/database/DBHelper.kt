@@ -11,7 +11,7 @@ import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.entity.Widget
-import by.rudkouski.clockWeatherK.listener.LocationChangeListener
+import by.rudkouski.clockWeatherK.receiver.LocationChangeChecker
 import java.util.*
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Calendar.HOUR_OF_DAY
@@ -22,7 +22,6 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                                    dbVersion: Int) : SQLiteOpenHelper(context, dbName, factory, dbVersion) {
 
     private val database: SQLiteDatabase = writableDatabase
-    private val locationChangeListener = LocationChangeListener
 
     companion object {
         private const val DATABASE_VERSION: Int = 1
@@ -151,7 +150,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             val timeZone = TimeZone.getTimeZone(cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE)))
             Location(id, nameCode, latitude, longitude, timeZone)
         } else {
-            locationChangeListener.getLocation()
+            LocationChangeChecker.location
         }
     }
 
@@ -170,7 +169,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             if (cursor.moveToFirst()) {
                 for (i in 0 until cursor.count) {
                     if (cursor.moveToPosition(i)) {
-                        locationIds.add(cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_LOCATION_ID)));
+                        locationIds.add(cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_LOCATION_ID)))
                     }
                 }
             }

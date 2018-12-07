@@ -28,7 +28,7 @@ import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Weather
-import by.rudkouski.clockWeatherK.listener.LocationChangeListener
+import by.rudkouski.clockWeatherK.receiver.LocationChangeChecker
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WidgetUpdateBroadcastReceiver
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
@@ -41,7 +41,6 @@ import java.util.Calendar.HOUR
 class WidgetProvider : AppWidgetProvider() {
 
     private val dbHelper = INSTANCE
-    private val locationChangeListener = LocationChangeListener
 
     companion object {
         private val WIDGET_UPDATE = "${WidgetProvider::class.java.`package`} WIDGET_UPDATE"
@@ -191,13 +190,14 @@ class WidgetProvider : AppWidgetProvider() {
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
         WidgetUpdateBroadcastReceiver.registerReceiver()
+        LocationChangeChecker.startLocationUpdate()
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         RebootBroadcastReceiver.stopScheduledWeatherUpdate()
         WidgetUpdateBroadcastReceiver.unregisterReceiver()
-        locationChangeListener.stopLocationUpdate()
+        LocationChangeChecker.stopLocationUpdate()
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

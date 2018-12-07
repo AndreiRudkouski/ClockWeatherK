@@ -11,14 +11,11 @@ import android.content.Intent.ACTION_LOCKED_BOOT_COMPLETED
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.SECOND_IN_MILLIS
 import by.rudkouski.clockWeatherK.app.App
-import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import java.util.*
 import java.util.Calendar.*
 
 class RebootBroadcastReceiver : BroadcastReceiver() {
-
-    private val locationChangeListener = LocationChangeListener
 
     companion object {
         fun startScheduledWeatherUpdate() {
@@ -48,7 +45,7 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
         if (ACTION_BOOT_COMPLETED == intent.action || ACTION_LOCKED_BOOT_COMPLETED == intent.action) {
             startScheduledWeatherUpdate()
             WidgetUpdateBroadcastReceiver.registerReceiver()
-            locationChangeListener.startLocationUpdate()
+            LocationChangeChecker.startLocationUpdate()
             WidgetProvider.updateWidgetPendingIntent(context).send()
             WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(context).send()
         }
