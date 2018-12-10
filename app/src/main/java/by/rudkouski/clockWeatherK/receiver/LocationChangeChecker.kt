@@ -10,8 +10,9 @@ import android.location.Geocoder
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import by.rudkouski.clockWeatherK.R
-import by.rudkouski.clockWeatherK.app.App
+import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.entity.Location
+import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
@@ -20,7 +21,7 @@ import java.util.*
 @SuppressLint("MissingPermission")
 object LocationChangeChecker {
 
-   var location = Location.createCurrentLocation(App.appContext.getString(R.string.default_location), 0.0, 0.0)
+    private var location: Location? = null
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
@@ -36,42 +37,57 @@ object LocationChangeChecker {
 
             val locationSettingsRequest = LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build()
 
-            val settingsClient = LocationServices.getSettingsClient(App.appContext)
+            val settingsClient = LocationServices.getSettingsClient(appContext)
             settingsClient.checkLocationSettings(locationSettingsRequest)
 
-            getFusedLocationProviderClient(App.appContext).requestLocationUpdates(locationRequest, locationCallback,
+            getFusedLocationProviderClient(appContext).requestLocationUpdates(locationRequest, locationCallback,
                 Looper.myLooper())
         }
     }
 
     fun stopLocationUpdate() {
-        getFusedLocationProviderClient(App.appContext).removeLocationUpdates(locationCallback)
+        getFusedLocationProviderClient(appContext).removeLocationUpdates(locationCallback)
     }
 
     fun isPermissionsGranted(): Boolean {
-        return ActivityCompat.checkSelfPermission(App.appContext, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
-            || ActivityCompat.checkSelfPermission(App.appContext, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
+        return ActivityCompat.checkSelfPermission(appContext, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
+            || ActivityCompat.checkSelfPermission(appContext, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
+    }
+
+    fun getLastLocation(): Location {
+        return if (location != null) location!!
+        else Location.createCurrentLocation(appContext.getString(R.string.default_location), 0.0, 0.0)
     }
 
     private fun setLocation(lastLocation: android.location.Location) {
         val address = getAddress(lastLocation)
-        location = if (address != null) {
+        val newLocation = if (address != null) {
             val locationName =
                 if (address.locality != null) address.locality else if (address.subAdminArea != null) address.subAdminArea else address.adminArea
             Location.createCurrentLocation(locationName, address.latitude, address.longitude)
         } else {
-            Location.createCurrentLocation(App.appContext.getString(R.string.default_location), 0.0, 0.0)
+            Location.createCurrentLocation(appContext.getString(R.string.default_location), lastLocation.latitude,
+                lastLocation.longitude)
         }
+        sendIntentToWidgetUpdate()
+        location = newLocation
     }
 
     private fun getAddress(location: android.location.Location): Address? {
         val longitude = location.longitude
         val latitude = location.latitude
-        val geoCoder = Geocoder(App.appContext, Locale.getDefault())
+        val geoCoder = Geocoder(appContext, Locale.getDefault())
         val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
         if (addresses != null && addresses.size > 0) {
             return addresses[0]
         }
         return null
+    }
+
+    private fun sendIntentToWidgetUpdate() {
+        if (location == null) {
+            WidgetProvider.updateWidgetPendingIntent(appContext)
+            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext).send()
+        }
     }
 }
