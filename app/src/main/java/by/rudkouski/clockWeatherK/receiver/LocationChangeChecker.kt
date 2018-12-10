@@ -69,8 +69,12 @@ object LocationChangeChecker {
             Location.createCurrentLocation(appContext.getString(R.string.default_location), lastLocation.latitude,
                 lastLocation.longitude)
         }
-        sendIntentToWidgetUpdate()
-        location = newLocation
+        if (location == null) {
+            location = newLocation
+            sendIntentToWidgetUpdate()
+        } else {
+            location = newLocation
+        }
     }
 
     private fun getAddress(location: android.location.Location): Address? {
@@ -85,9 +89,7 @@ object LocationChangeChecker {
     }
 
     private fun sendIntentToWidgetUpdate() {
-        if (location == null) {
-            WidgetProvider.updateWidgetPendingIntent(appContext)
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
-        }
+        WidgetProvider.updateWidgetPendingIntent(appContext)
+        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
     }
 }
