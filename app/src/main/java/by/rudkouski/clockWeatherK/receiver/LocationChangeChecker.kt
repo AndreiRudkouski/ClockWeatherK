@@ -9,6 +9,8 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
+import android.text.format.DateUtils.MINUTE_IN_MILLIS
+import android.util.Log
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.entity.Location
@@ -16,6 +18,7 @@ import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import com.google.android.gms.location.*
 import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
+import java.io.IOException
 import java.util.*
 
 @SuppressLint("MissingPermission")
@@ -31,18 +34,24 @@ object LocationChangeChecker {
 
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
-            val locationRequest = LocationRequest()
-            locationRequest.priority = PRIORITY_HIGH_ACCURACY
-            locationRequest.interval = INTERVAL_FIFTEEN_MINUTES
-
-            val locationSettingsRequest = LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build()
-
-            val settingsClient = LocationServices.getSettingsClient(appContext)
-            settingsClient.checkLocationSettings(locationSettingsRequest)
-
+            val locationRequest = createLocationRequest()
+            checkLocationSetting(LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build())
             getFusedLocationProviderClient(appContext).requestLocationUpdates(locationRequest, locationCallback,
-                Looper.myLooper())
+                Looper.getMainLooper())
         }
+    }
+
+    private fun createLocationRequest(): LocationRequest {
+        val locationRequest = LocationRequest()
+        locationRequest.priority = PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = INTERVAL_FIFTEEN_MINUTES
+        locationRequest.fastestInterval = MINUTE_IN_MILLIS * 5
+        return locationRequest
+    }
+
+    private fun checkLocationSetting(locationSettingsRequest: LocationSettingsRequest) {
+        val settingsClient = LocationServices.getSettingsClient(appContext)
+        settingsClient.checkLocationSettings(locationSettingsRequest)
     }
 
     fun stopLocationUpdate() {
@@ -81,9 +90,13 @@ object LocationChangeChecker {
         val longitude = location.longitude
         val latitude = location.latitude
         val geoCoder = Geocoder(appContext, Locale.getDefault())
-        val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-        if (addresses != null && addresses.size > 0) {
-            return addresses[0]
+        try {
+            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null && addresses.size > 0) {
+                return addresses[0]
+            }
+        } catch (e: IOException) {
+            Log.e(LocationChangeChecker::class.java.simpleName, e.toString())
         }
         return null
     }
