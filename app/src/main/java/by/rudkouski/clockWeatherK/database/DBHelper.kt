@@ -150,7 +150,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             val timeZone = TimeZone.getTimeZone(cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE)))
             Location(id, nameCode, latitude, longitude, timeZone)
         } else {
-            LocationChangeChecker.location
+            LocationChangeChecker.getLastLocation()
         }
     }
 

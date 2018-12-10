@@ -37,5 +37,5 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    override fun onReceive(context: Context, intent: Intent) = WidgetProvider.updateWidgetPendingIntent(context).send()
+    override fun onReceive(context: Context, intent: Intent) = WidgetProvider.updateWidgetPendingIntent(context)
 }

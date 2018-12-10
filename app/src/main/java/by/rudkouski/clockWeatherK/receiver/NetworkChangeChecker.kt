@@ -15,7 +15,7 @@ object NetworkChangeChecker {
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             isOnline.set(true)
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext).send()
+            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext)
         }
 
         override fun onLost(network: Network) {

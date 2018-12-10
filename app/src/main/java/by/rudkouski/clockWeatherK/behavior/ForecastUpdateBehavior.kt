@@ -75,7 +75,7 @@ class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayo
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop >= UPDATE_Y / PADDING_SCALE) {
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext).send()
+            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext)
             if (NetworkChangeChecker.isOnline()) {
                 Snackbar.make(target, App.appContext.getString(R.string.update), LENGTH_SHORT).show()
             }

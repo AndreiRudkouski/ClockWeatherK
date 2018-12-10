@@ -51,10 +51,10 @@ class WidgetProvider : AppWidgetProvider() {
         private const val SYSTEM_TIME_FORMAT_24 = 24
         private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
 
-        fun updateWidgetPendingIntent(context: Context): PendingIntent {
+        fun updateWidgetPendingIntent(context: Context) {
             val intent = Intent(context, WidgetProvider::class.java)
             intent.action = WIDGET_UPDATE
-            return PendingIntent.getBroadcast(context, WIDGET_CLOCK_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT)
+            PendingIntent.getBroadcast(context, WIDGET_CLOCK_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT).send()
         }
 
         fun chooseSystemTimeFormat(context: Context, timeFormat12: String, timeFormat24: String): String {

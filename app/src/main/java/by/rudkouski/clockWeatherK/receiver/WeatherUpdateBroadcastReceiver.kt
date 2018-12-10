@@ -28,10 +28,14 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         private const val WEATHER_QUERY_BY_COORDINATES =
             "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where " + "text=\"(%1\$s, %2\$s)\") and u='c' &format=json"
 
-        fun updateWeatherPendingIntent(context: Context): PendingIntent {
+        fun getUpdateWeatherPendingIntent(context: Context): PendingIntent {
             val intent = Intent(context, WeatherUpdateBroadcastReceiver::class.java)
             intent.action = WEATHER_UPDATE
             return PendingIntent.getBroadcast(context, WEATHER_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT)
+        }
+
+        fun updateWeatherPendingIntent(context: Context) {
+            getUpdateWeatherPendingIntent(context).send()
         }
     }
 
@@ -92,7 +96,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun sendIntentsForWidgetUpdate(context: Context) {
-        WidgetProvider.updateWidgetPendingIntent(context).send()
+        WidgetProvider.updateWidgetPendingIntent(context)
         ForecastActivity.updateActivityBroadcast(context)
     }
 }

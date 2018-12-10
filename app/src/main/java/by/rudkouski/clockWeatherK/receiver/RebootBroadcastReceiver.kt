@@ -21,7 +21,7 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
         fun startScheduledWeatherUpdate() {
             val alarmManager = App.appContext.getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.setRepeating(RTC, System.currentTimeMillis() + getUpdateStart(), INTERVAL_HALF_HOUR,
-                WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext))
+                WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(App.appContext))
         }
 
         private fun getUpdateStart(): Long {
@@ -37,7 +37,7 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
 
         fun stopScheduledWeatherUpdate() {
             val alarmManager = App.appContext.getSystemService(ALARM_SERVICE) as AlarmManager
-            alarmManager.cancel(WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(App.appContext))
+            alarmManager.cancel(WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(App.appContext))
         }
     }
 
@@ -46,8 +46,8 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
             startScheduledWeatherUpdate()
             WidgetUpdateBroadcastReceiver.registerReceiver()
             LocationChangeChecker.startLocationUpdate()
-            WidgetProvider.updateWidgetPendingIntent(context).send()
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(context).send()
+            WidgetProvider.updateWidgetPendingIntent(context)
+            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(context)
         }
     }
 }

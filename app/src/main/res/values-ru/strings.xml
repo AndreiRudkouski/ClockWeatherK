@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Часы &amp; Погода K</string>
+    <string name="app_name">Часы &amp; Погода</string>
     <string name="weather_image_description">Погода</string>
     <string name="toolbar_image_forecast_description">Текущая погода</string>
     <string name="default_clock">00:00</string>

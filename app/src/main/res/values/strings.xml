@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Clock &amp; Weather K</string>
+    <string name="app_name">Clock &amp; Weather</string>
     <string name="weather_image_description">Weather</string>
     <string name="toolbar_image_forecast_description">Current weather</string>
     <string name="default_clock">00:00</string>

@@ -87,7 +87,7 @@ object LocationChangeChecker {
     private fun sendIntentToWidgetUpdate() {
         if (location == null) {
             WidgetProvider.updateWidgetPendingIntent(appContext)
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext).send()
+            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
         }
     }
 }
