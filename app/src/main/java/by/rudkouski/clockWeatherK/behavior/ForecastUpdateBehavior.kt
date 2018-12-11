@@ -64,7 +64,7 @@ class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayo
     }
 
     private fun changeTextViewSetting(child: AppBarLayout, valueY: Float) {
-        val createDate = child.findViewById<TextView>(R.id.create_current_weather)
+        val createDate = child.findViewById<TextView>(R.id.update_date_current_weather)
         createDate.scaleY = 1.0f - valueY / UPDATE_Y
         createDate.alpha = 1.0f - valueY / UPDATE_Y
         val updateDate = child.findViewById<TextView>(R.id.update_current_weather)

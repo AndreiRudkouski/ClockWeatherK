@@ -58,7 +58,7 @@
             android:layout_gravity="end">
 
             <TextView
-                android:id="@+id/create_current_weather"
+                android:id="@+id/update_date_current_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"

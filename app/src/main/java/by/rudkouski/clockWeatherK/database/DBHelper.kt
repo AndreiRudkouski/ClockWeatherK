@@ -48,7 +48,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         private const val WEATHER_TABLE = "weathers"
         private const val WEATHER_ID = "weather_id"
         private const val WEATHER_CODE = "weather_code"
-        private const val WEATHER_DATE = "weather_date"
+        private const val WEATHER_CREATE = "weather_create"
         private const val WEATHER_TEMP = "weather_temp"
         private const val WEATHER_CHILL = "weather_chill"
         private const val WEATHER_DIRECTION = "weather_direction"
@@ -59,6 +59,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         private const val WEATHER_VISIBILITY = "weather_visibility"
         private const val WEATHER_SUNRISE = "weather_sunrise"
         private const val WEATHER_SUNSET = "weather_sunset"
+        private const val WEATHER_UPDATE = "weather_update"
         private const val WEATHER_LOCATION_ID = "weather_location_id"
 
         private const val IS_EQUAL_PARAMETER = " = ?"
@@ -76,11 +77,11 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 ") ON DELETE CASCADE);")
         db.execSQL(
             ("CREATE TABLE IF NOT EXISTS " + WEATHER_TABLE + " (" + WEATHER_ID + " INTEGER PRIMARY KEY, " + WEATHER_CODE + " INTEGER, " +
-                WEATHER_DATE + " INTEGER, " + WEATHER_TEMP + " INTEGER, " + WEATHER_CHILL + " INTEGER, " + WEATHER_DIRECTION + " INTEGER," +
+                WEATHER_CREATE + " INTEGER, " + WEATHER_TEMP + " INTEGER, " + WEATHER_CHILL + " INTEGER, " + WEATHER_DIRECTION + " INTEGER," +
                 " " + WEATHER_SPEED + " REAL, " + WEATHER_HUMIDITY + " INTEGER, " + WEATHER_PRESSURE + " REAL, " + WEATHER_RISING +
                 " INTEGER, " + WEATHER_VISIBILITY + " REAL, " + WEATHER_SUNRISE + " INTEGER, " + WEATHER_SUNSET + " INTEGER, " +
-                WEATHER_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE + " (" +
-                LOCATION_ID + ") ON DELETE CASCADE);"))
+                WEATHER_UPDATE + " INTEGER, " + WEATHER_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES "
+                + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);"))
         db.execSQL(("CREATE TABLE IF NOT EXISTS " + FORECAST_TABLE + " (" + FORECAST_ID + " " +
             "INTEGER PRIMARY KEY, " + FORECAST_CODE + " INTEGER, " + FORECAST_DATE + " INTEGER, " + FORECAST_HIGH_TEMP + " INTEGER, " +
             FORECAST_LOW_TEMP + " INTEGER, " + FORECAST_LOCATION_ID + " INTEGER, FOREIGN KEY" + " (" + FORECAST_LOCATION_ID + ") " +
@@ -217,7 +218,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             val existedWeather = getWeatherFromDatabase(database, locationId)
             if (existedWeather != null) {
                 if (isWeatherNeedUpdate(existedWeather, newWeather, locationId)) {
-                    updateWeather(database, Weather(existedWeather.id, newWeather))
+                    updateWeather(database, Weather(existedWeather.id, newWeather, Date()))
                 } else {
                     return false
                 }
@@ -249,7 +250,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     private fun createWeather(cursor: Cursor): Weather {
         val id = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_ID))
         val code = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_CODE))
-        val createDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATE)))
+        val createDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_CREATE)))
         val temp = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_TEMP))
         val windChill = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_CHILL))
         val windDirection = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_DIRECTION))
@@ -260,9 +261,9 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         val visibility = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_VISIBILITY))
         val sunrise = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_SUNRISE)))
         val sunset = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_SUNSET)))
+        val updateDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_UPDATE)))
         return Weather(id, code, createDate, temp, windChill, windDirection, windSpeed, humidity, pressure,
-            pressureRising, visibility, sunrise,
-            sunset)
+            pressureRising, visibility, sunrise, sunset, updateDate)
     }
 
     private fun isWeatherNeedUpdate(existedWeather: Weather, newWeather: Weather, locationId: Int): Boolean {
@@ -292,7 +293,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     private fun createContentValues(weather: Weather): ContentValues {
         with(ContentValues()) {
             put(WEATHER_CODE, weather.code)
-            put(WEATHER_DATE, weather.createDate.time)
+            put(WEATHER_CREATE, weather.createDate.time)
             put(WEATHER_TEMP, weather.temp)
             put(WEATHER_CHILL, weather.windChill)
             put(WEATHER_DIRECTION, weather.windDirection)
@@ -303,6 +304,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             put(WEATHER_VISIBILITY, weather.visibility)
             put(WEATHER_SUNRISE, weather.sunrise.time)
             put(WEATHER_SUNSET, weather.sunset.time)
+            put(WEATHER_UPDATE, (weather.updateDate ?: Date()).time)
             return this
         }
     }

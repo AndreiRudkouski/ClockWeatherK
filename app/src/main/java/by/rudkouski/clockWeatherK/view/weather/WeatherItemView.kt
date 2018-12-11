@@ -32,6 +32,7 @@ class WeatherItemView : LinearLayout {
         private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
         private const val KM_IN_MILE = 1.609344
         private const val hPa_IN_Hg = 33.8639
+        private const val NOT_UPDATED = " -- "
     }
 
     fun updateWeatherItemView(weather: Weather?) {
@@ -40,7 +41,7 @@ class WeatherItemView : LinearLayout {
         setImage(view, weather)
         setDegreeText(view, weather)
         setDescriptionText(view, weather)
-        setCreateDateText(view, weather)
+        setUpdateDateText(view, weather)
         setWindDirectionText(view, weather)
         setWindSpeedText(view, weather)
         setHumidityText(view, weather)
@@ -86,19 +87,15 @@ class WeatherItemView : LinearLayout {
         }
     }
 
-    private fun setCreateDateText(view: View, weather: Weather?) {
-        val createDateTextView = view.findViewById<TextView>(R.id.create_current_weather)
-        if (isActualWeather) {
-            createDateTextView.visibility = VISIBLE
-            val timeFormat = WidgetProvider.chooseSystemTimeFormat(context, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
-            val dateWithTimeFormat =
-                String.format(Locale.getDefault(), ENUMERATION_PATTERN, DATE_FORMAT_WITHOUT_YEAR, timeFormat)
-            val dateFormat = SimpleDateFormat(dateWithTimeFormat, Locale.getDefault())
-            val dateText = dateFormat.format(weather!!.createDate.time)
-            createDateTextView.text = convertToDeterminationPattern(context.getString(R.string.apply), dateText)
-        } else {
-            createDateTextView.visibility = INVISIBLE
-        }
+    private fun setUpdateDateText(view: View, weather: Weather?) {
+        val updateDateTextView = view.findViewById<TextView>(R.id.update_date_current_weather)
+        updateDateTextView.visibility = VISIBLE
+        val timeFormat = WidgetProvider.chooseSystemTimeFormat(context, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
+        val dateWithTimeFormat =
+            String.format(Locale.getDefault(), ENUMERATION_PATTERN, DATE_FORMAT_WITHOUT_YEAR, timeFormat)
+        val dateFormat = SimpleDateFormat(dateWithTimeFormat, Locale.getDefault())
+        val dateText = if (weather?.updateDate != null) dateFormat.format(weather.updateDate.time) else NOT_UPDATED
+        updateDateTextView.text = convertToDeterminationPattern(context.getString(R.string.update_date), dateText)
     }
 
     private fun setWindDirectionText(view: View, weather: Weather?) {

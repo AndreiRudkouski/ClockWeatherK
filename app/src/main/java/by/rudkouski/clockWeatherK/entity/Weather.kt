@@ -43,7 +43,6 @@ class Weather {
     val pressureRising: Int
 
     @SerializedName("visibility")
-    @Expose
     val visibility: Double
 
     @SerializedName("sunrise")
@@ -52,10 +51,12 @@ class Weather {
     @SerializedName("sunset")
     val sunset: Date
 
+    @Expose val updateDate: Date?
+
     constructor(id: Int, code: Int, createDate: Date, temp: Int, windChill: Int, windDirection: Int, windSpeed: Double,
                 humidity: Int,
                 pressure: Double,
-                pressureRising: Int, visibility: Double, sunrise: Date, sunset: Date) {
+                pressureRising: Int, visibility: Double, sunrise: Date, sunset: Date, updateDate: Date) {
         this.id = id
         this.code = code
         this.createDate = createDate
@@ -69,10 +70,11 @@ class Weather {
         this.visibility = visibility
         this.sunrise = sunrise
         this.sunset = sunset
+        this.updateDate = updateDate
     }
 
-    constructor(newId: Int, weather: Weather) :
+    constructor(newId: Int, weather: Weather, updateDate: Date) :
         this(newId, weather.code, weather.createDate, weather.temp, weather.windChill, weather.windDirection,
-            weather.windSpeed, weather.humidity,
-            weather.pressure, weather.pressureRising, weather.visibility, weather.sunrise, weather.sunset)
+            weather.windSpeed, weather.humidity, weather.pressure, weather.pressureRising, weather.visibility,
+            weather.sunrise, weather.sunset, updateDate)
 }

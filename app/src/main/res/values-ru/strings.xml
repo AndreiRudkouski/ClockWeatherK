@@ -21,7 +21,7 @@
     <string name="menu_location">Изменить местоположение</string>
     <string name="menu_text">Жирный/Нормальный виджет</string>
 
-    <string name="apply">Время</string>
+    <string name="update_date">Обновлено</string>
     <string name="wind_direction">Направл. ветра, \u00B0</string>
     <string name="wind_chill">Тем-ра ветра, \u00B0C</string>
     <string name="wind_speed">Скор. ветра, км/ч</string>

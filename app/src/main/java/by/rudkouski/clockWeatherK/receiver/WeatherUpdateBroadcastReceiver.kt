@@ -52,7 +52,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     private fun updateWeather(context: Context) {
         executorService.execute {
             val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
-            var isUpdated = false
             for (locationId in locationIds) {
                 val location = dbHelper.getLocationById(locationId)
                 try {
@@ -60,7 +59,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                     if (responseBody != null) {
                         val currentWeather = WeatherJsonConverter.getWeatherFromResponseBody(responseBody)
                         if (dbHelper.setWeatherByLocationId(currentWeather, locationId)) {
-                            isUpdated = true
                             val forecasts = WeatherJsonConverter.getForecastsFromResponseBody(responseBody)
                             dbHelper.setForecastsByLocationId(forecasts, locationId)
                         }
@@ -70,9 +68,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                     continue
                 }
             }
-            if (isUpdated) {
-                sendIntentsForWidgetUpdate(context)
-            }
+            sendIntentsForWidgetUpdate(context)
         }
     }
 
