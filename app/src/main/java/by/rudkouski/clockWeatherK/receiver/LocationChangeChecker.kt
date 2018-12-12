@@ -20,32 +20,40 @@ import com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.location.LocationServices.getFusedLocationProviderClient
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicReference
+
 
 @SuppressLint("MissingPermission")
 object LocationChangeChecker {
 
-    private var location: Location? = null
-
+    private var location = AtomicReference<Location>()
+    private val isRegistered = AtomicBoolean(false)
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
-            setLocation(locationResult.lastLocation)
+            val location = locationResult.lastLocation
+            if (location != null) {
+                setLocation(locationResult.lastLocation)
+            }
         }
     }
 
     fun startLocationUpdate() {
-        if (isPermissionsGranted()) {
+        if (isPermissionsGranted() && !isRegistered.get()) {
             val locationRequest = createLocationRequest()
             checkLocationSetting(LocationSettingsRequest.Builder().addLocationRequest(locationRequest).build())
             getFusedLocationProviderClient(appContext).requestLocationUpdates(locationRequest, locationCallback,
                 Looper.getMainLooper())
+            isRegistered.set(true)
         }
+        updateCurrentLocation()
     }
 
     private fun createLocationRequest(): LocationRequest {
         val locationRequest = LocationRequest()
         locationRequest.priority = PRIORITY_HIGH_ACCURACY
         locationRequest.interval = INTERVAL_FIFTEEN_MINUTES
-        locationRequest.fastestInterval = MINUTE_IN_MILLIS * 5
+        locationRequest.fastestInterval = MINUTE_IN_MILLIS
         return locationRequest
     }
 
@@ -54,8 +62,19 @@ object LocationChangeChecker {
         settingsClient.checkLocationSettings(locationSettingsRequest)
     }
 
+    private fun updateCurrentLocation() {
+        getFusedLocationProviderClient(appContext).lastLocation.addOnCompleteListener {
+            if (it.isSuccessful && it.result != null) {
+                setLocation(it.result!!)
+            }
+        }
+    }
+
     fun stopLocationUpdate() {
-        getFusedLocationProviderClient(appContext).removeLocationUpdates(locationCallback)
+        if (isRegistered.get()) {
+            getFusedLocationProviderClient(appContext).removeLocationUpdates(locationCallback)
+            isRegistered.set(false)
+        }
     }
 
     fun isPermissionsGranted(): Boolean {
@@ -64,25 +83,26 @@ object LocationChangeChecker {
     }
 
     fun getLastLocation(): Location {
-        return if (location != null) location!!
+        return if (location.get() != null) location.get()
         else Location.createCurrentLocation(appContext.getString(R.string.default_location), 0.0, 0.0)
     }
 
     private fun setLocation(lastLocation: android.location.Location) {
         val address = getAddress(lastLocation)
-        val newLocation = if (address != null) {
+        if (address != null && (address.locality != null || address.subAdminArea != null || address.adminArea != null)) {
             val locationName =
-                if (address.locality != null) address.locality else if (address.subAdminArea != null) address.subAdminArea else address.adminArea
-            Location.createCurrentLocation(locationName, address.latitude, address.longitude)
-        } else {
-            Location.createCurrentLocation(appContext.getString(R.string.default_location), lastLocation.latitude,
-                lastLocation.longitude)
-        }
-        if (location == null) {
-            location = newLocation
-            sendIntentToWidgetUpdate()
-        } else {
-            location = newLocation
+                when {
+                    address.locality != null -> address.locality
+                    address.subAdminArea != null -> address.subAdminArea
+                    else -> address.adminArea
+                }
+            val newLocation = Location.createCurrentLocation(locationName, address.latitude, address.longitude)
+            if (location.get() == null) {
+                location.set(newLocation)
+                sendIntentToWidgetUpdate()
+            } else {
+                location.set(newLocation)
+            }
         }
     }
 

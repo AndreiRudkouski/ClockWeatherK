@@ -55,7 +55,6 @@ object WeatherJsonConverter {
         val forecastsJson = parseResponseBodyToForecastJson(responseBody)
         val gson = GsonBuilder().setLenient().setDateFormat(DATE_FORMAT).create()
         return gson.fromJson(forecastsJson, Array<Forecast>::class.java).toList()
-
     }
 
     private fun parseResponseBodyToForecastJson(responseBody: String): String? {
