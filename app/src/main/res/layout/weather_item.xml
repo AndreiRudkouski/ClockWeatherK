@@ -55,7 +55,8 @@
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end">
+            android:layout_gravity="end"
+            android:paddingBottom="@dimen/bottom_padding">
 
             <TextView
                 android:id="@+id/update_date_current_weather"
@@ -70,6 +71,7 @@
                 android:id="@+id/update_current_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:scaleY="0"
@@ -79,22 +81,22 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/direction_current_weather"
+            android:id="@+id/feel_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Wind direction, \u00B0: 180"/>
+            tools:text="Feels like: 18\u00B0C"/>
 
         <TextView
-            android:id="@+id/speed_current_weather"
+            android:id="@+id/wind_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Wind speed, km/h: 21"/>
+            tools:text="Wind: SE, 21 km/h"/>
 
         <TextView
             android:id="@+id/humidity_current_weather"
@@ -103,7 +105,7 @@
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Humidity, %: 22"/>
+            tools:text="Humidity: 22 %"/>
 
         <TextView
             android:id="@+id/pressure_current_weather"
@@ -112,7 +114,7 @@
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Pressure, hpa: 987"/>
+            tools:text="Pressure: 987 hpa"/>
 
         <TextView
             android:id="@+id/rising_current_weather"
@@ -121,7 +123,7 @@
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Change: steady"/>
+            tools:text="steady"/>
 
         <TextView
             android:id="@+id/visibility_current_weather"
@@ -130,7 +132,7 @@
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Visibility, km: 16"/>
+            tools:text="Visibility: 16 km"/>
 
         <TextView
             android:id="@+id/sunrise_current_weather"

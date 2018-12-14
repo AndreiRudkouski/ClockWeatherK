@@ -30,6 +30,7 @@ class WeatherItemView : LinearLayout {
         private const val TIME_FORMAT_24 = "H:mm"
         private const val FULL_TIME_FORMAT_12 = "h:mm a"
         private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
+        private const val FEEL_IN_CELSIUS = 29
         private const val KM_IN_MILE = 1.609344
         private const val hPa_IN_Hg = 33.8639
         private const val NOT_UPDATED = " -- "
@@ -42,8 +43,8 @@ class WeatherItemView : LinearLayout {
         setDegreeText(view, weather)
         setDescriptionText(view, weather)
         setUpdateDateText(view, weather)
-        setWindDirectionText(view, weather)
-        setWindSpeedText(view, weather)
+        setFeelText(view, weather)
+        setWindText(view, weather)
         setHumidityText(view, weather)
         setPressureText(view, weather)
         setPressureRisingText(view, weather)
@@ -70,7 +71,7 @@ class WeatherItemView : LinearLayout {
                 Locale.getDefault(),
                 WEATHER_DEGREE_FORMAT,
                 weather!!.temp,
-                context.getString(R.string.degree)
+                context.getString(R.string.temperature_unit)
             )
             degreeTextView.text = degreeText
         } else {
@@ -98,39 +99,42 @@ class WeatherItemView : LinearLayout {
         updateDateTextView.text = convertToDeterminationPattern(context.getString(R.string.update_date), dateText)
     }
 
-    private fun setWindDirectionText(view: View, weather: Weather?) {
-        val description = context.getString(R.string.wind_direction)
-        val value = if (isActualWeather) weather!!.windDirection.toString() else null
-        setDataToView(view, R.id.direction_current_weather, description, value)
+    private fun setFeelText(view: View, weather: Weather?) {
+        val description = context.getString(R.string.feel)
+        val value = if (isActualWeather) "${convertTemperature(weather!!.windChill)} ${context.getString(
+            R.string.temperature_unit)}" else null
+        setDataToView(view, R.id.feel_current_weather, description, value)
     }
 
-    private fun setWindSpeedText(view: View, weather: Weather?) {
-        val description = context.getString(R.string.wind_speed)
-        val value = if (isActualWeather) convertWindSpeed(weather!!.windSpeed).toString() else null
-        setDataToView(view, R.id.speed_current_weather, description, value)
+    private fun setWindText(view: View, weather: Weather?) {
+        val description = context.getString(R.string.wind)
+        val value = if (isActualWeather) "${convertWindDirection(weather!!.windDirection)}, ${convertWindSpeed(
+            weather.windSpeed)} ${context.getString(R.string.speed_unit)}" else null
+        setDataToView(view, R.id.wind_current_weather, description, value)
     }
 
     private fun setHumidityText(view: View, weather: Weather?) {
         val description = context.getString(R.string.humidity)
-        val value = if (isActualWeather) weather!!.humidity.toString() else null
+        val value = if (isActualWeather) "${weather!!.humidity} ${context.getString(R.string.percent_unit)}" else null
         setDataToView(view, R.id.humidity_current_weather, description, value)
     }
 
     private fun setPressureText(view: View, weather: Weather?) {
         val description = context.getString(R.string.pressure)
-        val value = if (isActualWeather) convertPressure(weather!!.pressure).toString() else null
+        val value = if (isActualWeather) "${convertPressure(weather!!.pressure)} ${context.getString(
+            R.string.pressure_unit)}," else null
         setDataToView(view, R.id.pressure_current_weather, description, value)
     }
 
     private fun setPressureRisingText(view: View, weather: Weather?) {
-        val description = context.getString(R.string.rising)
         val value = if (isActualWeather) convertPressureRising(weather!!.pressureRising) else null
-        setDataToView(view, R.id.rising_current_weather, description, value)
+        setDataToView(view, R.id.rising_current_weather, null, value)
     }
 
     private fun setVisibilityText(view: View, weather: Weather?) {
         val description = context.getString(R.string.visibility)
-        val value = if (isActualWeather) convertVisibility(weather!!.visibility).toString() else null
+        val value = if (isActualWeather) "${convertVisibility(weather!!.visibility)} ${context.getString(
+            R.string.distance_unit)}" else null
         setDataToView(view, R.id.visibility_current_weather, description, value)
     }
 
@@ -146,11 +150,11 @@ class WeatherItemView : LinearLayout {
         setDataToView(view, R.id.sunset_current_weather, description, value)
     }
 
-    private fun setDataToView(view: View, identifier: Int, description: String, value: String?) {
+    private fun setDataToView(view: View, identifier: Int, description: String?, value: String?) {
         val textView = view.findViewById<TextView>(identifier)
         if (isActualWeather) {
             textView.visibility = VISIBLE
-            textView.text = convertToDeterminationPattern(description, value!!)
+            textView.text = if (description != null) convertToDeterminationPattern(description, value!!) else value
         } else {
             textView.visibility = INVISIBLE
         }
@@ -158,6 +162,32 @@ class WeatherItemView : LinearLayout {
 
     private fun convertToDeterminationPattern(param1: String, param2: String): String {
         return String.format(Locale.getDefault(), DETERMINATION_PATTERN, param1, param2)
+    }
+
+    private fun convertTemperature(temperature: Int): Int {
+        return temperature - FEEL_IN_CELSIUS
+    }
+
+    private fun convertWindDirection(direction: Int): String {
+        return when {
+            direction <= 11 -> context.getString(R.string.wind_direction_N)
+            direction <= 34 -> context.getString(R.string.wind_direction_NNE)
+            direction <= 56 -> context.getString(R.string.wind_direction_NE)
+            direction <= 79 -> context.getString(R.string.wind_direction_ENE)
+            direction <= 101 -> context.getString(R.string.wind_direction_E)
+            direction <= 124 -> context.getString(R.string.wind_direction_ESE)
+            direction <= 146 -> context.getString(R.string.wind_direction_SE)
+            direction <= 169 -> context.getString(R.string.wind_direction_SSE)
+            direction <= 191 -> context.getString(R.string.wind_direction_S)
+            direction <= 214 -> context.getString(R.string.wind_direction_SSW)
+            direction <= 236 -> context.getString(R.string.wind_direction_SW)
+            direction <= 259 -> context.getString(R.string.wind_direction_WSW)
+            direction <= 281 -> context.getString(R.string.wind_direction_W)
+            direction <= 304 -> context.getString(R.string.wind_direction_WNW)
+            direction <= 326 -> context.getString(R.string.wind_direction_NW)
+            direction <= 349 -> context.getString(R.string.wind_direction_NNW)
+            else -> context.getString(R.string.wind_direction_N)
+        }
     }
 
     private fun convertWindSpeed(speed: Double): Long {

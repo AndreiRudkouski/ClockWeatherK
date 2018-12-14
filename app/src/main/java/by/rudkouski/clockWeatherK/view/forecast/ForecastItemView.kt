@@ -53,7 +53,7 @@ class ForecastItemView : LinearLayout {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_forecast)
         val degreeText =
             String.format(Locale.getDefault(), FORECAST_DEGREE_FORMAT, forecast.highTemp, forecast.lowTemp,
-                context.getString(R.string.degree))
+                context.getString(R.string.temperature_unit))
         degreeTextView.text = degreeText
     }
 }

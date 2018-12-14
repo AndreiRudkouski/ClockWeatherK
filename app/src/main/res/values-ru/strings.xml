@@ -8,7 +8,6 @@
     <string name="default_location">Неизвестно</string>
     <string name="default_weather">Нет данных</string>
     <string name="choose_location">Выберите местоположение</string>
-    <string name="degree">\u00B0C</string>
 
     <string name="update_weather">ОТПУСТИТЬ ДЛЯ ОБНОВЛЕНИЯ</string>
     <string name="update">обновление…</string>
@@ -22,19 +21,23 @@
     <string name="menu_text">Жирный/Нормальный виджет</string>
 
     <string name="update_date">Обновлено</string>
-    <string name="wind_direction">Направл. ветра, \u00B0</string>
-    <string name="wind_chill">Тем-ра ветра, \u00B0C</string>
-    <string name="wind_speed">Скор. ветра, км/ч</string>
-    <string name="humidity">Влажность, %</string>
-    <string name="pressure">Давление, гПа</string>
-    <string name="rising">Изменение</string>
-    <string name="visibility">Видимость, км</string>
+    <string name="wind">Ветер</string>
+    <string name="feel">Ощущается</string>
+    <string name="humidity">Влажность</string>
+    <string name="pressure">Давление</string>
+    <string name="visibility">Видимость</string>
     <string name="sunrise">Восход</string>
     <string name="sunset">Закат</string>
 
-    <string name="pressure_steady">постоянно</string>
+    <string name="pressure_steady">стабильно</string>
     <string name="pressure_rising">растет</string>
     <string name="pressure_falling">падает</string>
+
+    <string name="speed_unit">км/ч</string>
+    <string name="pressure_unit">гПа</string>
+    <string name="distance_unit">км</string>
+    <string name="temperature_unit">\u00B0C</string>
+    <string name="percent_unit">%</string>
 
     <string name="tornado">Торнадо</string>
     <string name="tropical_storm">Тропическая буря</string>
@@ -84,4 +87,21 @@
     <string name="thundershowers">Грозы</string>
     <string name="snow_showers">Снегопады</string>
     <string name="isolated_thundershowers">Местами гром</string>
+
+    <string name="wind_direction_N">С</string>
+    <string name="wind_direction_NNE">ССВ</string>
+    <string name="wind_direction_NE">СВ</string>
+    <string name="wind_direction_ENE">ВСВ</string>
+    <string name="wind_direction_E">В</string>
+    <string name="wind_direction_ESE">ВЮВ</string>
+    <string name="wind_direction_SE">ЮВ</string>
+    <string name="wind_direction_SSE">ЮЮВ</string>
+    <string name="wind_direction_S">Ю</string>
+    <string name="wind_direction_SSW">ЮЮЗ</string>
+    <string name="wind_direction_SW">ЮЗ</string>
+    <string name="wind_direction_WSW">ЗЮЗ</string>
+    <string name="wind_direction_W">З</string>
+    <string name="wind_direction_WNW">ЗСЗ</string>
+    <string name="wind_direction_NW">СЗ</string>
+    <string name="wind_direction_NNW">ССЗ</string>
 </resources>
