@@ -30,7 +30,6 @@ class WeatherItemView : LinearLayout {
         private const val TIME_FORMAT_24 = "H:mm"
         private const val FULL_TIME_FORMAT_12 = "h:mm a"
         private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
-        private const val FEEL_IN_CELSIUS = 29
         private const val KM_IN_MILE = 1.609344
         private const val hPa_IN_Hg = 33.8639
         private const val NOT_UPDATED = " -- "
@@ -164,8 +163,8 @@ class WeatherItemView : LinearLayout {
         return String.format(Locale.getDefault(), DETERMINATION_PATTERN, param1, param2)
     }
 
-    private fun convertTemperature(temperature: Int): Int {
-        return temperature - FEEL_IN_CELSIUS
+    private fun convertTemperature(temperature: Int): Long {
+        return Math.round((temperature - 32) * 5.0 / 9.0)
     }
 
     private fun convertWindDirection(direction: Int): String {

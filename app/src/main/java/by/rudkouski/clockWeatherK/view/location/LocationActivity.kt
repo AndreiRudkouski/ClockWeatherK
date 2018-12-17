@@ -50,6 +50,11 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
         handler.post(this::setLocations)
     }
 
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
+
     private fun getWidgetId(): Int {
         return getWidgetIdFromBundle(intent.extras)
     }
@@ -114,6 +119,7 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     private fun updateLocationAndWeather() {
         LocationChangeChecker.startLocationUpdate()
         activitiesForNonCurrentLocation()
+        finish()
     }
 
     private fun updateWidgetAndWeather() {
