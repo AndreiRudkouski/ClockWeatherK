@@ -113,6 +113,11 @@ class ForecastActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        finish()
+    }
+
     private inner class ForecastActivityUpdateBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             updateActivity()
