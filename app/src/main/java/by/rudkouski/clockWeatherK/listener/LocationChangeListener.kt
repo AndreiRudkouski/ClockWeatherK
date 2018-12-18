@@ -31,10 +31,9 @@ object LocationChangeListener : LocationListener {
 
     override fun onLocationChanged(lastLocation: android.location.Location?) {
         if (lastLocation != null) {
-            if (dbHelper.isCurrentLocationUpdated()) {
+            if (dbHelper.isCurrentLocationNotUpdated()) {
                 locationManager.removeUpdates(this)
-                setRequestLocationUpdates(
-                    INTERVAL_FIFTEEN_MINUTES)
+                setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
             }
             setLocation(lastLocation)
         }
@@ -51,7 +50,7 @@ object LocationChangeListener : LocationListener {
 
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
-            if (dbHelper.isCurrentLocationUpdated()) {
+            if (dbHelper.isCurrentLocationNotUpdated()) {
                 setRequestLocationUpdates(0)
             } else {
                 setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
@@ -86,7 +85,7 @@ object LocationChangeListener : LocationListener {
                     address.subAdminArea != null -> address.subAdminArea
                     else -> address.adminArea
                 }
-            if (dbHelper.isCurrentLocationUpdated()) {
+            if (dbHelper.isCurrentLocationNotUpdated()) {
                 dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
                 sendIntentToWidgetUpdate()
             } else {

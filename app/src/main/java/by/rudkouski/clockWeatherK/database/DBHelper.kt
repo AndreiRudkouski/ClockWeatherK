@@ -143,7 +143,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             arrayOf(Location.CURRENT_LOCATION_ID.toString()))
     }
 
-    fun isCurrentLocationUpdated() = getLocationById(Location.CURRENT_LOCATION_ID).name == CURRENT_LOCATION
+    fun isCurrentLocationNotUpdated() =
+        getLocationById(Location.CURRENT_LOCATION_ID).name == appContext.getString(R.string.default_location)
 
     private fun getLocationFromDatabaseById(db: SQLiteDatabase, locationId: Int): Location {
         db.query(LOCATION_TABLE, null, LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()), null, null,
@@ -165,8 +166,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             Location(id, nameCode, latitude, longitude, timeZone)
         } else {
             Location.createCurrentLocation(
-                if (nameCode == CURRENT_LOCATION) appContext.getString(R.string.default_location) else nameCode,
-                latitude, longitude)
+                if (nameCode == CURRENT_LOCATION) appContext.getString(R.string.default_location)
+                else nameCode, latitude, longitude)
         }
     }
 
