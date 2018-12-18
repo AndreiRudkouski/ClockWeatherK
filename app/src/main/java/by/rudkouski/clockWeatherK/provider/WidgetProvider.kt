@@ -24,11 +24,13 @@ import android.view.Display
 import android.view.Display.STATE_OFF
 import android.view.View
 import android.widget.RemoteViews
+import android.widget.Toast
 import by.rudkouski.clockWeatherK.R
+import by.rudkouski.clockWeatherK.app.App
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Weather
-import by.rudkouski.clockWeatherK.receiver.LocationChangeChecker
+import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WidgetUpdateBroadcastReceiver
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
@@ -143,7 +145,7 @@ class WidgetProvider : AppWidgetProvider() {
             remoteViews.setImageViewResource(R.id.weather_image_widget,
                 WeatherCode.getWeatherImageResourceIdByCode(context, weather!!.code))
             val degreeText = String.format(Locale.getDefault(), WEATHER_DEGREE_FORMAT, weather.temp,
-                context.getString(R.string.degree))
+                context.getString(R.string.temperature_unit))
             val spanDegreeText = createSpannableString(degreeText, isBold)
             remoteViews.setTextViewText(R.id.degrees_widget, spanDegreeText)
             remoteViews.setViewVisibility(R.id.description_widget, View.VISIBLE)
@@ -189,15 +191,29 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onEnabled(context: Context) {
         super.onEnabled(context)
+        Thread.setDefaultUncaughtExceptionHandler { _, paramThrowable ->
+            object : Thread() {
+                override fun run() {
+                    Looper.prepare()
+                    Toast.makeText(App.appContext, paramThrowable.toString(), Toast.LENGTH_LONG).show()
+                    Looper.loop()
+                }
+            }.start()
+            try {
+                Thread.sleep(4000)
+            } catch (e: InterruptedException) {
+            }
+            System.exit(2)
+        }
         WidgetUpdateBroadcastReceiver.registerReceiver()
-        LocationChangeChecker.startLocationUpdate()
+        LocationChangeListener.startLocationUpdate()
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
         RebootBroadcastReceiver.stopScheduledWeatherUpdate()
         WidgetUpdateBroadcastReceiver.unregisterReceiver()
-        LocationChangeChecker.stopLocationUpdate()
+        LocationChangeListener.stopLocationUpdate()
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
