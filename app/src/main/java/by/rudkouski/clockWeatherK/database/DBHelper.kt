@@ -6,12 +6,12 @@ import android.database.Cursor
 import android.database.sqlite.*
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.app.App
+import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.entity.Forecast
 import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.entity.Widget
-import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import java.util.*
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Calendar.HOUR_OF_DAY
@@ -64,6 +64,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
         private const val IS_EQUAL_PARAMETER = " = ?"
         private const val DROP_TABLE_IF_EXISTS: String = "DROP TABLE IF EXISTS "
+
+        private const val CURRENT_LOCATION = "current_location"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -132,6 +134,17 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         return getLocationFromDatabaseById(database, locationId)
     }
 
+    fun updateCurrentLocation(locationName: String, latitude: Double, longitude: Double) {
+        val values = ContentValues()
+        values.put(LOCATION_NAME_CODE, locationName)
+        values.put(LOCATION_LATITUDE, latitude)
+        values.put(LOCATION_LONGITUDE, longitude)
+        database.update(LOCATION_TABLE, values, LOCATION_ID + IS_EQUAL_PARAMETER,
+            arrayOf(Location.CURRENT_LOCATION_ID.toString()))
+    }
+
+    fun isCurrentLocationUpdated() = getLocationById(Location.CURRENT_LOCATION_ID).name == CURRENT_LOCATION
+
     private fun getLocationFromDatabaseById(db: SQLiteDatabase, locationId: Int): Location {
         db.query(LOCATION_TABLE, null, LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()), null, null,
             null).use { cursor ->
@@ -144,14 +157,16 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createLocation(cursor: Cursor): Location {
         val id = cursor.getInt(cursor.getColumnIndexOrThrow(LOCATION_ID))
+        val nameCode = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_NAME_CODE))
+        val latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LATITUDE))
+        val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LONGITUDE))
         return if (id != CURRENT_LOCATION_ID) {
-            val nameCode = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_NAME_CODE))
-            val latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LATITUDE))
-            val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LONGITUDE))
             val timeZone = TimeZone.getTimeZone(cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE)))
             Location(id, nameCode, latitude, longitude, timeZone)
         } else {
-            LocationChangeListener.getLastLocation()
+            Location.createCurrentLocation(
+                if (nameCode == CURRENT_LOCATION) appContext.getString(R.string.default_location) else nameCode,
+                latitude, longitude)
         }
     }
 

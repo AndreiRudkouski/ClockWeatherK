@@ -13,27 +13,25 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
-import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.app.App.Companion.appContext
-import by.rudkouski.clockWeatherK.entity.Location
+import by.rudkouski.clockWeatherK.database.DBHelper
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import by.rudkouski.clockWeatherK.receiver.WeatherUpdateBroadcastReceiver
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.concurrent.atomic.AtomicReference
 
 
 @SuppressLint("MissingPermission")
-object LocationChangeListener: LocationListener {
+object LocationChangeListener : LocationListener {
 
-    private var location = AtomicReference<Location>()
+    private val dbHelper = DBHelper.INSTANCE
     private val isRegistered = AtomicBoolean(false)
     private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     override fun onLocationChanged(lastLocation: android.location.Location?) {
         if (lastLocation != null) {
-            if (location.get() == null) {
+            if (dbHelper.isCurrentLocationUpdated()) {
                 locationManager.removeUpdates(this)
                 setRequestLocationUpdates(
                     INTERVAL_FIFTEEN_MINUTES)
@@ -53,14 +51,14 @@ object LocationChangeListener: LocationListener {
 
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
-            if (location.get() == null) {
+            if (dbHelper.isCurrentLocationUpdated()) {
                 setRequestLocationUpdates(0)
             } else {
-                setRequestLocationUpdates(
-                    INTERVAL_FIFTEEN_MINUTES)
+                setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
             }
         }
     }
+
 
     private fun setRequestLocationUpdates(period: Long) {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, 0f, this)
@@ -79,11 +77,6 @@ object LocationChangeListener: LocationListener {
             || ActivityCompat.checkSelfPermission(appContext, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
     }
 
-    fun getLastLocation(): Location {
-        return if (location.get() != null) location.get()
-        else Location.createCurrentLocation(appContext.getString(R.string.default_location), 0.0, 0.0)
-    }
-
     private fun setLocation(lastLocation: android.location.Location) {
         val address = getAddress(lastLocation)
         if (address != null && (address.locality != null || address.subAdminArea != null || address.adminArea != null)) {
@@ -93,12 +86,11 @@ object LocationChangeListener: LocationListener {
                     address.subAdminArea != null -> address.subAdminArea
                     else -> address.adminArea
                 }
-            val newLocation = Location.createCurrentLocation(locationName, address.latitude, address.longitude)
-            if (location.get() == null) {
-                location.set(newLocation)
+            if (dbHelper.isCurrentLocationUpdated()) {
+                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
                 sendIntentToWidgetUpdate()
             } else {
-                location.set(newLocation)
+                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
             }
         }
     }
@@ -120,7 +112,6 @@ object LocationChangeListener: LocationListener {
 
     private fun sendIntentToWidgetUpdate() {
         WidgetProvider.updateWidgetPendingIntent(appContext)
-        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(
-            appContext)
+        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
     }
 }

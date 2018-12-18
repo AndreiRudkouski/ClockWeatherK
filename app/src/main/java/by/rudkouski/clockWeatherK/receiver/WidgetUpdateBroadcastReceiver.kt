@@ -11,17 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
-    private val intentFilter: IntentFilter = IntentFilter()
+    private val intentFilter: IntentFilter =
+        IntentFilter().also { it.addAction(ACTION_TIME_TICK) }.also { it.addAction(ACTION_TIMEZONE_CHANGED) }
+            .also { it.addAction(ACTION_TIME_CHANGED) }.also { it.addAction(ACTION_DATE_CHANGED) }
+            .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
     private val isRegistered = AtomicBoolean(false)
-
-    init {
-        intentFilter.addAction(ACTION_TIME_TICK)
-        intentFilter.addAction(ACTION_TIMEZONE_CHANGED)
-        intentFilter.addAction(ACTION_TIME_CHANGED)
-        intentFilter.addAction(ACTION_DATE_CHANGED)
-        intentFilter.addAction(ACTION_SCREEN_ON)
-        intentFilter.addAction(ACTION_LOCALE_CHANGED)
-    }
 
     fun registerReceiver() {
         if (!isRegistered.get()) {
