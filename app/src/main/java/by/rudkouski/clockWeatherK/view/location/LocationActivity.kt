@@ -18,8 +18,8 @@ import android.widget.ListView
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
-import by.rudkouski.clockWeatherK.receiver.LocationChangeChecker
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WeatherUpdateBroadcastReceiver
 import kotlin.Int.Companion.MIN_VALUE
@@ -91,7 +91,7 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun activitiesForCurrentLocation() {
-        if (LocationChangeChecker.isPermissionsGranted()) {
+        if (LocationChangeListener.isPermissionsGranted()) {
             updateLocationAndWeather()
         } else {
             ActivityCompat.requestPermissions(this,
@@ -117,7 +117,7 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun updateLocationAndWeather() {
-        LocationChangeChecker.startLocationUpdate()
+        LocationChangeListener.startLocationUpdate()
         activitiesForNonCurrentLocation()
         finish()
     }

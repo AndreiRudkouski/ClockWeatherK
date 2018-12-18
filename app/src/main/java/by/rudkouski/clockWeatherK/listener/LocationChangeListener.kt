@@ -1,4 +1,4 @@
-package by.rudkouski.clockWeatherK.receiver
+package by.rudkouski.clockWeatherK.listener
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -17,6 +17,7 @@ import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
+import by.rudkouski.clockWeatherK.receiver.WeatherUpdateBroadcastReceiver
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -24,51 +25,51 @@ import java.util.concurrent.atomic.AtomicReference
 
 
 @SuppressLint("MissingPermission")
-object LocationChangeChecker {
+object LocationChangeListener: LocationListener {
 
     private var location = AtomicReference<Location>()
     private val isRegistered = AtomicBoolean(false)
     private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private val locationListener = object : android.location.LocationListener {
-        override fun onLocationChanged(lastLocation: android.location.Location?) {
-            if (lastLocation != null) {
-                if (location.get() == null) {
-                    locationManager.removeUpdates(this)
-                    setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES, this)
-                }
-                setLocation(lastLocation)
+
+    override fun onLocationChanged(lastLocation: android.location.Location?) {
+        if (lastLocation != null) {
+            if (location.get() == null) {
+                locationManager.removeUpdates(this)
+                setRequestLocationUpdates(
+                    INTERVAL_FIFTEEN_MINUTES)
             }
+            setLocation(lastLocation)
         }
+    }
 
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        }
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+    }
 
-        override fun onProviderEnabled(provider: String?) {
-        }
+    override fun onProviderEnabled(provider: String?) {
+    }
 
-        override fun onProviderDisabled(provider: String?) {
-        }
-
+    override fun onProviderDisabled(provider: String?) {
     }
 
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
             if (location.get() == null) {
-                setRequestLocationUpdates(0, locationListener)
+                setRequestLocationUpdates(0)
             } else {
-                setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES, locationListener)
+                setRequestLocationUpdates(
+                    INTERVAL_FIFTEEN_MINUTES)
             }
         }
     }
 
-    private fun setRequestLocationUpdates(period: Long, listener: LocationListener) {
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, 0f, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 0f, listener)
+    private fun setRequestLocationUpdates(period: Long) {
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, period, 0f, this)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, period, 0f, this)
     }
 
     fun stopLocationUpdate() {
         if (isRegistered.get()) {
-            locationManager.removeUpdates(locationListener)
+            locationManager.removeUpdates(this)
             isRegistered.set(false)
         }
     }
@@ -112,13 +113,14 @@ object LocationChangeChecker {
                 return addresses[0]
             }
         } catch (e: IOException) {
-            Log.e(LocationChangeChecker::class.java.simpleName, e.toString())
+            Log.e(LocationChangeListener::class.java.simpleName, e.toString())
         }
         return null
     }
 
     private fun sendIntentToWidgetUpdate() {
         WidgetProvider.updateWidgetPendingIntent(appContext)
-        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
+        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(
+            appContext)
     }
 }
