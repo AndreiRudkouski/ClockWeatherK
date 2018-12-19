@@ -110,7 +110,7 @@ object LocationChangeListener : LocationListener {
     }
 
     private fun sendIntentToWidgetUpdate() {
-        WidgetProvider.updateWidgetPendingIntent(appContext)
-        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(appContext)
+        WidgetProvider.updateWidget(appContext)
+        WeatherUpdateBroadcastReceiver.updateWeather(appContext)
     }
 }

@@ -47,8 +47,8 @@ class RebootBroadcastReceiver : BroadcastReceiver() {
             startScheduledWeatherUpdate()
             WidgetUpdateBroadcastReceiver.registerReceiver()
             LocationChangeListener.startLocationUpdate()
-            WidgetProvider.updateWidgetPendingIntent(context)
-            WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(context)
+            WidgetProvider.updateWidget(context)
+            WeatherUpdateBroadcastReceiver.updateWeather(context)
         }
     }
 }

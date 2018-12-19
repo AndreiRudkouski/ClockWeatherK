@@ -34,7 +34,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
             return PendingIntent.getBroadcast(context, WEATHER_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT)
         }
 
-        fun updateWeatherPendingIntent(context: Context) {
+        fun updateWeather(context: Context) {
             getUpdateWeatherPendingIntent(context).send()
         }
     }
@@ -92,7 +92,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun sendIntentsForWidgetUpdate(context: Context) {
-        WidgetProvider.updateWidgetPendingIntent(context)
+        WidgetProvider.updateWidget(context)
         ForecastActivity.updateActivityBroadcast(context)
     }
 }

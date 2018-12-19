@@ -123,8 +123,8 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     }
 
     private fun updateWidgetAndWeather() {
-        WidgetProvider.updateWidgetPendingIntent(this)
-        WeatherUpdateBroadcastReceiver.updateWeatherPendingIntent(this)
+        WidgetProvider.updateWidget(this)
+        WeatherUpdateBroadcastReceiver.updateWeather(this)
     }
 
     private fun setResultIntent() {

@@ -92,7 +92,7 @@ class ForecastActivity : AppCompatActivity() {
             R.id.change_text_menu -> {
                 val handler = Handler(Looper.getMainLooper())
                 handler.post { dbHelper.changeWidgetTextBold(widgetId) }
-                WidgetProvider.updateWidgetPendingIntent(this)
+                WidgetProvider.updateWidget(this)
                 return true
             }
         }
