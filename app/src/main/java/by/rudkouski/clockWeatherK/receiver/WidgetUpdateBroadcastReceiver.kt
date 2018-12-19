@@ -31,5 +31,10 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    override fun onReceive(context: Context, intent: Intent) = WidgetProvider.updateWidget(context)
+    override fun onReceive(context: Context, intent: Intent) {
+        WidgetProvider.updateWidget(context)
+        if (ACTION_SCREEN_ON == intent.action) {
+            WeatherUpdateBroadcastReceiver.updateWeather(context)
+        }
+    }
 }
