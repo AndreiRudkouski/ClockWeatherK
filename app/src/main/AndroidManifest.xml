@@ -40,7 +40,8 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".view.location.LocationActivity">
+        <activity android:name=".view.location.LocationActivity"
+                  android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -55,7 +56,8 @@
                       android:scheme="http"/>
             </intent-filter>
         </activity>
-        <activity android:name=".view.forecast.ForecastActivity"/>
+        <activity android:name=".view.forecast.ForecastActivity"
+                  android:configChanges="orientation|screenSize"/>
 
     </application>
 
