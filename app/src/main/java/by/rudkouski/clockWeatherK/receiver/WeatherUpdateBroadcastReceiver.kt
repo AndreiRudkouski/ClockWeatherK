@@ -1,6 +1,5 @@
 package by.rudkouski.clockWeatherK.receiver
 
-import android.app.AlarmManager.INTERVAL_HALF_HOUR
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.BroadcastReceiver
@@ -8,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
-import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
 import by.rudkouski.clockWeatherK.view.weather.WeatherJsonConverter
@@ -56,10 +54,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
             val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
             for (locationId in locationIds) {
                 val location = dbHelper.getLocationById(locationId)
-                val weather = dbHelper.getWeatherByLocationId(locationId)
-                if (isWeatherFresh(weather, location.timeZone)) {
-                    continue
-                }
                 try {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
@@ -78,9 +72,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun isWeatherFresh(weather: Weather?, timeZone: TimeZone) =
-        weather?.updateDate != null
-            && Calendar.getInstance(timeZone).time.time.minus(weather.updateDate.time) < INTERVAL_HALF_HOUR
+
 
     private fun getResponseBodyForLocationCoordinates(latitude: Double, longitude: Double): String? {
         val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, latitude, longitude)

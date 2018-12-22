@@ -232,17 +232,15 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         database.beginTransaction()
         try {
             val existedWeather = getWeatherFromDatabase(database, locationId)
+            var isWeatherNeedUpdate = true
             if (existedWeather != null) {
-                if (isWeatherNeedUpdate(existedWeather, newWeather, locationId)) {
-                    updateWeather(database, Weather(existedWeather.id, newWeather, Date()))
-                } else {
-                    return false
-                }
+                isWeatherNeedUpdate = isWeatherNeedUpdate(existedWeather, newWeather, locationId)
+                updateWeather(database, Weather(existedWeather.id, newWeather, Date()))
             } else {
                 addWeather(database, newWeather, locationId)
             }
             database.setTransactionSuccessful()
-            return true
+            return isWeatherNeedUpdate
         } finally {
             database.endTransaction()
         }
