@@ -70,7 +70,7 @@ private constructor() : Fragment() {
         val forecastDate = Calendar.getInstance()
         forecastDate.time = date
         val currentDate = Calendar.getInstance()
-        return forecastDate.get(YEAR) == currentDate.get(YEAR)
-            && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR)
+        return (forecastDate.get(YEAR) == currentDate.get(YEAR)
+            && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR)) || forecastDate.get(YEAR) > currentDate.get(YEAR)
     }
 }
