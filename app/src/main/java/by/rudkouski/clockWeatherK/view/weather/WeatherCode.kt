@@ -27,7 +27,7 @@ abstract class WeatherCode {
                 put(12, "showers_2")
                 put(13, "snow_flurries")
                 put(14, "light_snow_showers")
-                put(15, "blowing_snow11")
+                put(15, "blowing_snow")
                 put(16, "snow")
                 put(17, "hail")
                 put(18, "sleet")
