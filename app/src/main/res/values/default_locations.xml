@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="default_locations">
-        <item>current_location,0,0,current_time_zone</item>
+        <item>current_location,360,360,current_time_zone</item>
         <item>amsterdam,52.3702157,4.8951679,Europe/Amsterdam</item>
         <item>zaslavl,54.0006143,27.276841,Europe/Minsk</item>
         <item>minsk,53.9045398,27.5615244,Europe/Minsk</item>

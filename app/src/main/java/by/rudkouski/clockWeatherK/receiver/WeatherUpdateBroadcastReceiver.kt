@@ -6,10 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import by.rudkouski.clockWeatherK.app.App
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
-import by.rudkouski.clockWeatherK.view.weather.WeatherJsonConverter
+import by.rudkouski.clockWeatherK.view.weather.WeatherUtils
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.*
@@ -24,9 +25,9 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     companion object {
         private const val WEATHER_UPDATE_REQUEST_CODE = 5678
         private const val WEATHER_UPDATE = "by.rudkouski.clockWeatherK.widget.WEATHER_UPDATE"
-        /*There is used Yahoo! Weather as data provider(https://developer.yahoo.com/weather/)*/
+        /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES =
-            "https://query.yahooapis.com/v1/public/yql?q=select * from weather.forecast where woeid in (select woeid from geo.places(1) where " + "text=\"(%1\$s, %2\$s)\") and u='c' &format=json"
+            "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
 
         fun getUpdateWeatherPendingIntent(context: Context): PendingIntent {
             val intent = Intent(context, WeatherUpdateBroadcastReceiver::class.java)
@@ -57,11 +58,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                 try {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
-                        val currentWeather = WeatherJsonConverter.getWeatherFromResponseBody(responseBody)
-                        if (dbHelper.setWeatherByLocationId(currentWeather, locationId)) {
-                            val forecasts = WeatherJsonConverter.getForecastsFromResponseBody(responseBody)
-                            dbHelper.setForecastsByLocationId(forecasts, locationId)
-                        }
+                        val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
+                        dbHelper.setWeatherByLocationId(currentWeather, locationId)
+                        //val forecasts = WeatherUtils.getForecastsFromResponseBody(responseBody)
+                        //dbHelper.setForecastsByLocationId(forecasts, locationId)
                     }
                 } catch (e: Throwable) {
                     Log.e(this.javaClass.simpleName, e.toString())
@@ -72,10 +72,9 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-
-
     private fun getResponseBodyForLocationCoordinates(latitude: Double, longitude: Double): String? {
-        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, latitude, longitude)
+        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, App.apiKey, latitude, longitude,
+            Locale.getDefault().language)
         return getResponseBodyForRequest(request)
     }
 

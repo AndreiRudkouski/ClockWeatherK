@@ -3,7 +3,7 @@
     <string name="app_name">Clock &amp; Weather</string>
     <string name="weather_image_description">Weather</string>
     <string name="toolbar_image_forecast_description">Current weather</string>
-    <string name="default_clock">00:00</string>
+    <string name="default_clock">12:12</string>
     <string name="default_day">Tue, 22 Mar</string>
     <string name="default_location">Unknown</string>
     <string name="default_weather">No data</string>
@@ -26,14 +26,18 @@
     <string name="humidity">Humidity</string>
     <string name="pressure">Pressure</string>
     <string name="visibility">Visibility</string>
-    <string name="sunrise">Sunrise</string>
-    <string name="sunset">Sunset</string>
+    <string name="cloud_cover">Cloud cover</string>
+    <string name="uv_index">UV index</string>
+    <string name="precipitationProbability">Precipitation</string>
+    <string name="dewPoint">Dew point</string>
+    <string name="gust">gusts</string>
+    <string name="windless">windless</string>
 
     <string name="pressure_steady">steady</string>
     <string name="pressure_rising">rising</string>
     <string name="pressure_falling">falling</string>
 
-    <string name="speed_unit">km/h</string>
+    <string name="speed_unit">m/s</string>
     <string name="pressure_unit">hpa</string>
     <string name="distance_unit">km</string>
     <string name="temperature_unit">\u00B0C</string>

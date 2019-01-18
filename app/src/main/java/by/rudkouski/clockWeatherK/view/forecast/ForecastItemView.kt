@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.entity.Forecast
-import by.rudkouski.clockWeatherK.view.weather.WeatherCode
+import by.rudkouski.clockWeatherK.view.weather.WeatherUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -35,7 +35,7 @@ class ForecastItemView : LinearLayout {
 
     private fun setImage(view: View, forecast: Forecast) {
         val imageView = view.findViewById<ImageView>(R.id.weather_image_forecast)
-        imageView.setImageResource(WeatherCode.getWeatherImageResourceIdByCode(context, forecast.code))
+        imageView.setImageResource(WeatherUtils.getWeatherImageResourceIdByName(context, "ff"))
     }
 
     private fun setDateText(view: View, forecast: Forecast) {
@@ -46,7 +46,7 @@ class ForecastItemView : LinearLayout {
 
     private fun setDescriptionText(view: View, forecast: Forecast) {
         val descriptionTextView = view.findViewById<TextView>(R.id.description_forecast)
-        descriptionTextView.text = WeatherCode.getWeatherDescriptionByCode(context, forecast.code)
+        descriptionTextView.text = "kkk"/*WeatherCode.getWeatherDescriptionByCode(context, forecast.code)*/
     }
 
     private fun setDegreeText(view: View, forecast: Forecast) {

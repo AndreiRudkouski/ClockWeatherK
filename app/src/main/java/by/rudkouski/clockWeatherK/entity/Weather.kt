@@ -1,6 +1,5 @@
 package by.rudkouski.clockWeatherK.entity
 
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.util.*
 
@@ -8,73 +7,85 @@ class Weather {
 
     val id: Int
 
-    /*The condition code for this forecast*/
-    @SerializedName("code")
-    val code: Int
+    @SerializedName("time")
+    val date: Date
 
-    /*The current date and time for which this forecast applies. The format is "E, dd Mmm yyyy
-    hh:mm aa"*/
-    @SerializedName("date")
-    val createDate: Date
 
-    @SerializedName("temp")
-    val temp: Int
+    @SerializedName("summary")
+    val description: String
 
-    /*Wind chill in degrees (integer)*/
-    @SerializedName("chill")
-    val windChill: Int
+    @SerializedName("icon")
+    val iconName: String
 
-    /*Wind direction, in degrees (integer)*/
-    @SerializedName("direction")
-    val windDirection: Int
+    @SerializedName("precipIntensity")
+    val precipitationIntensity: Double
 
-    @SerializedName("speed")
-    val windSpeed: Double
+    @SerializedName("precipProbability")
+    val precipitationProbability: Double
 
-    /*Humidity, in percent (integer)*/
+    @SerializedName("temperature")
+    val temperature: Double
+
+    @SerializedName("apparentTemperature")
+    val apparentTemperature: Double
+
+    @SerializedName("dewPoint")
+    val dewPoint: Double
+
     @SerializedName("humidity")
-    val humidity: Int
+    val humidity: Double
 
     @SerializedName("pressure")
     val pressure: Double
 
-    /*State of the barometric pressure: steady (0), rising (1), or falling (2). (integer: 0, 1, 2)*/
-    @SerializedName("rising")
-    val pressureRising: Int
+    @SerializedName("windSpeed")
+    val windSpeed: Double
+
+    @SerializedName("windGust")
+    val windGust: Double
+
+    @SerializedName("windBearing")
+    val windDirection: Int
+
+    @SerializedName("cloudCover")
+    val cloudCover: Double
+
+    @SerializedName("uvIndex")
+    val uvIndex: Int
 
     @SerializedName("visibility")
     val visibility: Double
 
-    @SerializedName("sunrise")
-    val sunrise: Date
+    @SerializedName("ozone")
+    val ozone: Double
 
-    @SerializedName("sunset")
-    val sunset: Date
-
-    @Expose val updateDate: Date?
-
-    constructor(id: Int, code: Int, createDate: Date, temp: Int, windChill: Int, windDirection: Int, windSpeed: Double,
-                humidity: Int,
-                pressure: Double,
-                pressureRising: Int, visibility: Double, sunrise: Date, sunset: Date, updateDate: Date) {
+    constructor(id: Int, date: Date, description: String, iconName: String, precipitationIntensity: Double,
+                precipitationProbability: Double, temperature: Double, apparentTemperature: Double, dewPoint: Double,
+                humidity: Double, pressure: Double, windSpeed: Double, windGust: Double, windDirection: Int,
+                cloudCover: Double, uvIndex: Int, visibility: Double, ozone: Double) {
         this.id = id
-        this.code = code
-        this.createDate = createDate
-        this.temp = temp
-        this.windChill = windChill
-        this.windDirection = windDirection
-        this.windSpeed = windSpeed
+        this.date = date
+        this.description = description
+        this.iconName = iconName
+        this.precipitationIntensity = precipitationIntensity
+        this.precipitationProbability = precipitationProbability
+        this.temperature = temperature
+        this.apparentTemperature = apparentTemperature
+        this.dewPoint = dewPoint
         this.humidity = humidity
         this.pressure = pressure
-        this.pressureRising = pressureRising
+        this.windSpeed = windSpeed
+        this.windGust = windGust
+        this.windDirection = windDirection
+        this.cloudCover = cloudCover
+        this.uvIndex = uvIndex
         this.visibility = visibility
-        this.sunrise = sunrise
-        this.sunset = sunset
-        this.updateDate = updateDate
+        this.ozone = ozone
     }
 
-    constructor(newId: Int, weather: Weather, updateDate: Date) :
-        this(newId, weather.code, weather.createDate, weather.temp, weather.windChill, weather.windDirection,
-            weather.windSpeed, weather.humidity, weather.pressure, weather.pressureRising, weather.visibility,
-            weather.sunrise, weather.sunset, updateDate)
+    constructor(newId: Int, weather: Weather) :
+        this(newId, weather.date, weather.description, weather.iconName, weather.precipitationIntensity,
+            weather.precipitationProbability, weather.temperature, weather.apparentTemperature, weather.dewPoint,
+            weather.humidity, weather.pressure, weather.windSpeed, weather.windGust, weather.windDirection,
+            weather.cloudCover, weather.uvIndex, weather.visibility, weather.ozone)
 }

@@ -58,6 +58,9 @@
         </activity>
         <activity android:name=".view.forecast.ForecastActivity"
                   android:configChanges="orientation|screenSize"/>
+        <activity
+            android:name="com.rohitss.uceh.UCEDefaultActivity"
+            android:process=":error_activity"/>
 
     </application>
 

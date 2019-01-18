@@ -13,8 +13,6 @@ import by.rudkouski.clockWeatherK.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.entity.Widget
 import java.util.*
-import java.util.Calendar.DAY_OF_YEAR
-import java.util.Calendar.HOUR_OF_DAY
 import kotlin.Int.Companion.MIN_VALUE
 import kotlin.collections.ArrayList
 
@@ -47,19 +45,23 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         private const val WIDGET_LOCATION_ID = "widget_location_id"
         private const val WEATHER_TABLE = "weathers"
         private const val WEATHER_ID = "weather_id"
-        private const val WEATHER_CODE = "weather_code"
-        private const val WEATHER_CREATE = "weather_create"
+        private const val WEATHER_DATE = "weather_date"
+        private const val WEATHER_DESCRIPTION = "weather_description"
+        private const val WEATHER_ICON = "weather_icon"
+        private const val WEATHER_PRECIPITATION_INTENSITY = "weather_precipitation_intensity"
+        private const val WEATHER_PRECIPITATION_PROBABILITY = "weather_precipitation_probability"
         private const val WEATHER_TEMP = "weather_temp"
-        private const val WEATHER_CHILL = "weather_chill"
-        private const val WEATHER_DIRECTION = "weather_direction"
-        private const val WEATHER_SPEED = "weather_speed"
+        private const val WEATHER_APPARENT_TEMP = "weather_apparent_temperature"
+        private const val WEATHER_DEW_POINT = "weather_dew_point"
         private const val WEATHER_HUMIDITY = "weather_humidity"
-        private const val WEATHER_RISING = "weather_rising"
         private const val WEATHER_PRESSURE = "weather_pressure"
+        private const val WEATHER_WIND_SPEED = "weather_wind_speed"
+        private const val WEATHER_WIND_GUST = "weather_wind_gust"
+        private const val WEATHER_WIND_DIRECTION = "weather_wind_direction"
+        private const val WEATHER_CLOUD_COVER = "weather_cloud_cover"
+        private const val WEATHER_UV_INDEX = "weather_uv_index"
         private const val WEATHER_VISIBILITY = "weather_visibility"
-        private const val WEATHER_SUNRISE = "weather_sunrise"
-        private const val WEATHER_SUNSET = "weather_sunset"
-        private const val WEATHER_UPDATE = "weather_update"
+        private const val WEATHER_OZONE = "weather_ozone"
         private const val WEATHER_LOCATION_ID = "weather_location_id"
 
         private const val IS_EQUAL_PARAMETER = " = ?"
@@ -73,21 +75,22 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         db.execSQL("CREATE TABLE IF NOT EXISTS " + LOCATION_TABLE + " (" + LOCATION_ID + " INTEGER PRIMARY KEY, " +
             LOCATION_LATITUDE + " DOUBLE, " + LOCATION_LONGITUDE + " DOUBLE, " + LOCATION_NAME_CODE + " TEXT, " +
             LOCATION_TIME_ZONE + " TEXT);")
-        db.execSQL(
-            "CREATE TABLE IF NOT EXISTS " + WIDGET_TABLE + " (" + WIDGET_ID + " INTEGER PRIMARY KEY, " + WIDGET_BOLD + " INTEGER, " +
-                WIDGET_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WIDGET_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE + " (" + LOCATION_ID +
-                ") ON DELETE CASCADE);")
-        db.execSQL(
-            ("CREATE TABLE IF NOT EXISTS " + WEATHER_TABLE + " (" + WEATHER_ID + " INTEGER PRIMARY KEY, " + WEATHER_CODE + " INTEGER, " +
-                WEATHER_CREATE + " INTEGER, " + WEATHER_TEMP + " INTEGER, " + WEATHER_CHILL + " INTEGER, " + WEATHER_DIRECTION + " INTEGER," +
-                " " + WEATHER_SPEED + " REAL, " + WEATHER_HUMIDITY + " INTEGER, " + WEATHER_PRESSURE + " REAL, " + WEATHER_RISING +
-                " INTEGER, " + WEATHER_VISIBILITY + " REAL, " + WEATHER_SUNRISE + " INTEGER, " + WEATHER_SUNSET + " INTEGER, " +
-                WEATHER_UPDATE + " INTEGER, " + WEATHER_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES "
-                + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);"))
-        db.execSQL(("CREATE TABLE IF NOT EXISTS " + FORECAST_TABLE + " (" + FORECAST_ID + " " +
-            "INTEGER PRIMARY KEY, " + FORECAST_CODE + " INTEGER, " + FORECAST_DATE + " INTEGER, " + FORECAST_HIGH_TEMP + " INTEGER, " +
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WIDGET_TABLE + " (" + WIDGET_ID + " INTEGER PRIMARY KEY, " +
+            WIDGET_BOLD + " INTEGER, " + WIDGET_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WIDGET_LOCATION_ID + ") REFERENCES " +
+            LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);")
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + WEATHER_TABLE + " (" + WEATHER_ID + " INTEGER PRIMARY KEY, " +
+            WEATHER_DATE + " INTEGER, " + WEATHER_DESCRIPTION + " TEXT, " + WEATHER_ICON + " TEXT, " +
+            WEATHER_PRECIPITATION_INTENSITY + " DOUBLE, " + WEATHER_PRECIPITATION_PROBABILITY + " DOUBLE, " +
+            WEATHER_TEMP + " DOUBLE, " + WEATHER_APPARENT_TEMP + " DOUBLE, " + WEATHER_DEW_POINT + " DOUBLE, " +
+            WEATHER_HUMIDITY + " DOUBLE, " + WEATHER_PRESSURE + " DOUBLE, " + WEATHER_WIND_SPEED + " DOUBLE, " +
+            WEATHER_WIND_GUST + " DOUBLE, " + WEATHER_WIND_DIRECTION + " INTEGER, " + WEATHER_CLOUD_COVER + " DOUBLE, " +
+            WEATHER_UV_INDEX + " INTEGER, " + WEATHER_VISIBILITY + " DOUBLE, " + WEATHER_OZONE + " DOUBLE, " +
+            WEATHER_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE +
+            " (" + LOCATION_ID + ") ON DELETE CASCADE);")
+        db.execSQL("CREATE TABLE IF NOT EXISTS " + FORECAST_TABLE + " (" + FORECAST_ID + " " + "INTEGER PRIMARY KEY, " +
+            FORECAST_CODE + " INTEGER, " + FORECAST_DATE + " INTEGER, " + FORECAST_HIGH_TEMP + " INTEGER, " +
             FORECAST_LOW_TEMP + " INTEGER, " + FORECAST_LOCATION_ID + " INTEGER, FOREIGN KEY" + " (" + FORECAST_LOCATION_ID + ") " +
-            "REFERENCES " + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);"))
+            "REFERENCES " + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);")
         addDefaultLocations(db)
     }
 
@@ -228,19 +231,16 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-    fun setWeatherByLocationId(newWeather: Weather, locationId: Int): Boolean {
+    fun setWeatherByLocationId(newWeather: Weather, locationId: Int) {
         database.beginTransaction()
         try {
             val existedWeather = getWeatherFromDatabase(database, locationId)
-            var isWeatherNeedUpdate = true
             if (existedWeather != null) {
-                isWeatherNeedUpdate = isWeatherNeedUpdate(existedWeather, newWeather, locationId)
-                updateWeather(database, Weather(existedWeather.id, newWeather, Date()))
+                updateWeather(database, Weather(existedWeather.id, newWeather))
             } else {
                 addWeather(database, newWeather, locationId)
             }
             database.setTransactionSuccessful()
-            return isWeatherNeedUpdate
         } finally {
             database.endTransaction()
         }
@@ -263,33 +263,26 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createWeather(cursor: Cursor): Weather {
         val id = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_ID))
-        val code = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_CODE))
-        val createDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_CREATE)))
-        val temp = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_TEMP))
-        val windChill = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_CHILL))
-        val windDirection = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_DIRECTION))
-        val windSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_SPEED))
-        val humidity = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_HUMIDITY))
+        val date = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATE)))
+        val description = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DESCRIPTION))
+        val icon = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_ICON))
+        val precipitationIntensity = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_PRECIPITATION_INTENSITY))
+        val precipitationProbability = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_PRECIPITATION_PROBABILITY))
+        val temp = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_TEMP))
+        val apparentTemperature = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_APPARENT_TEMP))
+        val dewPoint = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_DEW_POINT))
+        val humidity = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_HUMIDITY))
         val pressure = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_PRESSURE))
-        val pressureRising = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_RISING))
+        val windSpeed = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_WIND_SPEED))
+        val windGust = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_WIND_GUST))
+        val windDirection = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_WIND_DIRECTION))
+        val cloudCover = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_CLOUD_COVER))
+        val uvIndex = cursor.getInt(cursor.getColumnIndexOrThrow(WEATHER_UV_INDEX))
         val visibility = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_VISIBILITY))
-        val sunrise = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_SUNRISE)))
-        val sunset = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_SUNSET)))
-        val updateDate = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_UPDATE)))
-        return Weather(id, code, createDate, temp, windChill, windDirection, windSpeed, humidity, pressure,
-            pressureRising, visibility, sunrise, sunset, updateDate)
-    }
-
-    private fun isWeatherNeedUpdate(existedWeather: Weather, newWeather: Weather, locationId: Int): Boolean {
-        if (Location.CURRENT_LOCATION_ID == locationId) {
-            return true
-        }
-        val existedUpdate = Calendar.getInstance()
-        existedUpdate.time = existedWeather.createDate
-        val newUpdate = Calendar.getInstance()
-        newUpdate.time = newWeather.createDate
-        return existedUpdate.get(DAY_OF_YEAR) != newUpdate.get(DAY_OF_YEAR) ||
-            existedUpdate.get(HOUR_OF_DAY) != newUpdate.get(HOUR_OF_DAY)
+        val ozone = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_OZONE))
+        return Weather(id, date, description, icon, precipitationIntensity, precipitationProbability, temp,
+            apparentTemperature, dewPoint, humidity, pressure, windSpeed, windGust, windDirection, cloudCover, uvIndex,
+            visibility, ozone)
     }
 
     private fun updateWeather(db: SQLiteDatabase, weather: Weather) {
@@ -306,19 +299,23 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createContentValues(weather: Weather): ContentValues {
         with(ContentValues()) {
-            put(WEATHER_CODE, weather.code)
-            put(WEATHER_CREATE, weather.createDate.time)
-            put(WEATHER_TEMP, weather.temp)
-            put(WEATHER_CHILL, weather.windChill)
-            put(WEATHER_DIRECTION, weather.windDirection)
-            put(WEATHER_SPEED, weather.windSpeed)
+            put(WEATHER_DATE, weather.date.time)
+            put(WEATHER_DESCRIPTION, weather.description)
+            put(WEATHER_ICON, weather.iconName)
+            put(WEATHER_PRECIPITATION_INTENSITY, weather.precipitationIntensity)
+            put(WEATHER_PRECIPITATION_PROBABILITY, weather.precipitationProbability)
+            put(WEATHER_TEMP, weather.temperature)
+            put(WEATHER_APPARENT_TEMP, weather.apparentTemperature)
+            put(WEATHER_DEW_POINT, weather.dewPoint)
             put(WEATHER_HUMIDITY, weather.humidity)
             put(WEATHER_PRESSURE, weather.pressure)
-            put(WEATHER_RISING, weather.pressureRising)
+            put(WEATHER_WIND_SPEED, weather.windSpeed)
+            put(WEATHER_WIND_GUST, weather.windGust)
+            put(WEATHER_WIND_DIRECTION, weather.windDirection)
+            put(WEATHER_CLOUD_COVER, weather.cloudCover)
+            put(WEATHER_UV_INDEX, weather.uvIndex)
             put(WEATHER_VISIBILITY, weather.visibility)
-            put(WEATHER_SUNRISE, weather.sunrise.time)
-            put(WEATHER_SUNSET, weather.sunset.time)
-            put(WEATHER_UPDATE, (weather.updateDate ?: Date()).time)
+            put(WEATHER_OZONE, weather.ozone)
             return this
         }
     }

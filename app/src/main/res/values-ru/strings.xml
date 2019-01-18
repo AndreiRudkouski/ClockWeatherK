@@ -3,7 +3,7 @@
     <string name="app_name">Часы &amp; Погода</string>
     <string name="weather_image_description">Погода</string>
     <string name="toolbar_image_forecast_description">Текущая погода</string>
-    <string name="default_clock">00:00</string>
+    <string name="default_clock">12:12</string>
     <string name="default_day">Вт, 22 Мар</string>
     <string name="default_location">Неизвестно</string>
     <string name="default_weather">Нет данных</string>
@@ -26,14 +26,18 @@
     <string name="humidity">Влажность</string>
     <string name="pressure">Давление</string>
     <string name="visibility">Видимость</string>
-    <string name="sunrise">Восход</string>
-    <string name="sunset">Закат</string>
+    <string name="cloud_cover">Облачность</string>
+    <string name="uv_index">УФ индекс</string>
+    <string name="precipitationProbability">Осадки</string>
+    <string name="dewPoint">Точка росы</string>
+    <string name="gust">порывы</string>
+    <string name="windless">безветренно</string>
 
     <string name="pressure_steady">стабильно</string>
     <string name="pressure_rising">растет</string>
     <string name="pressure_falling">падает</string>
 
-    <string name="speed_unit">км/ч</string>
+    <string name="speed_unit">м/с</string>
     <string name="pressure_unit">гПа</string>
     <string name="distance_unit">км</string>
     <string name="temperature_unit">\u00B0C</string>

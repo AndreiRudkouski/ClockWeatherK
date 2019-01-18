@@ -6,9 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
-import by.rudkouski.clockWeatherK.app.App
+import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.entity.Weather
+import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
@@ -24,20 +25,24 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     fun registerReceiver() {
         if (!isRegistered.get()) {
-            App.appContext.registerReceiver(this, intentFilter)
+            appContext.registerReceiver(this, intentFilter)
             isRegistered.set(true)
         }
     }
 
     fun unregisterReceiver() {
         if (isRegistered.get()) {
-            App.appContext.applicationContext.unregisterReceiver(this)
+            appContext.applicationContext.unregisterReceiver(this)
             isRegistered.set(false)
         }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         WidgetProvider.updateWidget(context)
+        if (ACTION_LOCALE_CHANGED == intent.action) {
+            WeatherUpdateBroadcastReceiver.updateWeather(context)
+            LocationChangeListener.updateLocation()
+        }
         if (ACTION_SCREEN_ON == intent.action) {
             val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
             for (locationId in locationIds) {
@@ -47,12 +52,11 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
                     WeatherUpdateBroadcastReceiver.updateWeather(context)
                     return
                 }
-
             }
         }
     }
 
     private fun isWeatherNeedUpdate(weather: Weather?, timeZone: TimeZone) =
-        weather?.updateDate == null
-            || Calendar.getInstance(timeZone).time.time.minus(weather.updateDate.time) >= AlarmManager.INTERVAL_HALF_HOUR
+        weather == null
+            || Calendar.getInstance(timeZone).time.time.minus(weather.date.time) >= AlarmManager.INTERVAL_HALF_HOUR
 }

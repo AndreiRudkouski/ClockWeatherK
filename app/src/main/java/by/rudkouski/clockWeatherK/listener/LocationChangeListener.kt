@@ -113,4 +113,10 @@ object LocationChangeListener : LocationListener {
         WidgetProvider.updateWidget(appContext)
         WeatherUpdateBroadcastReceiver.updateWeather(appContext)
     }
+
+    fun updateLocation() {
+        var location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        if (location == null) location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+        if (location != null) setLocation(location)
+    }
 }

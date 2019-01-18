@@ -81,6 +81,15 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/precipitation_current_weather"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:textColor="@android:color/white"
+            android:textSize="@dimen/small_text_size"
+            tools:text="Precipitation: 25%"/>
+
+        <TextView
             android:id="@+id/feel_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -90,13 +99,13 @@
             tools:text="Feels like: 18\u00B0C"/>
 
         <TextView
-            android:id="@+id/wind_current_weather"
+            android:id="@+id/dew_point_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Wind: SE, 21 km/h"/>
+            tools:text="Dew point: 5\u00B0C"/>
 
         <TextView
             android:id="@+id/humidity_current_weather"
@@ -117,13 +126,13 @@
             tools:text="Pressure: 987 hpa"/>
 
         <TextView
-            android:id="@+id/rising_current_weather"
+            android:id="@+id/wind_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="steady"/>
+            tools:text="Wind: SE, 5 m/s, gusts 9 m/s"/>
 
         <TextView
             android:id="@+id/visibility_current_weather"
@@ -135,22 +144,22 @@
             tools:text="Visibility: 16 km"/>
 
         <TextView
-            android:id="@+id/sunrise_current_weather"
+            android:id="@+id/cloud_cover_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Sunrise: 6:22 AM"/>
+            tools:text="Cloud cover: 50%"/>
 
         <TextView
-            android:id="@+id/sunset_current_weather"
+            android:id="@+id/uv_index_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="@android:color/white"
             android:textSize="@dimen/small_text_size"
-            tools:text="Sunset: 8:01 PM"/>
+            tools:text="UV index: 0"/>
 
     </LinearLayout>
 
