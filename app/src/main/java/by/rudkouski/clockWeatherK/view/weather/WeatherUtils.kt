@@ -41,4 +41,14 @@ object WeatherUtils {
     fun getWeatherImageResourceIdByName(context: Context, iconName: String): Int {
         return context.resources.getIdentifier(iconName.replace("-", "_"), "mipmap", context.packageName)
     }
+
+    fun getWeatherImageResource(context: Context, weather: Weather): Int {
+        var cloudy = ""
+        if (weather.iconName.startsWith("party-cloudy")) {
+            if (weather.cloudCover >= 0.5) cloudy = "_mostly"
+            if (weather.cloudCover < 0.2) cloudy = "_less"
+        }
+        return context.resources.getIdentifier(weather.iconName.replace("-", "_") + cloudy, "mipmap",
+            context.packageName)
+    }
 }

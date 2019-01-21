@@ -140,7 +140,7 @@ class WidgetProvider : AppWidgetProvider() {
         if (isActualWeather(weather)) {
             remoteViews.setViewVisibility(R.id.weather_widget, View.VISIBLE)
             remoteViews.setImageViewResource(R.id.weather_image_widget,
-                WeatherUtils.getWeatherImageResourceIdByName(context, weather!!.iconName))
+                WeatherUtils.getWeatherImageResource(context, weather!!))
             remoteViews.setTextViewText(R.id.degrees_widget, Math.round(weather.temperature).toString())
             remoteViews.setTextViewText(R.id.degrees_text_widget, context.getString(R.string.temperature_unit))
         } else {

@@ -54,7 +54,7 @@ class WeatherItemView : LinearLayout {
         val imageView = view.findViewById<ImageView>(R.id.image_current_weather)
         if (isActualWeather) {
             imageView.visibility = VISIBLE
-            imageView.setImageResource(WeatherUtils.getWeatherImageResourceIdByName(context, weather!!.iconName))
+            imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, weather!!))
         } else {
             imageView.visibility = INVISIBLE
         }

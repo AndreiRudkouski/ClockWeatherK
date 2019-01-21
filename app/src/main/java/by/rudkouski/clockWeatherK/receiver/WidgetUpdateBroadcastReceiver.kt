@@ -38,7 +38,6 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        WidgetProvider.updateWidget(context)
         if (ACTION_LOCALE_CHANGED == intent.action) {
             WeatherUpdateBroadcastReceiver.updateWeather(context)
             LocationChangeListener.updateLocation()
@@ -54,6 +53,8 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
                 }
             }
         }
+        registerReceiver()
+        WidgetProvider.updateWidget(context)
     }
 
     private fun isWeatherNeedUpdate(weather: Weather?, timeZone: TimeZone) =
