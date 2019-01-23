@@ -14,7 +14,8 @@
     <dimen name="bottom_padding">7dp</dimen>
     <dimen name="degrees_text_margin">11dp</dimen>
     <dimen name="location_name_padding">10dp</dimen>
-    <dimen name="forecast_padding">10dp</dimen>
+    <dimen name="forecast_padding_vertical">10dp</dimen>
+    <dimen name="forecast_padding_horizontal">10dp</dimen>
     <dimen name="forecast_location_name_padding">15dp</dimen>
     <dimen name="card_view_height">80dp</dimen>
 

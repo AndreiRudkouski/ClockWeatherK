@@ -8,7 +8,7 @@ import android.content.Intent.*
 import android.content.IntentFilter
 import by.rudkouski.clockWeatherK.app.App.Companion.appContext
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
-import by.rudkouski.clockWeatherK.entity.Weather
+import by.rudkouski.clockWeatherK.entity.CurrentWeather
 import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.provider.WidgetProvider
 import java.util.*
@@ -57,7 +57,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         WidgetProvider.updateWidget(context)
     }
 
-    private fun isWeatherNeedUpdate(weather: Weather?, timeZone: TimeZone) =
+    private fun isWeatherNeedUpdate(weather: CurrentWeather?, timeZone: TimeZone) =
         weather == null
             || Calendar.getInstance(timeZone).time.time.minus(weather.date.time) >= AlarmManager.INTERVAL_HALF_HOUR
 }

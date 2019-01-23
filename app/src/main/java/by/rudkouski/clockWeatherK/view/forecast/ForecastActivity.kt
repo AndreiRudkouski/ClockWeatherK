@@ -111,6 +111,7 @@ class ForecastActivity : AppCompatActivity() {
         if (activityUpdateBroadcastReceiver != null) {
             unregisterReceiver(activityUpdateBroadcastReceiver)
         }
+        WidgetProvider.updateWidget(this)
     }
 
     override fun onStop() {

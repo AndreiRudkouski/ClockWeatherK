@@ -59,9 +59,9 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
                         val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
+                        val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)
                         dbHelper.setWeatherByLocationId(currentWeather, locationId)
-                        //val forecasts = WeatherUtils.getForecastsFromResponseBody(responseBody)
-                        //dbHelper.setForecastsByLocationId(forecasts, locationId)
+                        dbHelper.setDayForecastByLocationId(dayForecast, locationId)
                     }
                 } catch (e: Throwable) {
                     Log.e(this.javaClass.simpleName, e.toString())

@@ -8,6 +8,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.entity.Forecast
+import by.rudkouski.clockWeatherK.view.weather.WeatherItemView.Companion.getDegreeText
 import by.rudkouski.clockWeatherK.view.weather.WeatherUtils
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,7 +23,7 @@ class ForecastItemView : LinearLayout {
 
     companion object {
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
-        private const val FORECAST_DEGREE_FORMAT = "%1\$d%3\$s / %2\$d%3\$s"
+        private const val FORECAST_DEGREE_FORMAT = "%1\$s / %2\$s"
     }
 
     fun updateForecastItemView(forecast: Forecast) {
@@ -35,7 +36,7 @@ class ForecastItemView : LinearLayout {
 
     private fun setImage(view: View, forecast: Forecast) {
         val imageView = view.findViewById<ImageView>(R.id.weather_image_forecast)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResourceIdByName(context, "ff"))
+        imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, forecast))
     }
 
     private fun setDateText(view: View, forecast: Forecast) {
@@ -46,14 +47,12 @@ class ForecastItemView : LinearLayout {
 
     private fun setDescriptionText(view: View, forecast: Forecast) {
         val descriptionTextView = view.findViewById<TextView>(R.id.description_forecast)
-        descriptionTextView.text = "kkk"/*WeatherCode.getWeatherDescriptionByCode(context, forecast.code)*/
+        descriptionTextView.text = forecast.description
     }
 
     private fun setDegreeText(view: View, forecast: Forecast) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_forecast)
-        val degreeText =
-            String.format(Locale.getDefault(), FORECAST_DEGREE_FORMAT, forecast.highTemp, forecast.lowTemp,
-                context.getString(R.string.temperature_unit))
-        degreeTextView.text = degreeText
+        degreeTextView.text = String.format(Locale.getDefault(), FORECAST_DEGREE_FORMAT,
+            getDegreeText(context, forecast.temperatureHigh), getDegreeText(context, forecast.temperatureLow))
     }
 }

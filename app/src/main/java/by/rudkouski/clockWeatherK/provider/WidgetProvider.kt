@@ -26,8 +26,8 @@ import android.view.View
 import android.widget.RemoteViews
 import by.rudkouski.clockWeatherK.R
 import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
+import by.rudkouski.clockWeatherK.entity.CurrentWeather
 import by.rudkouski.clockWeatherK.entity.Location
-import by.rudkouski.clockWeatherK.entity.Weather
 import by.rudkouski.clockWeatherK.listener.LocationChangeListener
 import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WidgetUpdateBroadcastReceiver
@@ -61,7 +61,7 @@ class WidgetProvider : AppWidgetProvider() {
                 timeFormat24 else timeFormat12
         }
 
-        fun isActualWeather(weather: Weather?): Boolean {
+        fun isActualWeather(weather: CurrentWeather?): Boolean {
             if (weather != null) {
                 val actualCalendar = Calendar.getInstance()
                 actualCalendar.time = weather.date

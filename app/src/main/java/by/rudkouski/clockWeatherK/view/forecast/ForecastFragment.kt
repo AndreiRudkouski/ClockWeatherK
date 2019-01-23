@@ -48,7 +48,7 @@ private constructor() : Fragment() {
             handler.post {
                 val widgetId = arguments!!.getInt(EXTRA_APPWIDGET_ID)
                 val widget = dbHelper.getWidgetById(widgetId)
-                val forecasts = checkForecastDates(dbHelper.getForecastsByLocationId(widget.location.id))
+                val forecasts = checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id))
                 val adapter = ForecastAdapter(forecasts)
                 forecastRecycler.adapter = adapter
                 adapter.notifyDataSetChanged()
@@ -56,17 +56,19 @@ private constructor() : Fragment() {
         }
     }
 
-    private fun checkForecastDates(forecasts: List<Forecast>): List<Forecast> {
+    private fun checkWeatherDates(forecasts: List<Forecast>?): List<Forecast> {
         val correctForecasts = ArrayList<Forecast>()
-        for (forecast in forecasts) {
-            if (isForecastDateCorrect(forecast.date)) {
-                correctForecasts.add(forecast)
+        if (forecasts != null) {
+            for (forecast in forecasts) {
+                if (isWeatherDateCorrect(forecast.date)) {
+                    correctForecasts.add(forecast)
+                }
             }
         }
         return correctForecasts
     }
 
-    private fun isForecastDateCorrect(date: Date): Boolean {
+    private fun isWeatherDateCorrect(date: Date): Boolean {
         val forecastDate = Calendar.getInstance()
         forecastDate.time = date
         val currentDate = Calendar.getInstance()
