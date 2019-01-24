@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:paddingTop="@dimen/weather_margin_top"
     android:orientation="horizontal"
-    tools:background="@color/colorPrimaryDark">
+    tools:background="@color/colorDark">
 
     <LinearLayout
         android:layout_width="@dimen/weather_temperature_width"
@@ -23,7 +23,7 @@
             android:layout_height="@dimen/image_height"
             android:layout_gravity="center_horizontal"
             android:contentDescription="@string/weather_image_description"
-            tools:src="@mipmap/mostly_cloudy_night"/>
+            tools:src="@mipmap/partly_cloudy_night"/>
 
         <TextView
             android:id="@+id/description_current_weather"
@@ -49,6 +49,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/weather_margin"
         android:layout_marginEnd="@dimen/weather_margin"
         android:orientation="vertical">
 
