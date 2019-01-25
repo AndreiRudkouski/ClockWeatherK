@@ -48,10 +48,12 @@ private constructor() : Fragment() {
             handler.post {
                 val widgetId = arguments!!.getInt(EXTRA_APPWIDGET_ID)
                 val widget = dbHelper.getWidgetById(widgetId)
-                val forecasts = checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id))
-                val adapter = ForecastAdapter(forecasts)
-                forecastRecycler.adapter = adapter
-                adapter.notifyDataSetChanged()
+                if (widget != null) {
+                    val forecasts = checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id))
+                    val adapter = ForecastAdapter(forecasts)
+                    forecastRecycler.adapter = adapter
+                    adapter.notifyDataSetChanged()
+                }
             }
         }
     }
@@ -73,6 +75,7 @@ private constructor() : Fragment() {
         forecastDate.time = date
         val currentDate = Calendar.getInstance()
         return (forecastDate.get(YEAR) == currentDate.get(YEAR)
-            && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR)) || forecastDate.get(YEAR) > currentDate.get(YEAR)
+            && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR)) || forecastDate.get(
+            YEAR) > currentDate.get(YEAR)
     }
 }

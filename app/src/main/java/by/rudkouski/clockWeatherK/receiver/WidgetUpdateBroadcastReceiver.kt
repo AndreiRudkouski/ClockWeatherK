@@ -20,6 +20,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         IntentFilter().also { it.addAction(ACTION_TIME_TICK) }.also { it.addAction(ACTION_TIMEZONE_CHANGED) }
             .also { it.addAction(ACTION_TIME_CHANGED) }.also { it.addAction(ACTION_DATE_CHANGED) }
             .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
+            .also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
     private val isRegistered = AtomicBoolean(false)
     private val dbHelper = INSTANCE
 
@@ -53,7 +54,6 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
                 }
             }
         }
-        registerReceiver()
         WidgetProvider.updateWidget(context)
     }
 

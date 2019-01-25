@@ -69,10 +69,12 @@ class ForecastActivity : AppCompatActivity() {
         val handler = Handler(Looper.getMainLooper())
         handler.post {
             val widget = dbHelper.getWidgetById(widgetId)
-            val title = widget.location.name
-            toolbarLayout.title = title
-            val weather = dbHelper.getWeatherByLocationId(widget.location.id)
-            weatherView.updateWeatherItemView(weather)
+            if (widget != null) {
+                val title = widget.location.name
+                toolbarLayout.title = title
+                val weather = dbHelper.getWeatherByLocationId(widget.location.id)
+                weatherView.updateWeatherItemView(weather)
+            }
         }
     }
 

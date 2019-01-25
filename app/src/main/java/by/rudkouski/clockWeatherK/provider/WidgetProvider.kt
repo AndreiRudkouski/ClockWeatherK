@@ -29,8 +29,9 @@ import by.rudkouski.clockWeatherK.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.clockWeatherK.entity.CurrentWeather
 import by.rudkouski.clockWeatherK.entity.Location
 import by.rudkouski.clockWeatherK.listener.LocationChangeListener
-import by.rudkouski.clockWeatherK.receiver.RebootBroadcastReceiver
+import by.rudkouski.clockWeatherK.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.clockWeatherK.receiver.WidgetUpdateBroadcastReceiver
+import by.rudkouski.clockWeatherK.scheduler.UpdateWeatherScheduler
 import by.rudkouski.clockWeatherK.view.forecast.ForecastActivity
 import by.rudkouski.clockWeatherK.view.location.LocationActivity
 import by.rudkouski.clockWeatherK.view.weather.WeatherUtils
@@ -105,10 +106,12 @@ class WidgetProvider : AppWidgetProvider() {
     private fun updateWidget(context: Context, widgetId: Int): RemoteViews {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
         val widget = dbHelper.getWidgetById(widgetId)
-        updateClockAndDate(remoteViews, context, widget.location.timeZone, widget.isBold)
-        updateLocation(remoteViews, widget.location, widget.isBold)
-        updateWeather(remoteViews, context, widget.location.id)
-        setPendingIntents(remoteViews, context, widgetId)
+        if (widget != null) {
+            updateClockAndDate(remoteViews, context, widget.location.timeZone, widget.isBold)
+            updateLocation(remoteViews, widget.location, widget.isBold)
+            updateWeather(remoteViews, context, widget.location.id)
+            setPendingIntents(remoteViews, context, widgetId)
+        }
         return remoteViews
     }
 
@@ -177,15 +180,18 @@ class WidgetProvider : AppWidgetProvider() {
         return PendingIntent.getActivity(context, widgetId, forecastIntent, FLAG_UPDATE_CURRENT)
     }
 
-    override fun onEnabled(context: Context) {
-        super.onEnabled(context)
+    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        UpdateWeatherScheduler.startUpdateWeatherScheduler()
         WidgetUpdateBroadcastReceiver.registerReceiver()
         LocationChangeListener.startLocationUpdate()
+        updateWidget(context)
+        WeatherUpdateBroadcastReceiver.updateWeather(context)
     }
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        RebootBroadcastReceiver.stopScheduledWeatherUpdate()
+        UpdateWeatherScheduler.stopUpdateWeatherScheduler()
         WidgetUpdateBroadcastReceiver.unregisterReceiver()
         LocationChangeListener.stopLocationUpdate()
     }

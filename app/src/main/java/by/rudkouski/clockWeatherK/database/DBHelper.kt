@@ -223,9 +223,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     //widget methods
 
-    fun getWidgetById(widgetId: Int): Widget {
-        val widget = getWidgetFromDatabase(database, widgetId)
-        return widget ?: throw RuntimeException("An error occurred while getting the widget with id = $widgetId")
+    fun getWidgetById(widgetId: Int): Widget? {
+        return getWidgetFromDatabase(database, widgetId)
     }
 
     private fun getWidgetFromDatabase(db: SQLiteDatabase, widgetId: Int): Widget? {
@@ -515,7 +514,6 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
         return forecasts
     }
-
 
     private fun updateForecasts(db: SQLiteDatabase, existedForecasts: List<Forecast>, forecasts: List<Forecast>,
                                 locationId: Int) {

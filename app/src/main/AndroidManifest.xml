@@ -33,12 +33,6 @@
                 <action android:name="by.rudkouski.clockWeatherK.widget.WEATHER_UPDATE"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.RebootBroadcastReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-            </intent-filter>
-        </receiver>
 
         <activity android:name=".view.location.LocationActivity"
                   android:configChanges="orientation|screenSize">
