@@ -51,10 +51,14 @@ object LocationChangeListener : LocationListener {
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
             if (dbHelper.isCurrentLocationNotUpdated()) {
-                setRequestLocationUpdates(0)
-            } else {
-                setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
+                if (locationManager.isLocationEnabled) {
+                    setLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER))
+                } else {
+                    setRequestLocationUpdates(0)
+                    return
+                }
             }
+            setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
         }
     }
 
@@ -85,12 +89,9 @@ object LocationChangeListener : LocationListener {
                     address.subAdminArea != null -> address.subAdminArea
                     else -> address.adminArea
                 }
-            if (dbHelper.isCurrentLocationNotUpdated()) {
-                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
-                sendIntentToWidgetUpdate()
-            } else {
-                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
-            }
+            val needUpdate = dbHelper.isCurrentLocationNotUpdated()
+            dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
+            sendIntentToWidgetUpdate(needUpdate)
         }
     }
 
@@ -109,9 +110,11 @@ object LocationChangeListener : LocationListener {
         return null
     }
 
-    private fun sendIntentToWidgetUpdate() {
-        WidgetProvider.updateWidget(appContext)
-        WeatherUpdateBroadcastReceiver.updateWeather(appContext)
+    private fun sendIntentToWidgetUpdate(needUpdate: Boolean) {
+        if (needUpdate) {
+            WidgetProvider.updateWidget(appContext)
+            WeatherUpdateBroadcastReceiver.updateWeather(appContext)
+        }
     }
 
     fun updateLocation() {

@@ -35,7 +35,8 @@
         </receiver>
 
         <activity android:name=".view.location.LocationActivity"
-                  android:configChanges="orientation|screenSize">
+                  android:configChanges="orientation|screenSize"
+                  android:excludeFromRecents="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
@@ -51,7 +52,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.forecast.ForecastActivity"
-                  android:configChanges="orientation|screenSize"/>
+                  android:configChanges="orientation|screenSize"
+                  android:excludeFromRecents="true"/>
         <activity
             android:name="com.rohitss.uceh.UCEDefaultActivity"
             android:process=":error_activity"/>
