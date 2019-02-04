@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-	android:configure="by.rudkouski.clockWeatherK.view.location.LocationActivity"
+	android:configure="by.rudkouski.widget.view.location.LocationActivity"
 	android:initialLayout="@layout/widget"
 	android:minHeight="@dimen/widget_height"
 	android:minResizeHeight="@dimen/widget_height"

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<by.rudkouski.clockWeatherK.view.location.LocationItemView
+<by.rudkouski.widget.view.location.LocationItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tool="http://schemas.android.com/tools"
     android:id="@+id/location_item"
@@ -17,4 +17,4 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         tool:text="@string/minsk"/>
 
-</by.rudkouski.clockWeatherK.view.location.LocationItemView>
+</by.rudkouski.widget.view.location.LocationItemView>

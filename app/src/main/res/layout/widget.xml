@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:background="@color/colorPrimaryDark">
+    tools:background="@color/colorDark">
 
     <TextView
         android:id="@+id/clock_widget"
@@ -15,13 +15,14 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:includeFontPadding="false"
+        android:paddingEnd="@dimen/bottom_padding"
         android:shadowColor="@color/colorShadow"
         android:shadowDx="@dimen/shadow_x"
         android:shadowDy="@dimen/shadow_y"
         android:shadowRadius="@dimen/shadow_radius"
         android:text="@string/default_clock"
         android:textColor="@android:color/white"
-        android:textSize="@dimen/clock_text_size"/>
+        android:textSize="@dimen/clock_text_size" tools:ignore="RtlSymmetry"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"

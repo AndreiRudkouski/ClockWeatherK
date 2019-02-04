@@ -15,7 +15,7 @@
         android:layout_height="@dimen/appBar_height"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:layout_behavior="by.rudkouski.clockWeatherK.behavior.ForecastUpdateBehavior">
+        app:layout_behavior="by.rudkouski.widget.behavior.ForecastUpdateBehavior">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_forecast"
