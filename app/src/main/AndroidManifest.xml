@@ -20,7 +20,7 @@
         <receiver android:name=".provider.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="by.rudkouski.clockWeatherK.widget.WIDGET_UPDATE"/>
+                <action android:name="by.rudkouski.widget.WIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -30,7 +30,7 @@
             android:name=".receiver.WeatherUpdateBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="by.rudkouski.clockWeatherK.widget.WEATHER_UPDATE"/>
+                <action android:name="by.rudkouski.widget.WEATHER_UPDATE"/>
             </intent-filter>
         </receiver>
 

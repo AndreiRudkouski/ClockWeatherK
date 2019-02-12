@@ -18,13 +18,13 @@ class Forecast : WeatherData {
     val moonPhase: Double
 
     @SerializedName("precipIntensityMax")
-    val precipitationIntensityMax: Double
+    val precipitationIntensityMax: Double?
 
     @SerializedName("precipIntensityMaxTime")
-    val precipitationIntensityMaxTime: Date
+    val precipitationIntensityMaxTime: Date?
 
     @SerializedName("precipAccumulation")
-    val precipitationAccumulation: Double
+    val precipitationAccumulation: Double?
 
     @SerializedName("precipType")
     val precipitationType: String?
@@ -57,8 +57,8 @@ class Forecast : WeatherData {
                 precipitationProbability: Double, dewPoint: Double, humidity: Double, pressure: Double,
                 windSpeed: Double, windGust: Double, windDirection: Int, cloudCover: Double, visibility: Double,
                 ozone: Double, uvIndex: Int, sunriseTime: Date, sunsetTime: Date, moonPhase: Double,
-                precipitationIntensityMax: Double, precipitationIntensityMaxTime: Date,
-                precipitationAccumulation: Double, precipitationType: String?, temperatureHigh: Double,
+                precipitationIntensityMax: Double?, precipitationIntensityMaxTime: Date?,
+                precipitationAccumulation: Double?, precipitationType: String?, temperatureHigh: Double,
                 temperatureHighTime: Date, temperatureLow: Double, temperatureLowTime: Date,
                 apparentTemperatureHigh: Double, apparentTemperatureHighTime: Date, apparentTemperatureLow: Double,
                 apparentTemperatureLowTime: Date) : super(id, date, description, iconName, precipitationIntensity,

@@ -44,6 +44,7 @@
             android:textColor="@android:color/white"
             android:textSize="@dimen/weather_degree_size"
             tools:text="20\u00B0C"/>
+
     </LinearLayout>
 
     <LinearLayout

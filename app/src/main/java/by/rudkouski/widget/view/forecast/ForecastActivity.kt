@@ -10,14 +10,21 @@ import android.os.Handler
 import android.os.Looper
 import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.text.format.DateUtils.DAY_IN_MILLIS
 import android.view.Menu
 import android.view.MenuItem
 import by.rudkouski.widget.R
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
+import by.rudkouski.widget.entity.Weather
+import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.location.LocationActivity
+import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
+import java.util.*
 
 class ForecastActivity : AppCompatActivity() {
 
@@ -26,7 +33,7 @@ class ForecastActivity : AppCompatActivity() {
     private var widgetId: Int = 0
 
     companion object {
-        private const val FORECAST_ACTIVITY_UPDATE = "by.rudkouski.clockWeatherK.widget.FORECAST_ACTIVITY_UPDATE"
+        private const val FORECAST_ACTIVITY_UPDATE = "by.rudkouski.widget.FORECAST_ACTIVITY_UPDATE"
 
         fun startIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, ForecastActivity::class.java)
@@ -74,8 +81,37 @@ class ForecastActivity : AppCompatActivity() {
                 toolbarLayout.title = title
                 val weather = dbHelper.getWeatherByLocationId(widget.location.id)
                 weatherView.updateWeatherItemView(weather)
+                hourWeatherViewUpdate(widget)
             }
         }
+    }
+
+    private fun hourWeatherViewUpdate(widget: Widget) {
+        val hourWeatherRecycler = findViewById<RecyclerView>(R.id.hour_weather_recycler_view)
+        hourWeatherRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val hourWeathers = checkWeatherTime(dbHelper.getHourWeathersByLocationId(widget.location.id))
+        val adapter = HourWeatherAdapter(hourWeathers)
+        hourWeatherRecycler.adapter = adapter
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun checkWeatherTime(weathers: List<Weather>?): List<Weather> {
+        val correctWeathers = ArrayList<Weather>()
+        if (weathers != null) {
+            for (weather in weathers) {
+                if (isWeatherTimeCorrect(weather.date)) {
+                    correctWeathers.add(weather)
+                }
+            }
+        }
+        return correctWeathers
+    }
+
+    private fun isWeatherTimeCorrect(time: Date): Boolean {
+        val weatherTime = Calendar.getInstance()
+        weatherTime.time = time
+        val currentTime = Calendar.getInstance()
+        return weatherTime.time.time - currentTime.time.time in 0..DAY_IN_MILLIS
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

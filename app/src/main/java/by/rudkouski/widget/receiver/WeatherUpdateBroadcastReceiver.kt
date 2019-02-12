@@ -24,7 +24,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
         private const val WEATHER_UPDATE_REQUEST_CODE = 5678
-        private const val WEATHER_UPDATE = "by.rudkouski.clockWeatherK.widget.WEATHER_UPDATE"
+        private const val WEATHER_UPDATE = "by.rudkouski.widget.WEATHER_UPDATE"
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES =
             "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
@@ -59,8 +59,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
                         val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
+                        val hourWeather = WeatherUtils.getHourWeatherFromResponseBody(responseBody)
                         val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)
                         dbHelper.setWeatherByLocationId(currentWeather, locationId)
+                        dbHelper.setHourWeathersByLocationId(hourWeather, locationId)
                         dbHelper.setDayForecastByLocationId(dayForecast, locationId)
                     }
                 } catch (e: Throwable) {

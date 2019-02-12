@@ -12,7 +12,7 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar_forecast"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/appBar_height"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_behavior="by.rudkouski.widget.behavior.ForecastUpdateBehavior">
@@ -26,7 +26,20 @@
             app:expandedTitleMarginBottom="@dimen/forecast_location_name_padding"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-            <include layout="@layout/weather_item"/>
+            <LinearLayout android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:orientation="vertical">
+
+                <include layout="@layout/weather_item"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/hour_weather_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingTop="@dimen/hour_weather_padding_top"
+                    android:paddingBottom="@dimen/hour_weather_padding_bottom"/>
+
+            </LinearLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar_forecast"

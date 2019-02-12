@@ -12,6 +12,7 @@ import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import java.util.*
 import kotlin.Int.Companion.MIN_VALUE
 import kotlin.collections.ArrayList
+import kotlin.math.absoluteValue
 
 class DBHelper private constructor(context: Context, dbName: String, factory: SQLiteDatabase.CursorFactory,
                                    dbVersion: Int) : SQLiteOpenHelper(context, dbName, factory, dbVersion) {
@@ -56,6 +57,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
         private const val WEATHER_TABLE = "weathers"
         private const val WEATHER_ID = "weather_id"
+        private const val WEATHER_TYPE = "weather_type"
         private const val WEATHER_TEMP = "weather_temp"
         private const val WEATHER_APPARENT_TEMP = "weather_apparent_temp"
         private const val WEATHER_LOCATION_ID = "weather_location_id"
@@ -80,6 +82,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         private const val FORECAST_LOCATION_ID = "forecast_location_id"
 
         private const val IS_EQUAL_PARAMETER = " = ?"
+        private const val AND = " AND "
         private const val DROP_TABLE_IF_EXISTS: String = "DROP TABLE IF EXISTS "
         private const val CURRENT_LOCATION = "current_location"
     }
@@ -102,8 +105,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 WEATHER_DATA_OZONE + " DOUBLE, " + WEATHER_DATA_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_DATA_LOCATION_ID +
                 ") REFERENCES " + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);")
         db.execSQL("CREATE TABLE IF NOT EXISTS " + WEATHER_TABLE + " (" + WEATHER_ID + " INTEGER PRIMARY KEY, " +
-            WEATHER_TEMP + " DOUBLE, " + WEATHER_APPARENT_TEMP + " DOUBLE, " + WEATHER_LOCATION_ID +
-            " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE +
+            WEATHER_TYPE + " INTEGER, " + WEATHER_TEMP + " DOUBLE, " + WEATHER_APPARENT_TEMP + " DOUBLE, " +
+            WEATHER_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WEATHER_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE +
             " (" + LOCATION_ID + ") ON DELETE CASCADE);")
         db.execSQL("CREATE TABLE IF NOT EXISTS " + FORECAST_TABLE + " (" + FORECAST_ID + " INTEGER PRIMARY KEY, " +
             FORECAST_SUNRISE_TIME + " INTEGER, " + FORECAST_SUNSET_TIME + " INTEGER, " + FORECAST_MOON_PHASE + " DOUBLE, " +
@@ -318,14 +321,14 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     //weather methods
 
-    fun setWeatherByLocationId(newWeather: CurrentWeather, locationId: Int) {
+    fun setWeatherByLocationId(newWeather: Weather, locationId: Int) {
         database.beginTransaction()
         try {
-            val existedWeather = getWeatherFromDatabase(database, locationId)
-            if (existedWeather != null) {
-                updateWeather(database, CurrentWeather(existedWeather.id, newWeather))
+            val existedWeathers = getWeathersFromDatabase(database, locationId, WeatherType.CURRENT)
+            if (existedWeathers.isNullOrEmpty()) {
+                addWeather(database, newWeather, locationId, WeatherType.CURRENT)
             } else {
-                addWeather(database, newWeather, locationId)
+                updateWeather(database, Weather(existedWeathers[0].id, newWeather), WeatherType.CURRENT)
             }
             database.setTransactionSuccessful()
         } finally {
@@ -333,23 +336,29 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-    fun getWeatherByLocationId(locationId: Int): CurrentWeather? {
-        return getWeatherFromDatabase(database, locationId)
+    fun getWeatherByLocationId(locationId: Int): Weather? {
+        val weathers = getWeathersFromDatabase(database, locationId, WeatherType.CURRENT)
+        return if (weathers.isNullOrEmpty()) null else weathers[0]
     }
 
-    private fun getWeatherFromDatabase(db: SQLiteDatabase, locationId: Int): CurrentWeather? {
+    private fun getWeathersFromDatabase(db: SQLiteDatabase, locationId: Int, type: WeatherType): List<Weather> {
         val query = "SELECT * FROM " + WEATHER_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
-            WEATHER_ID + " = " + WEATHER_DATA_ID + " WHERE " + WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER
-        db.rawQuery(query, arrayOf(locationId.toString()))
-            .use { cursor ->
-                if (cursor.moveToFirst()) {
-                    return createWeather(cursor)
+            WEATHER_ID + " = " + WEATHER_DATA_ID + " WHERE " + WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER + AND + WEATHER_TYPE + IS_EQUAL_PARAMETER +
+            "ORDER BY " + WEATHER_DATA_DATE
+        val weathers = ArrayList<Weather>()
+        db.rawQuery(query, arrayOf(locationId.toString(), type.ordinal.toString())).use { cursor ->
+            if (cursor.moveToFirst()) {
+                for (i in 0 until cursor.count) {
+                    if (cursor.moveToPosition(i)) {
+                        weathers.add(createWeather(cursor))
+                    }
                 }
             }
-        return null
+        }
+        return weathers
     }
 
-    private fun createWeather(cursor: Cursor): CurrentWeather {
+    private fun createWeather(cursor: Cursor): Weather {
         val date = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATA_DATE)))
         val description = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_DESCRIPTION))
         val icon = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_ICON))
@@ -372,20 +381,21 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         val temperature = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_TEMP))
         val apparentTemperature = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_APPARENT_TEMP))
 
-        return CurrentWeather(id, date, description, icon, precipitationIntensity, precipitationProbability, dewPoint,
+        return Weather(id, date, description, icon, precipitationIntensity, precipitationProbability, dewPoint,
             humidity, pressure, windSpeed, windGust, windDirection, cloudCover, visibility, ozone, uvIndex, temperature,
             apparentTemperature)
     }
 
-    private fun updateWeather(db: SQLiteDatabase, weather: CurrentWeather) {
+    private fun updateWeather(db: SQLiteDatabase, weather: Weather, type: WeatherType) {
         val weatherValues = createWeatherContentValues(weather)
+        weatherValues.put(WEATHER_TYPE, type.ordinal)
         db.update(WEATHER_TABLE, weatherValues, WEATHER_ID + IS_EQUAL_PARAMETER, arrayOf(weather.id.toString()))
         val weatherDataValues = createWeatherDataContentValues(weather)
         db.update(WEATHER_DATA_TABLE, weatherDataValues, WEATHER_DATA_ID + IS_EQUAL_PARAMETER,
             arrayOf(weather.id.toString()))
     }
 
-    private fun addWeather(db: SQLiteDatabase, weather: CurrentWeather, locationId: Int) {
+    private fun addWeather(db: SQLiteDatabase, weather: Weather, locationId: Int, type: WeatherType) {
         val commonId = getId()
         val weatherDataValues = createWeatherDataContentValues(weather)
         weatherDataValues.put(WEATHER_DATA_ID, commonId)
@@ -394,6 +404,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         val weatherValues = createWeatherContentValues(weather)
         weatherValues.put(WEATHER_ID, commonId)
         weatherValues.put(WEATHER_LOCATION_ID, locationId)
+        weatherValues.put(WEATHER_TYPE, type.ordinal)
         db.insert(WEATHER_TABLE, null, weatherValues)
     }
 
@@ -418,7 +429,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-    private fun createWeatherContentValues(weather: CurrentWeather): ContentValues {
+    private fun createWeatherContentValues(weather: Weather): ContentValues {
         with(ContentValues()) {
             put(WEATHER_TEMP, weather.temperature)
             put(WEATHER_APPARENT_TEMP, weather.apparentTemperature)
@@ -432,6 +443,48 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             db.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
             db.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
         }
+    }
+
+    //hour weathers methods
+
+    fun setHourWeathersByLocationId(hourWeather: HourWeather, locationId: Int) {
+        database.beginTransaction()
+        try {
+            val existedHourWeathers = getWeathersFromDatabase(database, locationId, WeatherType.HOUR)
+            if (existedHourWeathers.isNullOrEmpty()) {
+                addHourWeathers(database, hourWeather.weathers, locationId)
+            } else {
+                updateHourWeathers(database, existedHourWeathers, hourWeather.weathers, locationId)
+            }
+            database.setTransactionSuccessful()
+        } finally {
+            database.endTransaction()
+        }
+    }
+
+    private fun addHourWeathers(db: SQLiteDatabase, hourWeathers: List<Weather>, locationId: Int) {
+        for (hourWeather in hourWeathers) {
+            addWeather(db, hourWeather, locationId, WeatherType.HOUR)
+        }
+    }
+
+    private fun updateHourWeathers(db: SQLiteDatabase, existedHourWeathers: List<Weather>, hourWeathers: List<Weather>,
+                                   locationId: Int) {
+        if (existedHourWeathers.size == hourWeathers.size) {
+            for (i in 0 until existedHourWeathers.size) {
+                val hourWeathersForUpdate = Weather(existedHourWeathers[i].id, hourWeathers[i])
+                updateWeather(db, hourWeathersForUpdate, WeatherType.HOUR)
+            }
+        } else {
+            db.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER + AND + WEATHER_TYPE + IS_EQUAL_PARAMETER,
+                arrayOf(locationId.toString(), WeatherType.HOUR.ordinal.toString()))
+            addHourWeathers(db, hourWeathers, locationId)
+        }
+    }
+
+    fun getHourWeathersByLocationId(locationId: Int): List<Weather>? {
+        val weathers = getWeathersFromDatabase(database, locationId, WeatherType.HOUR)
+        return if (weathers.isNullOrEmpty()) null else weathers
     }
 
     //forecast methods
@@ -501,7 +554,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun getForecastsFromDatabase(db: SQLiteDatabase, locationId: Int): List<Forecast>? {
         val query = "SELECT * FROM " + FORECAST_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
-            FORECAST_ID + " = " + WEATHER_DATA_ID + " WHERE " + FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER + "ORDER BY " + WEATHER_DATA_DATE
+            FORECAST_ID + " = " + WEATHER_DATA_ID + " WHERE " + FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER + " ORDER BY " + WEATHER_DATA_DATE
         val forecasts = ArrayList<Forecast>()
         db.rawQuery(query, arrayOf(locationId.toString())).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -522,17 +575,18 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 val forecastForUpdate = Forecast(existedForecasts[i].id, forecasts[i])
                 val forecastValues = createForecastContentValues(forecastForUpdate)
                 db.update(
-                    FORECAST_TABLE, forecastValues, FORECAST_ID + IS_EQUAL_PARAMETER, arrayOf(forecastForUpdate.id.toString()))
+                    FORECAST_TABLE, forecastValues, FORECAST_ID + IS_EQUAL_PARAMETER,
+                    arrayOf(forecastForUpdate.id.toString()))
                 val weatherDataValues = createWeatherDataContentValues(forecastForUpdate)
                 db.update(WEATHER_DATA_TABLE, weatherDataValues, WEATHER_DATA_ID + IS_EQUAL_PARAMETER,
                     arrayOf(forecastForUpdate.id.toString()))
             }
         } else {
-            db.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+            db.delete(FORECAST_TABLE,
+                FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER + AND + WEATHER_TYPE + IS_EQUAL_PARAMETER,
+                arrayOf(locationId.toString()))
             addForecasts(db, forecasts, locationId)
         }
-
-
     }
 
     private fun addForecasts(db: SQLiteDatabase, forecasts: List<Forecast>, locationId: Int) {
@@ -555,7 +609,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             put(FORECAST_SUNSET_TIME, forecast.sunsetTime.time)
             put(FORECAST_MOON_PHASE, forecast.moonPhase)
             put(FORECAST_PRECIPITATION_INTENSITY_MAX, forecast.precipitationIntensityMax)
-            put(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME, forecast.precipitationIntensityMaxTime.time)
+            put(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME, forecast.precipitationIntensityMaxTime?.time)
             put(FORECAST_PRECIPITATION_ACCUMULATION, forecast.precipitationAccumulation)
             put(FORECAST_PRECIPITATION_TYPE, forecast.precipitationType)
             put(FORECAST_TEMP_HIGH, forecast.temperatureHigh)
@@ -572,7 +626,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     //common methods
 
-    private fun getId() = UUID.randomUUID().mostSignificantBits
+    private fun getId() = UUID.randomUUID().mostSignificantBits.absoluteValue
 
     class Factory : SQLiteDatabase.CursorFactory {
         override fun newCursor(db: SQLiteDatabase?, masterQuery: SQLiteCursorDriver?, editTable: String?,

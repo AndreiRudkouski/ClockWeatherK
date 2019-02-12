@@ -38,6 +38,6 @@ class Location {
 
     private fun getNameByCode(nameCode: String, context: Context): String {
         return context.getString(
-            context.resources.getIdentifier(nameCode, String::class.java.simpleName.toLowerCase(), context.packageName))
+            context.resources.getIdentifier(nameCode, "string", context.packageName))
     }
 }

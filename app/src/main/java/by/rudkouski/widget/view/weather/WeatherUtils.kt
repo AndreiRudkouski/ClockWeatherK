@@ -1,8 +1,9 @@
 package by.rudkouski.widget.view.weather
 
 import android.content.Context
-import by.rudkouski.widget.entity.CurrentWeather
 import by.rudkouski.widget.entity.DayForecast
+import by.rudkouski.widget.entity.HourWeather
+import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.WeatherData
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
@@ -12,6 +13,7 @@ import java.util.*
 object WeatherUtils {
 
     private const val CURRENT_WEATHER = "currently"
+    private const val HOUR_WEATHER = "hourly"
     private const val DAY_WEATHER = "daily"
 
     private val dateJsonDeserializer: JsonDeserializer<Date> =
@@ -20,9 +22,14 @@ object WeatherUtils {
         }
     private val gson = GsonBuilder().registerTypeAdapter(Date::class.java, dateJsonDeserializer).create()
 
-    fun getWeatherFromResponseBody(responseBody: String): CurrentWeather {
+    fun getWeatherFromResponseBody(responseBody: String): Weather {
         val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(CURRENT_WEATHER)
-        return gson.fromJson(jsonObject, CurrentWeather::class.java)
+        return gson.fromJson(jsonObject, Weather::class.java)
+    }
+
+    fun getHourWeatherFromResponseBody(responseBody: String): HourWeather {
+        val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(HOUR_WEATHER)
+        return gson.fromJson(jsonObject, HourWeather::class.java)
     }
 
     fun getDayForecastFromResponseBody(responseBody: String): DayForecast {

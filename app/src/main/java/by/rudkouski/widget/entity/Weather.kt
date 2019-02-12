@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 /**
- * Contains the current weather conditions at the requested location.
+ * Contains the weather conditions at the requested location.
  */
-class CurrentWeather : WeatherData {
+class Weather : WeatherData {
 
     @SerializedName("temperature")
     val temperature: Double
@@ -24,7 +24,7 @@ class CurrentWeather : WeatherData {
         this.apparentTemperature = apparentTemperature
     }
 
-    constructor(newId: Long, weather: CurrentWeather) :
+    constructor(newId: Long, weather: Weather) :
         this(newId, weather.date, weather.description, weather.iconName, weather.precipitationIntensity,
             weather.precipitationProbability, weather.dewPoint, weather.humidity, weather.pressure, weather.windSpeed,
             weather.windGust, weather.windDirection, weather.cloudCover, weather.visibility, weather.ozone,

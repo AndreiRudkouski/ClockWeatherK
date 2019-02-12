@@ -19,11 +19,18 @@
     <dimen name="forecast_location_name_padding">15dp</dimen>
     <dimen name="card_view_height">80dp</dimen>
 
+    <dimen name="hour_weather_padding_horizontal">12dp</dimen>
+    <dimen name="hour_weather_padding_top">10dp</dimen>
+    <dimen name="hour_weather_padding_bottom">50dp</dimen>
+
     <dimen name="image_width">75dp</dimen>
     <dimen name="image_height">45dp</dimen>
 
     <dimen name="image_small_width">65dp</dimen>
     <dimen name="image_small_height">40dp</dimen>
+
+    <dimen name="hour_weather_image_width">35dp</dimen>
+    <dimen name="hour_weather_image_height">21dp</dimen>
 
     <dimen name="weather_margin">10dp</dimen>
     <dimen name="weather_margin_top">37dp</dimen>
@@ -37,6 +44,5 @@
     <dimen name="shadow_small_y">8</dimen>
     <dimen name="shadow_small_radius">5</dimen>
 
-    <dimen name="appBar_height">290dp</dimen>
     <dimen name="toolBar_height">40dp</dimen>
 </resources>
