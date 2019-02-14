@@ -14,6 +14,7 @@ import android.view.ViewGroup
 import by.rudkouski.widget.R
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Forecast
+import by.rudkouski.widget.entity.Weather
 import java.util.*
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Calendar.YEAR
@@ -22,6 +23,7 @@ class ForecastFragment @SuppressLint("ValidFragment")
 private constructor() : Fragment() {
 
     private val dbHelper = INSTANCE
+    private val forecasts = ArrayList<Forecast>()
 
     companion object {
         fun newInstance(widgetId: Int): ForecastFragment {
@@ -43,15 +45,15 @@ private constructor() : Fragment() {
     private fun setDataToForecastRecyclerView(view: View) {
         val forecastRecycler = view.findViewById<RecyclerView>(R.id.forecast_recycler_view)
         forecastRecycler.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
+        val adapter = ForecastAdapter(forecasts)
+        forecastRecycler.adapter = adapter
         if (context != null && arguments != null) {
             val handler = Handler(Looper.getMainLooper())
             handler.post {
                 val widgetId = arguments!!.getInt(EXTRA_APPWIDGET_ID)
                 val widget = dbHelper.getWidgetById(widgetId)
                 if (widget != null) {
-                    val forecasts = checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id))
-                    val adapter = ForecastAdapter(forecasts)
-                    forecastRecycler.adapter = adapter
+                    forecasts.addAll(checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id)))
                     adapter.notifyDataSetChanged()
                 }
             }

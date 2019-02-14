@@ -25,12 +25,14 @@ import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
 import java.util.*
+import kotlin.collections.ArrayList
 
 class ForecastActivity : AppCompatActivity() {
 
     private val dbHelper = INSTANCE
     private var activityUpdateBroadcastReceiver: ForecastActivityUpdateBroadcastReceiver? = null
     private var widgetId: Int = 0
+    private val hourWeathers = ArrayList<Weather>()
 
     companion object {
         private const val FORECAST_ACTIVITY_UPDATE = "by.rudkouski.widget.FORECAST_ACTIVITY_UPDATE"
@@ -73,6 +75,10 @@ class ForecastActivity : AppCompatActivity() {
     private fun initToolbar(widgetId: Int) {
         val toolbarLayout = findViewById<CollapsingToolbarLayout>(R.id.collapsing_toolbar_forecast)
         val weatherView = findViewById<WeatherItemView>(R.id.current_weather)
+        val hourWeatherRecycler = findViewById<RecyclerView>(R.id.hour_weather_recycler_view)
+        hourWeatherRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        val adapter = HourWeatherAdapter(hourWeathers)
+        hourWeatherRecycler.adapter = adapter
         val handler = Handler(Looper.getMainLooper())
         handler.post {
             val widget = dbHelper.getWidgetById(widgetId)
@@ -81,17 +87,13 @@ class ForecastActivity : AppCompatActivity() {
                 toolbarLayout.title = title
                 val weather = dbHelper.getWeatherByLocationId(widget.location.id)
                 weatherView.updateWeatherItemView(weather)
-                hourWeatherViewUpdate(widget)
+                hourWeatherViewUpdate(widget, adapter)
             }
         }
     }
 
-    private fun hourWeatherViewUpdate(widget: Widget) {
-        val hourWeatherRecycler = findViewById<RecyclerView>(R.id.hour_weather_recycler_view)
-        hourWeatherRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val hourWeathers = checkWeatherTime(dbHelper.getHourWeathersByLocationId(widget.location.id))
-        val adapter = HourWeatherAdapter(hourWeathers)
-        hourWeatherRecycler.adapter = adapter
+    private fun hourWeatherViewUpdate(widget: Widget, adapter: HourWeatherAdapter) {
+        hourWeathers.addAll(checkWeatherTime(dbHelper.getHourWeathersByLocationId(widget.location.id)))
         adapter.notifyDataSetChanged()
     }
 
