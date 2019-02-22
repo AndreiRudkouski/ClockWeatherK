@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="?android:attr/colorPrimaryDark"
-    android:textColor="@color/colorForecast">
+    android:textColor="?colorTextLight">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_config"
@@ -20,13 +20,13 @@
     <View
         android:layout_height="@dimen/divider_height"
         android:layout_width="match_parent"
-        android:background="@color/colorSelected"/>
+        android:background="?colorSelected"/>
 
     <ListView
         android:id="@+id/locations_config"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:divider="@color/colorSelected"
+        android:divider="?colorSelected"
         android:dividerHeight="@dimen/divider_height"/>
 
 </LinearLayout>

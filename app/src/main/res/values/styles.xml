@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorDark</item>
-        <item name="colorPrimaryDark">@color/colorDark</item>
-        <item name="android:colorControlHighlight">@color/colorSelected</item>
+    <style name="DarkTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorSelected">@color/colorSelected_Dark</item>
+        <item name="colorPrimary">@color/colorDark_Dark</item>
+        <item name="colorPrimaryDark">@color/colorDark_Dark</item>
+        <item name="colorTextLight">@color/colorTextWhite_Dark</item>
+        <item name="colorTextDark">@color/colorTextGray_Dark</item>
+        <item name="android:colorControlHighlight">@color/colorSelected_Dark</item>
     </style>
 </resources>

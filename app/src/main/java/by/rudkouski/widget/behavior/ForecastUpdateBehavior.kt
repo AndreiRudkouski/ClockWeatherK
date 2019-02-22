@@ -16,7 +16,7 @@ import by.rudkouski.widget.receiver.NetworkChangeChecker
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 
 /**
- * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\layout\forecast_activity.xml".
+ * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".
  */
 class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayout.Behavior(context, attrs) {
 

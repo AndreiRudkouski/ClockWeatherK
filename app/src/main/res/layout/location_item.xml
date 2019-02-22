@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="false"
-        android:textColor="@color/colorForecast"
+        android:textColor="?colorTextDark"
         android:padding="@dimen/location_name_padding"
         android:textAppearance="?android:attr/textAppearanceMedium"
         tool:text="@string/minsk"

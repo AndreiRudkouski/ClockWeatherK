@@ -7,6 +7,11 @@ import android.os.Handler
 import android.os.Looper
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
+import android.util.TypedValue
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
@@ -103,15 +108,15 @@ class DayForecastActivity : AppCompatActivity() {
     }
 
     private fun setSunriseTime(view: View, forecast: Forecast) {
-        val description = getString(R.string.sunrise)
-        val value = getFormatTime(forecast.sunriseTime)
-        setDataToView(view, R.id.sunrise_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.sunrise)
+        val value = getSpannableStringValue(getFormatTime(forecast.sunriseTime))
+        setDataToView(view, R.id.sunrise_day_forecast, description, value)
     }
 
     private fun setSunsetTime(view: View, forecast: Forecast) {
-        val description = getString(R.string.sunset)
-        val value = getFormatTime(forecast.sunsetTime)
-        setDataToView(view, R.id.sunset_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.sunset)
+        val value = getSpannableStringValue(getFormatTime(forecast.sunsetTime))
+        setDataToView(view, R.id.sunset_day_forecast, description, value)
     }
 
     private fun getFormatTime(date: Date): String {
@@ -121,63 +126,89 @@ class DayForecastActivity : AppCompatActivity() {
     }
 
     private fun setPrecipitationText(view: View, forecast: Forecast) {
-        val description = getString(R.string.precipitationProbability)
-        val value = if (forecast.precipitationProbability > 0) "${getString(
+        val description = getSpannableStringDescription(R.string.precipitationProbability)
+        val value = getSpannableStringValue(if (forecast.precipitationProbability > 0) "${getString(
             resources.getIdentifier(forecast.precipitationType, "string", packageName))}, ${convertDoubleToPercents(
-            forecast.precipitationProbability)}" else getString(R.string.no_rain)
-        setDataToView(view, R.id.precipitation_day_forecast, description, value, true)
+            forecast.precipitationProbability)}" else getString(R.string.no_rain))
+        setDataToView(view, R.id.precipitation_day_forecast, description, value)
     }
 
     private fun setFeelText(view: View, forecast: Forecast) {
-        val description = getString(R.string.feel)
-        val value = String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
-            getDegreeText(forecast.apparentTemperatureHigh), getDegreeText(forecast.apparentTemperatureLow))
-        setDataToView(view, R.id.feel_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.feel)
+        val value = getSpannableStringValue(String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
+            getDegreeText(forecast.apparentTemperatureHigh), getDegreeText(forecast.apparentTemperatureLow)))
+        setDataToView(view, R.id.feel_day_forecast, description, value)
     }
 
     private fun setDewPointText(view: View, forecast: Forecast) {
-        val description = getString(R.string.dewPoint)
-        val value = getDegreeText(forecast.dewPoint)
-        setDataToView(view, R.id.dew_point_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.dewPoint)
+        val value = getSpannableStringValue(getDegreeText(forecast.dewPoint))
+        setDataToView(view, R.id.dew_point_day_forecast, description, value)
     }
 
     private fun setHumidityText(view: View, forecast: Forecast) {
-        val description = getString(R.string.humidity)
-        val value = convertDoubleToPercents(forecast.humidity)
-        setDataToView(view, R.id.humidity_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.humidity)
+        val value = getSpannableStringValue(convertDoubleToPercents(forecast.humidity))
+        setDataToView(view, R.id.humidity_day_forecast, description, value)
     }
 
     private fun setPressureText(view: View, forecast: Forecast) {
-        val description = getString(R.string.pressure)
-        val value = "${mathRound(forecast.pressure)} ${getString(R.string.pressure_unit)}"
-        setDataToView(view, R.id.pressure_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.pressure)
+        val value = getSpannableStringValue("${mathRound(forecast.pressure)} ${getString(R.string.pressure_unit)}")
+        setDataToView(view, R.id.pressure_day_forecast, description, value)
     }
 
     private fun setWindText(view: View, forecast: Forecast) {
-        val description = getString(R.string.wind)
-        val value = if (forecast.windSpeed != 0.0) "${convertWindDirection(
+        val description = getSpannableStringDescription(R.string.wind)
+        val value = getSpannableStringValue(if (forecast.windSpeed != 0.0) "${convertWindDirection(
             forecast.windDirection)}, ${mathRound(forecast.windSpeed)} ${getString(R.string.speed_unit)}, " +
             "${getString(R.string.gust)} ${mathRound(forecast.windGust)} ${getString(R.string.speed_unit)}"
-        else getString(R.string.windless)
-        setDataToView(view, R.id.wind_day_forecast, description, value, true)
+        else getString(R.string.windless))
+        setDataToView(view, R.id.wind_day_forecast, description, value)
     }
 
     private fun setVisibilityText(view: View, forecast: Forecast) {
-        val description = getString(R.string.visibility)
-        val value = "${forecast.visibility} ${getString(R.string.distance_unit)}"
-        setDataToView(view, R.id.visibility_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.visibility)
+        val value = getSpannableStringValue("${forecast.visibility} ${getString(R.string.distance_unit)}")
+        setDataToView(view, R.id.visibility_day_forecast, description, value)
     }
 
     private fun setCloudCoverText(view: View, forecast: Forecast) {
-        val description = getString(R.string.cloud_cover)
-        val value = convertDoubleToPercents(forecast.cloudCover)
-        setDataToView(view, R.id.cloud_cover_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.cloud_cover)
+        val value = getSpannableStringValue(convertDoubleToPercents(forecast.cloudCover))
+        setDataToView(view, R.id.cloud_cover_day_forecast, description, value)
     }
 
     private fun setUvIndexText(view: View, forecast: Forecast) {
-        val description = getString(R.string.uv_index)
-        val value = "${forecast.uvIndex}"
-        setDataToView(view, R.id.uv_index_day_forecast, description, value, true)
+        val description = getSpannableStringDescription(R.string.uv_index)
+        val value = getSpannableStringValue("${forecast.uvIndex}")
+        setDataToView(view, R.id.uv_index_day_forecast, description, value)
+    }
+
+    private fun getSpannableStringDescription(resId: Int): Spannable {
+        val description = SpannableString(getString(resId))
+        description.setSpan(ForegroundColorSpan(getDarkTextColor(this)), 0, description.length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        description.setSpan(RelativeSizeSpan(0.8f), 0, description.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return description
+    }
+
+    private fun getSpannableStringValue(res: String): Spannable {
+        val value = SpannableString("\n" + res)
+        value.setSpan(ForegroundColorSpan(getLightTextColor(this)), 0, value.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        return value
+    }
+
+    private fun getLightTextColor(context: Context): Int {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorTextLight, typedValue, true)
+        return typedValue.data
+    }
+
+    private fun getDarkTextColor(context: Context): Int {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorTextDark, typedValue, true)
+        return typedValue.data
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
