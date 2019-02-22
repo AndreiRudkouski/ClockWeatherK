@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorShadow"
+    android:id="@+id/day_forecast">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_day_forecast"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolBar_height"
+        android:background="@color/colorDark"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:fitsSystemWindows="true"
+        app:title="@string/default_day"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="false"
+        android:orientation="vertical"
+        android:layout_alignParentTop="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/toolBar_height"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/weather_margin"
+            android:layout_marginBottom="@dimen/weather_margin">
+
+            <ImageView
+                android:id="@+id/image_day_forecast"
+                android:layout_width="@dimen/image_width"
+                android:layout_height="@dimen/image_height"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/weather_image_description"
+                tools:src="@mipmap/partly_cloudy_night"/>
+
+            <TextView
+                android:id="@+id/description_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/default_weather"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/big_text_size"
+                tools:text="Mostly cloudy"/>
+
+            <TextView
+                android:id="@+id/degrees_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/weather_degree_size"
+                tools:text="20\u00B0C"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="@android:color/white"
+            android:textSize="@dimen/big_text_size"
+            android:textColor="@color/colorForecast"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/sunrise_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Sunrise: 08:10 AM"/>
+
+            <TextView
+                android:id="@+id/sunset_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Sunset: 08:15 PM"/>
+
+            <TextView
+                android:id="@+id/precipitation_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Precipitation: rain, 25%"/>
+
+            <TextView
+                android:id="@+id/feel_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Feels like: 18\u00B0C"/>
+
+            <TextView
+                android:id="@+id/dew_point_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Dew point: 5\u00B0C"/>
+
+            <TextView
+                android:id="@+id/humidity_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Humidity: 22 %"/>
+
+            <TextView
+                android:id="@+id/pressure_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Pressure: 987 hpa"/>
+
+            <TextView
+                android:id="@+id/wind_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Wind: SE, 5 m/s, gusts 9 m/s"/>
+
+            <TextView
+                android:id="@+id/visibility_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Visibility: 16 km"/>
+
+            <TextView
+                android:id="@+id/cloud_cover_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Cloud cover: 50%"/>
+
+            <TextView
+                android:id="@+id/uv_index_day_forecast"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="UV index: 0"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

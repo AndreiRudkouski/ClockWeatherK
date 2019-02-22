@@ -7,13 +7,16 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.view.weather.WeatherItemView.Companion.getDegreeText
 import by.rudkouski.widget.view.weather.WeatherUtils
+import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ForecastItemView : LinearLayout {
+class ForecastItemView : LinearLayout, View.OnClickListener {
+
+    private lateinit var forecast: Forecast
 
     constructor(context: Context) : super(context)
 
@@ -22,16 +25,18 @@ class ForecastItemView : LinearLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     companion object {
-        private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
-        private const val FORECAST_DEGREE_FORMAT = "%1\$s / %2\$s"
+        const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
+        const val FORECAST_DEGREE_FORMAT = "%1\$s / %2\$s"
     }
 
     fun updateForecastItemView(forecast: Forecast) {
+        this.forecast = forecast
         val view = findViewById<View>(R.id.forecast_item)
         setImage(view, forecast)
         setDateText(view, forecast)
         setDescriptionText(view, forecast)
         setDegreeText(view, forecast)
+        view.setOnClickListener(this)
     }
 
     private fun setImage(view: View, forecast: Forecast) {
@@ -53,6 +58,10 @@ class ForecastItemView : LinearLayout {
     private fun setDegreeText(view: View, forecast: Forecast) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_forecast)
         degreeTextView.text = String.format(Locale.getDefault(), FORECAST_DEGREE_FORMAT,
-            getDegreeText(context, forecast.temperatureHigh), getDegreeText(context, forecast.temperatureLow))
+            getDegreeText(forecast.temperatureHigh), getDegreeText(forecast.temperatureLow))
+    }
+
+    override fun onClick(v: View) {
+        DayForecastActivity.start(App.appContext, forecast.id)
     }
 }

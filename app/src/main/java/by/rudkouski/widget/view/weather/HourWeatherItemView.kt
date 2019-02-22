@@ -9,6 +9,7 @@ import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,12 +27,9 @@ class HourWeatherItemView : LinearLayout {
         val view = findViewById<View>(R.id.current_hour_weather)
         isActualWeather = WidgetProvider.isActualWeather(weather)
         if (isActualWeather) {
-            view.visibility = VISIBLE
             setTime(view, weather)
             setImage(view, weather)
             setDegree(view, weather)
-        } else {
-            view.visibility = INVISIBLE
         }
     }
 
@@ -50,6 +48,6 @@ class HourWeatherItemView : LinearLayout {
 
     private fun setDegree(view: View, weather: Weather) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_hour_weather)
-        degreeTextView.text = WeatherItemView.getDegreeText(context, weather.temperature)
+        degreeTextView.text = getDegreeText(weather.temperature)
     }
 }

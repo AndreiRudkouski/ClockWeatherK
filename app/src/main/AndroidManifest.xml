@@ -54,6 +54,9 @@
         <activity android:name=".view.forecast.ForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>
+        <activity android:name=".view.forecast.DayForecastActivity"
+                  android:configChanges="orientation|screenSize"
+                  android:excludeFromRecents="true"/>
         <activity
             android:name="com.rohitss.uceh.UCEDefaultActivity"
             android:process=":error_activity"/>

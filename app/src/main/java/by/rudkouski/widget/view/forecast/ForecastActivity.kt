@@ -55,6 +55,8 @@ class ForecastActivity : AppCompatActivity() {
         widgetId = getAppWidgetId()
         val toolbar = findViewById<Toolbar>(R.id.toolbar_forecast)
         setSupportActionBar(toolbar)
+        activityUpdateBroadcastReceiver = ForecastActivityUpdateBroadcastReceiver()
+        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(FORECAST_ACTIVITY_UPDATE))
         updateActivity()
     }
 
@@ -93,6 +95,7 @@ class ForecastActivity : AppCompatActivity() {
     }
 
     private fun hourWeatherViewUpdate(widget: Widget, adapter: HourWeatherAdapter) {
+        if (hourWeathers.isNotEmpty()) hourWeathers.clear()
         hourWeathers.addAll(checkWeatherTime(dbHelper.getHourWeathersByLocationId(widget.location.id)))
         adapter.notifyDataSetChanged()
     }
@@ -139,23 +142,12 @@ class ForecastActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onResume() {
-        super.onResume()
-        updateActivity()
-        activityUpdateBroadcastReceiver = ForecastActivityUpdateBroadcastReceiver()
-        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(FORECAST_ACTIVITY_UPDATE))
-    }
-
-    override fun onPause() {
-        super.onPause()
+    override fun onStop() {
+        super.onStop()
         if (activityUpdateBroadcastReceiver != null) {
             unregisterReceiver(activityUpdateBroadcastReceiver)
         }
         WidgetProvider.updateWidget(this)
-    }
-
-    override fun onStop() {
-        super.onStop()
         finish()
     }
 

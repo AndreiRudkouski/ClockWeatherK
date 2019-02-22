@@ -19,7 +19,9 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
+            android:layout_gravity="center_vertical"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="false">
 
             <ImageView
                 android:id="@+id/weather_image_forecast"
@@ -55,7 +57,7 @@
                 android:paddingEnd="@dimen/forecast_padding_horizontal"
                 android:textColor="@color/colorForecast"
                 android:textSize="@dimen/middle_text_size"
-                tools:text="@string/mostly_cloudy_night"
+                tools:text="Mostly cloudy"
                 tools:ignore="RtlSymmetry"/>
 
             <TextView

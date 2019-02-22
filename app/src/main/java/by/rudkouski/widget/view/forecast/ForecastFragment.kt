@@ -14,7 +14,6 @@ import android.view.ViewGroup
 import by.rudkouski.widget.R
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.entity.Weather
 import java.util.*
 import java.util.Calendar.DAY_OF_YEAR
 import java.util.Calendar.YEAR
@@ -53,6 +52,7 @@ private constructor() : Fragment() {
                 val widgetId = arguments!!.getInt(EXTRA_APPWIDGET_ID)
                 val widget = dbHelper.getWidgetById(widgetId)
                 if (widget != null) {
+                    if (forecasts.isNotEmpty()) forecasts.clear()
                     forecasts.addAll(checkWeatherDates(dbHelper.getDayForecastsByLocationId(widget.location.id)))
                     adapter.notifyDataSetChanged()
                 }

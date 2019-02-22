@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="@dimen/weather_temperature_width"
         android:layout_height="wrap_content"
-        android:paddingTop="10dp"
+        android:paddingTop="@dimen/top_padding"
         android:layout_marginEnd="@dimen/location_name_padding"
         android:layout_marginStart="@dimen/weather_margin"
         android:orientation="vertical">
@@ -34,7 +34,7 @@
             android:text="@string/default_weather"
             android:textColor="@android:color/white"
             android:textSize="@dimen/big_text_size"
-            tools:text="@string/mostly_cloudy_night"/>
+            tools:text="Mostly cloudy"/>
 
         <TextView
             android:id="@+id/degrees_current_weather"

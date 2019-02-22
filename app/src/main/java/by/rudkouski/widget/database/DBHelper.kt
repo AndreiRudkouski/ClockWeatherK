@@ -304,7 +304,6 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-
     fun changeWidgetTextBold(widgetId: Int) {
         database.beginTransaction()
         try {
@@ -317,6 +316,21 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         } finally {
             database.endTransaction()
         }
+    }
+
+    fun getWidgetIdByForecastId(forecastId: Long): Int {
+        val query = "SELECT * FROM " + WIDGET_TABLE + " INNER JOIN " + FORECAST_TABLE + " ON " +
+            WIDGET_LOCATION_ID + " = " + FORECAST_LOCATION_ID + " WHERE " + FORECAST_ID + IS_EQUAL_PARAMETER
+        database.rawQuery(query, arrayOf(forecastId.toString())).use { cursor ->
+            if (cursor.moveToFirst()) {
+                for (i in 0 until cursor.count) {
+                    if (cursor.moveToPosition(i)) {
+                        return cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_ID))
+                    }
+                }
+            }
+        }
+        return Int.MIN_VALUE
     }
 
     //weather methods
@@ -601,6 +615,21 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             forecastValues.put(FORECAST_LOCATION_ID, locationId)
             db.insert(FORECAST_TABLE, null, forecastValues)
         }
+    }
+
+    fun getDayForecastById(forecastId: Long): Forecast? {
+        val query = "SELECT * FROM " + FORECAST_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
+            FORECAST_ID + " = " + WEATHER_DATA_ID + " WHERE " + FORECAST_ID + IS_EQUAL_PARAMETER
+        database.rawQuery(query, arrayOf(forecastId.toString())).use { cursor ->
+            if (cursor.moveToFirst()) {
+                for (i in 0 until cursor.count) {
+                    if (cursor.moveToPosition(i)) {
+                        return createForecast(cursor)
+                    }
+                }
+            }
+        }
+        return null
     }
 
     private fun createForecastContentValues(forecast: Forecast): ContentValues {
