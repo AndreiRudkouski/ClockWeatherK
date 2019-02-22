@@ -18,7 +18,8 @@
     <string name="minsk">Minsk</string>
 
     <string name="menu_location">Change location</string>
-    <string name="menu_text">Bold/Normal widget</string>
+    <string name="menu_text">Change text</string>
+    <string name="menu_theme">Change theme</string>
 
     <string name="update_date">Updated</string>
     <string name="wind">Wind</string>

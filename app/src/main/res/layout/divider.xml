@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<View xmlns:android="http://schemas.android.com/apk/res/android"
+      android:layout_height="@dimen/divider_height"
+      android:layout_width="match_parent"
+      android:background="?colorSelected"
+      android:layout_marginTop="@dimen/divider_indent"
+      android:layout_marginBottom="@dimen/divider_indent"/>

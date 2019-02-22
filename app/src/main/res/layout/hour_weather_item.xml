@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:textColor="@color/colorForecast"
+            android:textColor="?colorTextDark"
             android:textSize="@dimen/small_text_size"
             tools:text="12:00 PM"/>
 
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/colorForecast"
+            android:textColor="?colorTextDark"
             android:textSize="@dimen/small_text_size"
             tools:text="-10\u00B0C"/>
 
