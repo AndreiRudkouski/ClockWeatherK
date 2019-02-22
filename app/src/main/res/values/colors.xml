@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorShadow">#99424242</color>
-    <color name="colorForecast">#60000000</color>
-    <color name="colorSelected">#D8D8D8</color>
-    <color name="colorDark">#6E6E6E</color>
+    <color name="colorForecast">#FFFFFF</color>
+    <color name="colorSelected">#424242</color>
+    <color name="colorDark">#000000</color>
 </resources>

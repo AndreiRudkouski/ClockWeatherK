@@ -21,7 +21,7 @@
         android:shadowDy="@dimen/shadow_y"
         android:shadowRadius="@dimen/shadow_radius"
         android:text="@string/default_clock"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorForecast"
         android:textSize="@dimen/clock_text_size" tools:ignore="RtlSymmetry"/>
 
     <RelativeLayout
@@ -41,7 +41,7 @@
             android:shadowDy="@dimen/shadow_small_y"
             android:shadowRadius="@dimen/shadow_small_radius"
             android:text="@string/default_day"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size" tools:ignore="RtlSymmetry"/>
 
         <TextView
@@ -57,7 +57,7 @@
             android:shadowDy="@dimen/shadow_small_y"
             android:shadowRadius="@dimen/shadow_small_radius"
             android:text="@string/default_location"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Minsk, " tools:ignore="RtlSymmetry"/>
 
@@ -89,7 +89,7 @@
             android:shadowDx="@dimen/shadow_small_x"
             android:shadowDy="@dimen/shadow_small_y"
             android:shadowRadius="@dimen/shadow_small_radius"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="25sp"
             tools:text="20" tools:ignore="RtlSymmetry"/>
 
@@ -106,7 +106,7 @@
             android:shadowDx="@dimen/shadow_small_x"
             android:shadowDy="@dimen/shadow_small_y"
             android:shadowRadius="@dimen/shadow_small_radius"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/middle_text_size"
             tools:text="\u00B0C" tools:ignore="RtlSymmetry"/>
 

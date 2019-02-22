@@ -19,6 +19,7 @@
     <dimen name="forecast_location_name_padding">15dp</dimen>
     <dimen name="card_view_height">80dp</dimen>
     <dimen name="top_padding">10dp</dimen>
+    <dimen name="divider_indent">10dp</dimen>
 
     <dimen name="hour_weather_padding_horizontal">12dp</dimen>
     <dimen name="hour_weather_padding_top">10dp</dimen>
@@ -46,4 +47,6 @@
     <dimen name="shadow_small_radius">5</dimen>
 
     <dimen name="toolBar_height">40dp</dimen>
+
+    <dimen name="divider_height">2dp</dimen>
 </resources>

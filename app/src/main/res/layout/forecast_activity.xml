@@ -45,7 +45,7 @@
                 android:id="@+id/toolbar_forecast"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/toolBar_height"
-                android:background="@color/colorDark"
+                android:background="?android:attr/colorPrimaryDark"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 

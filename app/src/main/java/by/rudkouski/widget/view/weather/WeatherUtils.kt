@@ -22,6 +22,7 @@ object WeatherUtils {
 
     private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
     private const val DETERMINATION_PATTERN = "%1\$s: %2\$s"
+    private const val DETERMINATION_PATTERN_TWO_LINE = "%1\$s:\n%2\$s"
 
     private val dateJsonDeserializer: JsonDeserializer<Date> =
         JsonDeserializer { json, _, _ ->
@@ -63,15 +64,17 @@ object WeatherUtils {
 
     fun mathRound(double: Double) = Math.round(double)
 
-    fun setDataToView(view: View, identifier: Int, description: String?, value: String?) {
+    fun setDataToView(view: View, identifier: Int, description: String?, value: String?, isTwoLine: Boolean) {
         val textView = view.findViewById<TextView>(identifier)
-        textView.text = if (description != null) convertToDeterminationPattern(description, value!!) else value
+        textView.text =
+            if (description != null) convertToDeterminationPattern(description, value!!, isTwoLine) else value
     }
 
-    fun convertToDeterminationPattern(param1: String, param2: String) =
-        String.format(Locale.getDefault(), DETERMINATION_PATTERN, param1, param2)
+    fun convertToDeterminationPattern(param1: String, param2: String, isTwoLine: Boolean) =
+        String.format(Locale.getDefault(), if (isTwoLine) DETERMINATION_PATTERN_TWO_LINE else DETERMINATION_PATTERN,
+            param1, param2)
 
-   fun convertWindDirection(direction: Int): String {
+    fun convertWindDirection(direction: Int): String {
         return when {
             direction <= 11 -> appContext.getString(R.string.wind_direction_N)
             direction <= 34 -> appContext.getString(R.string.wind_direction_NNE)

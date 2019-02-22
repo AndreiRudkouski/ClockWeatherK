@@ -12,7 +12,6 @@
     <LinearLayout
         android:layout_width="@dimen/weather_temperature_width"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/top_padding"
         android:layout_marginEnd="@dimen/location_name_padding"
         android:layout_marginStart="@dimen/weather_margin"
         android:orientation="vertical">
@@ -32,7 +31,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             android:text="@string/default_weather"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/big_text_size"
             tools:text="Mostly cloudy"/>
 
@@ -41,7 +40,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/weather_degree_size"
             tools:text="20\u00B0C"/>
 
@@ -50,7 +49,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/weather_margin"
         android:layout_marginEnd="@dimen/weather_margin"
         android:orientation="vertical">
 
@@ -65,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:textColor="@android:color/white"
+                android:textColor="@color/colorForecast"
                 android:textSize="@dimen/small_text_size"
                 tools:text="Time: 09 Apr, 5:00PM"/>
 
@@ -78,7 +76,7 @@
                 android:layout_centerVertical="true"
                 android:scaleY="0"
                 android:text="@string/update_weather"
-                android:textColor="@android:color/white"
+                android:textColor="@color/colorForecast"
                 android:textSize="@dimen/very_small_text_size"/>
         </RelativeLayout>
 
@@ -87,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Precipitation: 25%"/>
 
@@ -96,7 +94,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Feels like: 18\u00B0C"/>
 
@@ -105,7 +103,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Dew point: 5\u00B0C"/>
 
@@ -114,7 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Humidity: 22 %"/>
 
@@ -123,7 +121,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Pressure: 987 hpa"/>
 
@@ -132,7 +130,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Wind: SE, 5 m/s, gusts 9 m/s"/>
 
@@ -141,7 +139,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Visibility: 16 km"/>
 
@@ -150,7 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="Cloud cover: 50%"/>
 
@@ -159,7 +157,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorForecast"
             android:textSize="@dimen/small_text_size"
             tools:text="UV index: 0"/>
 

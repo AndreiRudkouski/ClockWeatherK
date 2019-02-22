@@ -105,13 +105,13 @@ class DayForecastActivity : AppCompatActivity() {
     private fun setSunriseTime(view: View, forecast: Forecast) {
         val description = getString(R.string.sunrise)
         val value = getFormatTime(forecast.sunriseTime)
-        setDataToView(view, R.id.sunrise_day_forecast, description, value)
+        setDataToView(view, R.id.sunrise_day_forecast, description, value, true)
     }
 
     private fun setSunsetTime(view: View, forecast: Forecast) {
         val description = getString(R.string.sunset)
         val value = getFormatTime(forecast.sunsetTime)
-        setDataToView(view, R.id.sunset_day_forecast, description, value)
+        setDataToView(view, R.id.sunset_day_forecast, description, value, true)
     }
 
     private fun getFormatTime(date: Date): String {
@@ -125,32 +125,32 @@ class DayForecastActivity : AppCompatActivity() {
         val value = if (forecast.precipitationProbability > 0) "${getString(
             resources.getIdentifier(forecast.precipitationType, "string", packageName))}, ${convertDoubleToPercents(
             forecast.precipitationProbability)}" else getString(R.string.no_rain)
-        setDataToView(view, R.id.precipitation_day_forecast, description, value)
+        setDataToView(view, R.id.precipitation_day_forecast, description, value, true)
     }
 
     private fun setFeelText(view: View, forecast: Forecast) {
         val description = getString(R.string.feel)
         val value = String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
             getDegreeText(forecast.apparentTemperatureHigh), getDegreeText(forecast.apparentTemperatureLow))
-        setDataToView(view, R.id.feel_day_forecast, description, value)
+        setDataToView(view, R.id.feel_day_forecast, description, value, true)
     }
 
     private fun setDewPointText(view: View, forecast: Forecast) {
         val description = getString(R.string.dewPoint)
         val value = getDegreeText(forecast.dewPoint)
-        setDataToView(view, R.id.dew_point_day_forecast, description, value)
+        setDataToView(view, R.id.dew_point_day_forecast, description, value, true)
     }
 
     private fun setHumidityText(view: View, forecast: Forecast) {
         val description = getString(R.string.humidity)
         val value = convertDoubleToPercents(forecast.humidity)
-        setDataToView(view, R.id.humidity_day_forecast, description, value)
+        setDataToView(view, R.id.humidity_day_forecast, description, value, true)
     }
 
     private fun setPressureText(view: View, forecast: Forecast) {
         val description = getString(R.string.pressure)
         val value = "${mathRound(forecast.pressure)} ${getString(R.string.pressure_unit)}"
-        setDataToView(view, R.id.pressure_day_forecast, description, value)
+        setDataToView(view, R.id.pressure_day_forecast, description, value, true)
     }
 
     private fun setWindText(view: View, forecast: Forecast) {
@@ -159,25 +159,25 @@ class DayForecastActivity : AppCompatActivity() {
             forecast.windDirection)}, ${mathRound(forecast.windSpeed)} ${getString(R.string.speed_unit)}, " +
             "${getString(R.string.gust)} ${mathRound(forecast.windGust)} ${getString(R.string.speed_unit)}"
         else getString(R.string.windless)
-        setDataToView(view, R.id.wind_day_forecast, description, value)
+        setDataToView(view, R.id.wind_day_forecast, description, value, true)
     }
 
     private fun setVisibilityText(view: View, forecast: Forecast) {
         val description = getString(R.string.visibility)
         val value = "${forecast.visibility} ${getString(R.string.distance_unit)}"
-        setDataToView(view, R.id.visibility_day_forecast, description, value)
+        setDataToView(view, R.id.visibility_day_forecast, description, value, true)
     }
 
     private fun setCloudCoverText(view: View, forecast: Forecast) {
         val description = getString(R.string.cloud_cover)
         val value = convertDoubleToPercents(forecast.cloudCover)
-        setDataToView(view, R.id.cloud_cover_day_forecast, description, value)
+        setDataToView(view, R.id.cloud_cover_day_forecast, description, value, true)
     }
 
     private fun setUvIndexText(view: View, forecast: Forecast) {
         val description = getString(R.string.uv_index)
         val value = "${forecast.uvIndex}"
-        setDataToView(view, R.id.uv_index_day_forecast, description, value)
+        setDataToView(view, R.id.uv_index_day_forecast, description, value, true)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
