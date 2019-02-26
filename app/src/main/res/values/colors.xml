@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorShadow">#99424242</color>
-    <color name="colorTextWhite_Dark">#FFFFFF</color>
-    <color name="colorTextGray_Dark">#c5c5c5</color>
-    <color name="colorSelected_Dark">#424242</color>
-    <color name="colorDark_Dark">#000000</color>
+    <color name="colorSelected">#424242</color>
+
+    <color name="colorTextMain_Dark">#FFFFFF</color>
+    <color name="colorTextAdd_Dark">#c5c5c5</color>
+    <color name="colorPrimary_Dark">#000000</color>
+
+    <color name="colorPrimary_Light">#838383</color>
+    <color name="colorTextAdd_Light">#D8D8D8</color>
+    <color name="colorTextMain_Light">#FFFFFF</color>
 </resources>

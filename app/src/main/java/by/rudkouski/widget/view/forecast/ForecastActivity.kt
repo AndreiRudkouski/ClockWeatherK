@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
@@ -17,21 +16,19 @@ import android.text.format.DateUtils.DAY_IN_MILLIS
 import android.view.Menu
 import android.view.MenuItem
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ForecastActivity : AppCompatActivity() {
+class ForecastActivity : BaseActivity() {
 
-    private val dbHelper = INSTANCE
     private var activityUpdateBroadcastReceiver: ForecastActivityUpdateBroadcastReceiver? = null
-    private var widgetId: Int = 0
     private val hourWeathers = ArrayList<Weather>()
 
     companion object {
@@ -52,18 +49,11 @@ class ForecastActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.forecast_activity)
-        widgetId = getAppWidgetId()
         val toolbar = findViewById<Toolbar>(R.id.toolbar_forecast)
         setSupportActionBar(toolbar)
         activityUpdateBroadcastReceiver = ForecastActivityUpdateBroadcastReceiver()
         registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(FORECAST_ACTIVITY_UPDATE))
         updateActivity()
-    }
-
-    private fun getAppWidgetId() = getAppWidgetIdFromBundle(intent.extras)
-
-    private fun getAppWidgetIdFromBundle(bundle: Bundle?): Int {
-        return bundle?.getInt(EXTRA_APPWIDGET_ID) ?: Integer.MIN_VALUE
     }
 
     private fun updateActivity() {
@@ -136,6 +126,17 @@ class ForecastActivity : AppCompatActivity() {
                 val handler = Handler(Looper.getMainLooper())
                 handler.post { dbHelper.changeWidgetTextBold(widgetId) }
                 WidgetProvider.updateWidget(this)
+                return true
+            }
+            R.id.change_theme_menu -> {
+                val darkThemeId = resources.getIdentifier("DarkTheme", "style", packageName)
+                val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
+                val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
+                val handler = Handler(Looper.getMainLooper())
+                handler.post { dbHelper.changeWidgetTheme(widgetId, themeId) }
+                WidgetProvider.updateWidget(this)
+                finish()
+                startActivity(intent)
                 return true
             }
         }

@@ -16,5 +16,4 @@
         android:id="@+id/change_theme_menu"
         android:title="@string/menu_theme"
         app:showAsAction="never"/>
-
 </menu>

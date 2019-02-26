@@ -10,7 +10,6 @@ import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.*
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import java.util.*
-import kotlin.Int.Companion.MIN_VALUE
 import kotlin.collections.ArrayList
 import kotlin.math.absoluteValue
 
@@ -34,6 +33,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         private const val WIDGET_TABLE = "widgets"
         private const val WIDGET_ID = "widget_id"
         private const val WIDGET_BOLD = "widget_bold"
+        private const val WIDGET_THEME = "widget_theme"
         private const val WIDGET_LOCATION_ID = "widget_location_id"
 
         private const val WEATHER_DATA_TABLE = "weather_data"
@@ -93,8 +93,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             LOCATION_LATITUDE + " DOUBLE, " + LOCATION_LONGITUDE + " DOUBLE, " + LOCATION_NAME_CODE + " TEXT, " +
             LOCATION_TIME_ZONE + " TEXT);")
         db.execSQL("CREATE TABLE IF NOT EXISTS " + WIDGET_TABLE + " (" + WIDGET_ID + " INTEGER PRIMARY KEY, " +
-            WIDGET_BOLD + " INTEGER, " + WIDGET_LOCATION_ID + " INTEGER, FOREIGN KEY (" + WIDGET_LOCATION_ID + ") REFERENCES " +
-            LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);")
+            WIDGET_BOLD + " INTEGER, " + WIDGET_THEME + " INTEGER, " + WIDGET_LOCATION_ID + " INTEGER, FOREIGN KEY (" +
+            WIDGET_LOCATION_ID + ") REFERENCES " + LOCATION_TABLE + " (" + LOCATION_ID + ") ON DELETE CASCADE);")
         db.execSQL(
             "CREATE TABLE IF NOT EXISTS " + WEATHER_DATA_TABLE + " (" + WEATHER_DATA_ID + " INTEGER PRIMARY KEY, " +
                 WEATHER_DATA_DATE + " INTEGER, " + WEATHER_DATA_DESCRIPTION + " TEXT, " + WEATHER_DATA_ICON + " TEXT, " +
@@ -207,7 +207,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     fun getLocationByWidgetId(widgetId: Int): Int {
         val widget = getWidgetFromDatabase(database, widgetId)
-        return widget?.location?.id ?: MIN_VALUE
+        return widget?.location?.id ?: 0
     }
 
     private fun getLocationIdsForAllWidgetsFromDatabase(db: SQLiteDatabase): List<Int> {
@@ -236,9 +236,10 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 if (cursor.moveToFirst()) {
                     val id = cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_ID))
                     val isBold = cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_BOLD)) != 0
+                    val themeId = cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_THEME))
                     val location =
                         getLocationFromDatabaseById(db, cursor.getInt(cursor.getColumnIndexOrThrow(WIDGET_LOCATION_ID)))
-                    return Widget(id, location, isBold)
+                    return Widget(id, location, isBold, themeId)
                 }
             }
         return null
@@ -268,14 +269,14 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 if (existedWidget.location.id == locationId) {
                     return false
                 }
-                val newWidget = Widget(widgetId, location, existedWidget.isBold)
+                val newWidget = Widget(widgetId, location, existedWidget.isBold, existedWidget.themeId)
                 if (existedWidget.location.id != locationId) {
                     updateWidget(database, newWidget)
                     deleteWeatherForLocationWithoutWidget(database, existedWidget.location.id)
                     database.setTransactionSuccessful()
                 }
             } else {
-                val newWidget = Widget(widgetId, location, false)
+                val newWidget = Widget(widgetId, location, false, App.appContext.applicationInfo.theme)
                 addWidget(database, newWidget)
                 database.setTransactionSuccessful()
             }
@@ -300,6 +301,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         with(ContentValues()) {
             put(WIDGET_LOCATION_ID, widget.location.id)
             put(WIDGET_BOLD, if (widget.isBold) 1 else 0)
+            put(WIDGET_THEME, widget.themeId)
             return this
         }
     }
@@ -309,7 +311,21 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         try {
             val existWidget = getWidgetFromDatabase(database, widgetId)
             if (existWidget != null) {
-                val newWidget = Widget(widgetId, existWidget.location, !existWidget.isBold)
+                val newWidget = Widget(widgetId, existWidget.location, !existWidget.isBold, existWidget.themeId)
+                updateWidget(database, newWidget)
+                database.setTransactionSuccessful()
+            }
+        } finally {
+            database.endTransaction()
+        }
+    }
+
+    fun changeWidgetTheme(widgetId: Int, themeId: Int) {
+        database.beginTransaction()
+        try {
+            val existWidget = getWidgetFromDatabase(database, widgetId)
+            if (existWidget != null) {
+                val newWidget = Widget(widgetId, existWidget.location, existWidget.isBold, themeId)
                 updateWidget(database, newWidget)
                 database.setTransactionSuccessful()
             }
@@ -330,7 +346,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
                 }
             }
         }
-        return Int.MIN_VALUE
+        return 0
     }
 
     //weather methods

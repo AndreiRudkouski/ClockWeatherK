@@ -47,7 +47,7 @@
                 android:layout_marginTop="@dimen/forecast_padding_vertical"
                 android:paddingEnd="@dimen/forecast_padding_horizontal"
                 android:text="@string/default_day"
-                android:textColor="?colorTextLight"
+                android:textColor="?colorTextMain"
                 android:textSize="@dimen/big_text_size"
                 tools:ignore="RtlSymmetry"/>
 
@@ -60,7 +60,7 @@
                 android:layout_toEndOf="@+id/weather_image_forecast"
                 android:layout_marginBottom="@dimen/forecast_padding_vertical"
                 android:paddingEnd="@dimen/forecast_padding_horizontal"
-                android:textColor="?colorTextDark"
+                android:textColor="?colorTextAdd"
                 android:textSize="@dimen/middle_text_size"
                 tools:text="Mostly cloudy"
                 tools:ignore="RtlSymmetry"/>
@@ -74,7 +74,7 @@
                 android:gravity="end"
                 android:layout_marginTop="@dimen/forecast_padding_vertical"
                 android:paddingEnd="@dimen/forecast_padding_horizontal"
-                android:textColor="?colorTextLight"
+                android:textColor="?colorTextMain"
                 android:textSize="@dimen/big_text_size"
                 tools:text="20\u00B0C/-10\u00B0C"
                 tools:ignore="RtlSymmetry"/>

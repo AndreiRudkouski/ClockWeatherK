@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="ViewStyle">
-        <attr name="colorTextLight" format="color"/>
-        <attr name="colorTextDark" format="color"/>
+        <attr name="colorTextMain" format="color"/>
+        <attr name="colorTextAdd" format="color"/>
         <attr name="colorSelected" format="color"/>
     </declare-styleable>
 </resources>

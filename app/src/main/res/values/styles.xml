@@ -2,11 +2,28 @@
 <resources>
     <!-- Base application theme. -->
     <style name="DarkTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorSelected">@color/colorSelected_Dark</item>
-        <item name="colorPrimary">@color/colorDark_Dark</item>
-        <item name="colorPrimaryDark">@color/colorDark_Dark</item>
-        <item name="colorTextLight">@color/colorTextWhite_Dark</item>
-        <item name="colorTextDark">@color/colorTextGray_Dark</item>
-        <item name="android:colorControlHighlight">@color/colorSelected_Dark</item>
+        <item name="colorSelected">@color/colorSelected</item>
+        <item name="android:colorPrimary">@color/colorPrimary_Dark</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimary_Dark</item>
+        <item name="android:textColor">@color/colorSelected</item>
+        <item name="android:textColorPrimary">@color/colorTextMain_Dark</item>
+        <item name="android:textColorSecondary">@color/colorTextMain_Dark</item>
+        <item name="colorTextMain">@color/colorTextMain_Dark</item>
+        <item name="colorTextAdd">@color/colorTextAdd_Dark</item>
+        <item name="android:windowBackground">@color/colorPrimary_Dark</item>
+        <item name="android:colorControlHighlight">@color/colorSelected</item>
+    </style>
+
+    <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorSelected">@color/colorSelected</item>
+        <item name="android:colorPrimary">@color/colorPrimary_Light</item>
+        <item name="android:textColor">@color/colorSelected</item>
+        <item name="android:colorPrimaryDark">@color/colorPrimary_Light</item>
+        <item name="android:textColorPrimary">@color/colorTextMain_Light</item>
+        <item name="android:textColorSecondary">@color/colorTextMain_Dark</item>
+        <item name="colorTextMain">@color/colorTextMain_Light</item>
+        <item name="colorTextAdd">@color/colorTextAdd_Light</item>
+        <item name="android:windowBackground">@color/colorPrimary_Light</item>
+        <item name="android:colorControlHighlight">@color/colorSelected</item>
     </style>
 </resources>

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,9 +17,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
@@ -34,13 +33,10 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class DayForecastActivity : AppCompatActivity() {
-
-    private val dbHelper = DBHelper.INSTANCE
-    private var forecastId: Long = 0
+class DayForecastActivity : BaseActivity() {
 
     companion object {
-        private const val EXTRA_FORECAST_ID = "forecastId"
+        const val EXTRA_FORECAST_ID = "forecastId"
 
         fun start(context: Context, forecastId: Long) {
             val intent = Intent(context, DayForecastActivity::class.java)
@@ -53,7 +49,6 @@ class DayForecastActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(by.rudkouski.widget.R.layout.day_forecast_activity)
-        forecastId = intent?.extras?.getLong(EXTRA_FORECAST_ID) ?: 0
         val handler = Handler(Looper.getMainLooper())
         handler.post(this::updateActivity)
     }
@@ -201,13 +196,13 @@ class DayForecastActivity : AppCompatActivity() {
 
     private fun getLightTextColor(context: Context): Int {
         val typedValue = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorTextLight, typedValue, true)
+        context.theme.resolveAttribute(R.attr.colorTextMain, typedValue, true)
         return typedValue.data
     }
 
     private fun getDarkTextColor(context: Context): Int {
         val typedValue = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorTextDark, typedValue, true)
+        context.theme.resolveAttribute(R.attr.colorTextAdd, typedValue, true)
         return typedValue.data
     }
 
@@ -220,7 +215,6 @@ class DayForecastActivity : AppCompatActivity() {
     }
 
     private fun callPreviousActivity() {
-        val widgetId = dbHelper.getWidgetIdByForecastId(forecastId)
         val intent = ForecastActivity.startIntent(this, widgetId)
         startActivity(intent)
     }

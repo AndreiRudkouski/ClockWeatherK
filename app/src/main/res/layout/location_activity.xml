@@ -5,16 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/colorPrimaryDark"
-    android:textColor="?colorTextLight">
+    android:textColor="?colorTextMain">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_config"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:minHeight="?android:attr/actionBarSize"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/choose_location"/>
 
     <View

@@ -13,10 +13,9 @@
         android:layout_height="match_parent"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="false"
-        android:textColor="?colorTextDark"
+        android:textColor="?colorTextAdd"
         android:padding="@dimen/location_name_padding"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        tool:text="@string/minsk"
-        tool:background="?android:attr/colorPrimaryDark"/>
+        tool:text="@string/minsk"/>
 
 </by.rudkouski.widget.view.location.LocationItemView>

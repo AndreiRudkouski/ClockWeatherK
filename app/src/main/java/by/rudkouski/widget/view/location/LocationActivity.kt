@@ -11,22 +11,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.ListView
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.listener.LocationChangeListener
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
-import kotlin.Int.Companion.MIN_VALUE
+import by.rudkouski.widget.view.BaseActivity
 
-class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationItemClickListener {
-
-    private val dbHelper = INSTANCE
-    private var widgetId: Int = 0
+class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClickListener {
 
     companion object {
         private const val requestPermissionCode = 1234
@@ -44,7 +39,6 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
         val toolbar: Toolbar = findViewById(R.id.toolbar_config)
         setSupportActionBar(toolbar)
         setResult(RESULT_CANCELED)
-        widgetId = getWidgetId()
         val handler = Handler(Looper.getMainLooper())
         handler.post(this::setLocations)
     }
@@ -52,17 +46,6 @@ class LocationActivity : AppCompatActivity(), LocationsViewAdapter.OnLocationIte
     override fun onStop() {
         super.onStop()
         finish()
-    }
-
-    private fun getWidgetId(): Int {
-        return getWidgetIdFromBundle(intent.extras)
-    }
-
-    private fun getWidgetIdFromBundle(bundle: Bundle?): Int {
-        return when (bundle) {
-            null -> MIN_VALUE
-            else -> bundle.getInt(EXTRA_APPWIDGET_ID)
-        }
     }
 
     private fun setLocations() {

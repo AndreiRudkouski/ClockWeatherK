@@ -109,7 +109,7 @@ class WidgetProvider : AppWidgetProvider() {
         if (widget != null) {
             updateClockAndDate(remoteViews, context, widget.location.timeZone, widget.isBold)
             updateLocation(remoteViews, widget.location, widget.isBold)
-            updateWeather(remoteViews, context, widget.location.id)
+            updateWeather(remoteViews, context, widget.location.id, widget.isBold)
             setPendingIntents(remoteViews, context, widgetId)
         }
         return remoteViews
@@ -138,14 +138,16 @@ class WidgetProvider : AppWidgetProvider() {
         remoteViews.setTextViewText(R.id.location_widget, spanLocationText)
     }
 
-    private fun updateWeather(remoteViews: RemoteViews, context: Context, locationId: Int) {
+    private fun updateWeather(remoteViews: RemoteViews, context: Context, locationId: Int, isBold: Boolean) {
         val weather = dbHelper.getWeatherByLocationId(locationId)
         if (isActualWeather(weather)) {
             remoteViews.setViewVisibility(R.id.weather_widget, View.VISIBLE)
             remoteViews.setImageViewResource(R.id.weather_image_widget,
                 WeatherUtils.getWeatherImageResource(context, weather!!))
-            remoteViews.setTextViewText(R.id.degrees_widget, Math.round(weather.temperature).toString())
-            remoteViews.setTextViewText(R.id.degrees_text_widget, context.getString(R.string.temperature_unit))
+            remoteViews.setTextViewText(R.id.degrees_widget,
+                createSpannableString(Math.round(weather.temperature).toString(), isBold))
+            remoteViews.setTextViewText(R.id.degrees_text_widget,
+                createSpannableString(context.getString(R.string.temperature_unit), isBold))
         } else {
             remoteViews.setViewVisibility(R.id.weather_widget, View.INVISIBLE)
         }
