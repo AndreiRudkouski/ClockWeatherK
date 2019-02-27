@@ -80,9 +80,10 @@ class DayForecastActivity : BaseActivity() {
     }
 
     private fun updateTitle(forecast: Forecast) {
-        val toolbar = findViewById<Toolbar>(by.rudkouski.widget.R.id.toolbar_day_forecast)
+        val toolbar = findViewById<Toolbar>(R.id.toolbar_day_forecast)
         val dateFormat = SimpleDateFormat(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault())
         toolbar.title = dateFormat.format(forecast.date.time)
+        setSupportActionBar(toolbar)
     }
 
     private fun setImage(view: View, forecast: Forecast) {

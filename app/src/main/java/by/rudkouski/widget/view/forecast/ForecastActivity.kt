@@ -13,14 +13,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.text.format.DateUtils.DAY_IN_MILLIS
-import android.view.Menu
-import android.view.MenuItem
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.BaseActivity
-import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
 import java.util.*
@@ -107,40 +104,6 @@ class ForecastActivity : BaseActivity() {
         weatherTime.time = time
         val currentTime = Calendar.getInstance()
         return weatherTime.time.time - currentTime.time.time in 0..DAY_IN_MILLIS
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val menuItem = item.itemId
-        when (menuItem) {
-            R.id.change_location_menu -> {
-                val intent = LocationActivity.startIntent(this, widgetId)
-                startActivity(intent)
-                return true
-            }
-            R.id.change_text_menu -> {
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTextBold(widgetId) }
-                WidgetProvider.updateWidget(this)
-                return true
-            }
-            R.id.change_theme_menu -> {
-                val darkThemeId = resources.getIdentifier("DarkTheme", "style", packageName)
-                val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
-                val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTheme(widgetId, themeId) }
-                WidgetProvider.updateWidget(this)
-                finish()
-                startActivity(intent)
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onStop() {
