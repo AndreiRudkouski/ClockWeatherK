@@ -59,5 +59,5 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private fun isWeatherNeedUpdate(weather: Weather?, timeZone: TimeZone) =
         weather == null
-            || Calendar.getInstance(timeZone).time.time.minus(weather.date.time) >= AlarmManager.INTERVAL_HALF_HOUR
+            || Calendar.getInstance(timeZone).time.time.minus(weather.date.time.time) >= AlarmManager.INTERVAL_HALF_HOUR
 }

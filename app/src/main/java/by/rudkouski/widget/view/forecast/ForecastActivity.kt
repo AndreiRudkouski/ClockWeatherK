@@ -99,10 +99,8 @@ class ForecastActivity : BaseActivity() {
         return correctWeathers
     }
 
-    private fun isWeatherTimeCorrect(time: Date): Boolean {
-        val weatherTime = Calendar.getInstance()
-        weatherTime.time = time
-        val currentTime = Calendar.getInstance()
+    private fun isWeatherTimeCorrect(weatherTime: Calendar): Boolean {
+        val currentTime = Calendar.getInstance(weatherTime.timeZone)
         return weatherTime.time.time - currentTime.time.time in 0..DAY_IN_MILLIS
     }
 

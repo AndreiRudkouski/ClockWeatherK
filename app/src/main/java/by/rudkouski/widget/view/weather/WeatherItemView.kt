@@ -79,7 +79,7 @@ class WeatherItemView : LinearLayout {
         val timeFormat = WidgetProvider.chooseSystemTimeFormat(context, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
         val dateWithTimeFormat = convertToEnumerationPattern(DATE_FORMAT_WITHOUT_YEAR, timeFormat)
         val dateFormat = SimpleDateFormat(dateWithTimeFormat, Locale.getDefault())
-        val dateText = if (weather != null) dateFormat.format(weather.date) else NOT_UPDATED
+        val dateText = if (weather != null) dateFormat.format(weather.date.time) else NOT_UPDATED
         updateDateTextView.text = convertToDeterminationPattern(context.getString(R.string.update_date), dateText)
     }
 

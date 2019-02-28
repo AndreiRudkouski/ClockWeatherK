@@ -38,6 +38,7 @@ class HourWeatherItemView : LinearLayout {
         val timeFormat = SimpleDateFormat(
             WidgetProvider.chooseSystemTimeFormat(context, WeatherItemView.FULL_TIME_FORMAT_12,
                 WeatherItemView.TIME_FORMAT_24), Locale.getDefault())
+        timeFormat.timeZone = weather.date.timeZone
         timeTextView.text = timeFormat.format(weather.date.time)
     }
 

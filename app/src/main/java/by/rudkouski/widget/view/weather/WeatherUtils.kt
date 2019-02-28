@@ -10,9 +10,8 @@ import by.rudkouski.widget.entity.DayForecast
 import by.rudkouski.widget.entity.HourWeather
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.WeatherData
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonObject
+import com.google.gson.*
+import java.lang.reflect.Type
 import java.util.*
 
 object WeatherUtils {
@@ -24,11 +23,20 @@ object WeatherUtils {
     private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
     private const val DETERMINATION_PATTERN = "%1\$s: %2\$s"
 
-    private val dateJsonDeserializer: JsonDeserializer<Date> =
-        JsonDeserializer { json, _, _ ->
-            Date(json.asJsonPrimitive.asLong * 1000)
+    private val dateJsonDeserializer: JsonDeserializer<Calendar> = object : JsonDeserializer<Calendar> {
+        override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): Calendar {
+            val date = Calendar.getInstance()
+            date.time = Date(json.asJsonPrimitive.asLong * 1000)
+            return date
         }
-    private val gson = GsonBuilder().registerTypeAdapter(Date::class.java, dateJsonDeserializer).create()
+    }
+
+    private val gson = GsonBuilder().registerTypeAdapter(Calendar::class.java, dateJsonDeserializer).create()
+
+    fun getCurrentTimeZoneNameFromResponseBody(responseBody: String): String {
+        val jsonObject = gson.fromJson(responseBody, JsonObject::class.java)
+        return jsonObject.get("timezone").asString
+    }
 
     fun getWeatherFromResponseBody(responseBody: String): Weather {
         val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(CURRENT_WEATHER)

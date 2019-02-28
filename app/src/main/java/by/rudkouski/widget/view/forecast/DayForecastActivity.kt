@@ -115,10 +115,11 @@ class DayForecastActivity : BaseActivity() {
         setDataToView(view, R.id.sunset_day_forecast, description, value)
     }
 
-    private fun getFormatTime(date: Date): String {
+    private fun getFormatTime(date: Calendar): String {
         val timeFormat = WidgetProvider.chooseSystemTimeFormat(this, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
         val dateFormat = SimpleDateFormat(timeFormat, Locale.getDefault())
-        return dateFormat.format(date)
+        dateFormat.timeZone = date.timeZone
+        return dateFormat.format(date.time)
     }
 
     private fun setPrecipitationText(view: View, forecast: Forecast) {

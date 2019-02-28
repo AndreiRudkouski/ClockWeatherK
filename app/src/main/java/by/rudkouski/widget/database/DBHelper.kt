@@ -173,6 +173,13 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             arrayOf(Location.CURRENT_LOCATION_ID.toString()))
     }
 
+    fun updateCurrentLocationTimeZoneName(timeZoneName: String) {
+        val values = ContentValues()
+        values.put(LOCATION_TIME_ZONE, timeZoneName)
+        database.update(LOCATION_TABLE, values, LOCATION_ID + IS_EQUAL_PARAMETER,
+            arrayOf(Location.CURRENT_LOCATION_ID.toString()))
+    }
+
     fun isCurrentLocationNotUpdated() =
         getLocationById(Location.CURRENT_LOCATION_ID).name == appContext.getString(R.string.default_location)
 
@@ -188,17 +195,25 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createLocation(cursor: Cursor): Location {
         val id = cursor.getInt(cursor.getColumnIndexOrThrow(LOCATION_ID))
-        val nameCode = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_NAME_CODE))
+        val tempNameCode = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_NAME_CODE))
+        val name =
+            when {
+                tempNameCode == CURRENT_LOCATION -> getNameByCode("default_location")
+                id != CURRENT_LOCATION_ID -> getNameByCode(tempNameCode)
+                else -> tempNameCode
+            }
         val latitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LATITUDE))
         val longitude = cursor.getDouble(cursor.getColumnIndexOrThrow(LOCATION_LONGITUDE))
-        return if (id != CURRENT_LOCATION_ID) {
-            val timeZone = TimeZone.getTimeZone(cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE)))
-            Location(id, nameCode, latitude, longitude, timeZone)
-        } else {
-            Location.createCurrentLocation(
-                if (nameCode == CURRENT_LOCATION) appContext.getString(R.string.default_location) else nameCode,
-                latitude, longitude)
-        }
+        val timeZoneName = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE))
+        val timeZone =
+            if (timeZoneName == null || timeZoneName.isEmpty()) TimeZone.getDefault() else TimeZone.getTimeZone(
+                timeZoneName)
+        return Location(id, name, latitude, longitude, timeZone)
+    }
+
+    private fun getNameByCode(nameCode: String): String {
+        return appContext.getString(
+            appContext.resources.getIdentifier(nameCode, "string", appContext.packageName))
     }
 
     fun getLocationIdsContainedInAllWidgets(): List<Int> {
@@ -373,7 +388,9 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun getWeathersFromDatabase(db: SQLiteDatabase, locationId: Int, type: WeatherType): List<Weather> {
         val query = "SELECT * FROM " + WEATHER_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
-            WEATHER_ID + " = " + WEATHER_DATA_ID + " WHERE " + WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER + AND + WEATHER_TYPE + IS_EQUAL_PARAMETER +
+            WEATHER_ID + " = " + WEATHER_DATA_ID + " INNER JOIN " + LOCATION_TABLE + " ON " +
+            LOCATION_ID + " = " + WEATHER_LOCATION_ID +
+            " WHERE " + WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER + AND + WEATHER_TYPE + IS_EQUAL_PARAMETER +
             "ORDER BY " + WEATHER_DATA_DATE
         val weathers = ArrayList<Weather>()
         db.rawQuery(query, arrayOf(locationId.toString(), type.ordinal.toString())).use { cursor ->
@@ -389,7 +406,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     }
 
     private fun createWeather(cursor: Cursor): Weather {
-        val date = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATA_DATE)))
+        val date = getCalendar(cursor)
+        date.time = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATA_DATE)))
         val description = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_DESCRIPTION))
         val icon = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_ICON))
         val precipitationIntensity =
@@ -440,7 +458,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createWeatherDataContentValues(weatherData: WeatherData): ContentValues {
         with(ContentValues()) {
-            put(WEATHER_DATA_DATE, weatherData.date.time)
+            put(WEATHER_DATA_DATE, weatherData.date.time.time)
             put(WEATHER_DATA_DESCRIPTION, weatherData.description)
             put(WEATHER_DATA_ICON, weatherData.iconName)
             put(WEATHER_DATA_PRECIPITATION_INTENSITY, weatherData.precipitationIntensity)
@@ -535,7 +553,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     }
 
     private fun createForecast(cursor: Cursor): Forecast {
-        val date = Date(cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATA_DATE)))
+        val date = getCalendar(cursor)
+        date.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(WEATHER_DATA_DATE))
         val description = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_DESCRIPTION))
         val icon = cursor.getString(cursor.getColumnIndexOrThrow(WEATHER_DATA_ICON))
         val precipitationIntensity =
@@ -554,22 +573,30 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         val ozone = cursor.getDouble(cursor.getColumnIndexOrThrow(WEATHER_DATA_OZONE))
 
         val id = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_ID))
-        val sunrise = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_SUNRISE_TIME)))
-        val sunset = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_SUNSET_TIME)))
+        val sunrise = getCalendar(cursor)
+        sunrise.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_SUNRISE_TIME))
+        val sunset = getCalendar(cursor)
+        sunset.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_SUNSET_TIME))
         val moonPhase = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_MOON_PHASE))
         val precipIntensityMax = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_PRECIPITATION_INTENSITY_MAX))
-        val precipIntensityMaxTime =
-            Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME)))
+        val precipIntensityMaxTime = getCalendar(cursor)
+        precipIntensityMaxTime.timeInMillis =
+            cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME))
         val precipAccumulation = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_PRECIPITATION_ACCUMULATION))
         val precipType = cursor.getString(cursor.getColumnIndexOrThrow(FORECAST_PRECIPITATION_TYPE))
         val tempHigh = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_TEMP_HIGH))
-        val tempHighTime = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_TEMP_HIGH_TIME)))
+        val tempHighTime = getCalendar(cursor)
+        tempHighTime.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_TEMP_HIGH_TIME))
         val tempLow = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_TEMP_LOW))
-        val tempLowTime = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_TEMP_LOW_TIME)))
+        val tempLowTime = getCalendar(cursor)
+        tempLowTime.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_TEMP_LOW_TIME))
         val apparentTempHigh = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_HIGH))
-        val apparentTempHighTime = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_HIGH_TIME)))
+        val apparentTempHighTime = getCalendar(cursor)
+        apparentTempHighTime.timeInMillis =
+            cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_HIGH_TIME))
         val apparentTempLow = cursor.getDouble(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_LOW))
-        val apparentTempLowTime = Date(cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_LOW_TIME)))
+        val apparentTempLowTime = getCalendar(cursor)
+        apparentTempLowTime.timeInMillis = cursor.getLong(cursor.getColumnIndexOrThrow(FORECAST_APPARENT_TEMP_LOW_TIME))
 
         return Forecast(id, date, description, icon, precipitationIntensity, precipitationProbability, dewPoint,
             humidity, pressure, windSpeed, windGust, windDirection, cloudCover, visibility, ozone, uvIndex, sunrise,
@@ -578,13 +605,18 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             apparentTempLowTime)
     }
 
+    private fun getCalendar(cursor: Cursor) = Calendar.getInstance(
+        TimeZone.getTimeZone(cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_TIME_ZONE))))
+
     fun getDayForecastsByLocationId(locationId: Int): List<Forecast>? {
         return getForecastsFromDatabase(database, locationId)
     }
 
     private fun getForecastsFromDatabase(db: SQLiteDatabase, locationId: Int): List<Forecast>? {
         val query = "SELECT * FROM " + FORECAST_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
-            FORECAST_ID + " = " + WEATHER_DATA_ID + " WHERE " + FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER + " ORDER BY " + WEATHER_DATA_DATE
+            FORECAST_ID + " = " + WEATHER_DATA_ID + " INNER JOIN " + LOCATION_TABLE + " ON " +
+            LOCATION_ID + " = " + FORECAST_LOCATION_ID +
+            " WHERE " + FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER + " ORDER BY " + WEATHER_DATA_DATE
         val forecasts = ArrayList<Forecast>()
         db.rawQuery(query, arrayOf(locationId.toString())).use { cursor ->
             if (cursor.moveToFirst()) {
@@ -635,7 +667,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     fun getDayForecastById(forecastId: Long): Forecast? {
         val query = "SELECT * FROM " + FORECAST_TABLE + " INNER JOIN " + WEATHER_DATA_TABLE + " ON " +
-            FORECAST_ID + " = " + WEATHER_DATA_ID + " WHERE " + FORECAST_ID + IS_EQUAL_PARAMETER
+            FORECAST_ID + " = " + WEATHER_DATA_ID + " INNER JOIN " + LOCATION_TABLE + " ON " +
+            LOCATION_ID + " = " + FORECAST_LOCATION_ID + " WHERE " + FORECAST_ID + IS_EQUAL_PARAMETER
         database.rawQuery(query, arrayOf(forecastId.toString())).use { cursor ->
             if (cursor.moveToFirst()) {
                 for (i in 0 until cursor.count) {
@@ -650,21 +683,21 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
 
     private fun createForecastContentValues(forecast: Forecast): ContentValues {
         with(ContentValues()) {
-            put(FORECAST_SUNRISE_TIME, forecast.sunriseTime.time)
-            put(FORECAST_SUNSET_TIME, forecast.sunsetTime.time)
+            put(FORECAST_SUNRISE_TIME, forecast.sunriseTime.time.time)
+            put(FORECAST_SUNSET_TIME, forecast.sunsetTime.time.time)
             put(FORECAST_MOON_PHASE, forecast.moonPhase)
             put(FORECAST_PRECIPITATION_INTENSITY_MAX, forecast.precipitationIntensityMax)
-            put(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME, forecast.precipitationIntensityMaxTime?.time)
+            put(FORECAST_PRECIPITATION_INTENSITY_MAX_TIME, forecast.precipitationIntensityMaxTime?.time?.time)
             put(FORECAST_PRECIPITATION_ACCUMULATION, forecast.precipitationAccumulation)
             put(FORECAST_PRECIPITATION_TYPE, forecast.precipitationType)
             put(FORECAST_TEMP_HIGH, forecast.temperatureHigh)
-            put(FORECAST_TEMP_HIGH_TIME, forecast.temperatureHighTime.time)
+            put(FORECAST_TEMP_HIGH_TIME, forecast.temperatureHighTime.time.time)
             put(FORECAST_TEMP_LOW, forecast.temperatureLow)
-            put(FORECAST_TEMP_LOW_TIME, forecast.temperatureLowTime.time)
+            put(FORECAST_TEMP_LOW_TIME, forecast.temperatureLowTime.time.time)
             put(FORECAST_APPARENT_TEMP_HIGH, forecast.apparentTemperatureHigh)
-            put(FORECAST_APPARENT_TEMP_HIGH_TIME, forecast.apparentTemperatureHighTime.time)
+            put(FORECAST_APPARENT_TEMP_HIGH_TIME, forecast.apparentTemperatureHighTime.time.time)
             put(FORECAST_APPARENT_TEMP_LOW, forecast.apparentTemperatureLow)
-            put(FORECAST_APPARENT_TEMP_LOW_TIME, forecast.apparentTemperatureLowTime.time)
+            put(FORECAST_APPARENT_TEMP_LOW_TIME, forecast.apparentTemperatureLowTime.time.time)
             return this
         }
     }

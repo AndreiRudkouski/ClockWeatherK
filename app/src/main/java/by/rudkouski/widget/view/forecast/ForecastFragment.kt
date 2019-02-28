@@ -72,10 +72,8 @@ private constructor() : Fragment() {
         return correctForecasts
     }
 
-    private fun isWeatherDateCorrect(date: Date): Boolean {
-        val forecastDate = Calendar.getInstance()
-        forecastDate.time = date
-        val currentDate = Calendar.getInstance()
+    private fun isWeatherDateCorrect(forecastDate: Calendar): Boolean {
+        val currentDate = Calendar.getInstance(forecastDate.timeZone)
         return (forecastDate.get(YEAR) == currentDate.get(YEAR)
             && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR)) || forecastDate.get(
             YEAR) > currentDate.get(YEAR)

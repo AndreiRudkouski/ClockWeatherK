@@ -9,10 +9,10 @@ import java.util.*
 class Forecast : WeatherData {
 
     @SerializedName("sunriseTime")
-    val sunriseTime: Date
+    val sunriseTime: Calendar
 
     @SerializedName("sunsetTime")
-    val sunsetTime: Date
+    val sunsetTime: Calendar
 
     @SerializedName("moonPhase")
     val moonPhase: Double
@@ -21,7 +21,7 @@ class Forecast : WeatherData {
     val precipitationIntensityMax: Double?
 
     @SerializedName("precipIntensityMaxTime")
-    val precipitationIntensityMaxTime: Date?
+    val precipitationIntensityMaxTime: Calendar?
 
     @SerializedName("precipAccumulation")
     val precipitationAccumulation: Double?
@@ -33,35 +33,35 @@ class Forecast : WeatherData {
     val temperatureHigh: Double
 
     @SerializedName("temperatureHighTime")
-    val temperatureHighTime: Date
+    val temperatureHighTime: Calendar
 
     @SerializedName("temperatureLow")
     val temperatureLow: Double
 
     @SerializedName("temperatureLowTime")
-    val temperatureLowTime: Date
+    val temperatureLowTime: Calendar
 
     @SerializedName("apparentTemperatureHigh")
     val apparentTemperatureHigh: Double
 
     @SerializedName("apparentTemperatureHighTime")
-    val apparentTemperatureHighTime: Date
+    val apparentTemperatureHighTime: Calendar
 
     @SerializedName("apparentTemperatureLow")
     val apparentTemperatureLow: Double
 
     @SerializedName("apparentTemperatureLowTime")
-    val apparentTemperatureLowTime: Date
+    val apparentTemperatureLowTime: Calendar
 
-    constructor(id: Long, date: Date, description: String, iconName: String, precipitationIntensity: Double,
+    constructor(id: Long, date: Calendar, description: String, iconName: String, precipitationIntensity: Double,
                 precipitationProbability: Double, dewPoint: Double, humidity: Double, pressure: Double,
                 windSpeed: Double, windGust: Double, windDirection: Int, cloudCover: Double, visibility: Double,
-                ozone: Double, uvIndex: Int, sunriseTime: Date, sunsetTime: Date, moonPhase: Double,
-                precipitationIntensityMax: Double?, precipitationIntensityMaxTime: Date?,
+                ozone: Double, uvIndex: Int, sunriseTime: Calendar, sunsetTime: Calendar, moonPhase: Double,
+                precipitationIntensityMax: Double?, precipitationIntensityMaxTime: Calendar?,
                 precipitationAccumulation: Double?, precipitationType: String?, temperatureHigh: Double,
-                temperatureHighTime: Date, temperatureLow: Double, temperatureLowTime: Date,
-                apparentTemperatureHigh: Double, apparentTemperatureHighTime: Date, apparentTemperatureLow: Double,
-                apparentTemperatureLowTime: Date) : super(id, date, description, iconName, precipitationIntensity,
+                temperatureHighTime: Calendar, temperatureLow: Double, temperatureLowTime: Calendar,
+                apparentTemperatureHigh: Double, apparentTemperatureHighTime: Calendar, apparentTemperatureLow: Double,
+                apparentTemperatureLowTime: Calendar) : super(id, date, description, iconName, precipitationIntensity,
         precipitationProbability, dewPoint, humidity, pressure, windSpeed, windGust, windDirection, cloudCover,
         visibility, ozone, uvIndex) {
         this.sunriseTime = sunriseTime

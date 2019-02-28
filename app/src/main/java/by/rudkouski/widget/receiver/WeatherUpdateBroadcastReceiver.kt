@@ -8,6 +8,7 @@ import android.content.Intent
 import android.util.Log
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.weather.WeatherUtils
@@ -58,6 +59,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                 try {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
+                        if (location.id == CURRENT_LOCATION_ID) {
+                            val currentTimeZoneName = WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
+                            dbHelper.updateCurrentLocationTimeZoneName(currentTimeZoneName)
+                        }
                         val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
                         val hourWeather = WeatherUtils.getHourWeatherFromResponseBody(responseBody)
                         val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)

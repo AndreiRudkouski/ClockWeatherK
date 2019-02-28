@@ -14,7 +14,7 @@ class Weather : WeatherData {
     @SerializedName("apparentTemperature")
     val apparentTemperature: Double
 
-    constructor(id: Long, date: Date, description: String, iconName: String, precipitationIntensity: Double,
+    constructor(id: Long, date: Calendar, description: String, iconName: String, precipitationIntensity: Double,
                 precipitationProbability: Double, dewPoint: Double, humidity: Double, pressure: Double,
                 windSpeed: Double, windGust: Double, windDirection: Int, cloudCover: Double, visibility: Double,
                 ozone: Double, uvIndex: Int, temperature: Double, apparentTemperature: Double) :

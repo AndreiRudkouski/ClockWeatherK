@@ -7,7 +7,7 @@ import java.util.*
  * Contains the common fields for weather conditions.
  */
 abstract class WeatherData(val id: Long,
-                           @SerializedName("time") val date: Date,
+                           @SerializedName("time") val date: Calendar,
                            @SerializedName("summary") val description: String,
                            @SerializedName("icon") val iconName: String,
                            @SerializedName("precipIntensity") val precipitationIntensity: Double,

@@ -65,7 +65,7 @@ class WidgetProvider : AppWidgetProvider() {
         fun isActualWeather(weather: Weather?): Boolean {
             if (weather != null) {
                 val actualCalendar = Calendar.getInstance()
-                actualCalendar.time = weather.date
+                actualCalendar.time = weather.date.time
                 actualCalendar.add(HOUR, 4)
                 return Calendar.getInstance().before(actualCalendar)
             }
