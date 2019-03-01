@@ -6,7 +6,11 @@ import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.Snackbar
 import android.support.design.widget.Snackbar.LENGTH_SHORT
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
@@ -18,7 +22,7 @@ import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".
  */
-class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayout.Behavior(context, attrs) {
+class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBarLayout.Behavior(context, attrs) {
 
     private var isFirstTouch = true
     private var startY: Float = 0.toFloat()
@@ -75,10 +79,12 @@ class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayo
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
-            WeatherUpdateBroadcastReceiver.updateWeather(App.appContext)
-            if (NetworkChangeChecker.isOnline()) {
-                Snackbar.make(target, App.appContext.getString(R.string.update), LENGTH_SHORT).show()
-            }
+            WeatherUpdateBroadcastReceiver.updateWeather(context)
+            val message =
+                SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update) else
+                    App.appContext.getString(R.string.no_connection))
+            message.setSpan(ForegroundColorSpan(getLightTextColor()), 0, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            Snackbar.make(target, message, LENGTH_SHORT).show()
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)
@@ -88,6 +94,12 @@ class ForecastUpdateBehavior(context: Context, attrs: AttributeSet) : AppBarLayo
         }
         animation.start()
         isFirstTouch = true
+    }
+
+    private fun getLightTextColor(): Int {
+        val typedValue = TypedValue()
+        context.theme.resolveAttribute(R.attr.colorTextMain, typedValue, true)
+        return typedValue.data
     }
 
     private fun changeSettingAfterUpdate(child: AppBarLayout, target: View, valueY: Float) {
