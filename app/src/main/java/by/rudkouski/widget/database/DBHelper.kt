@@ -9,6 +9,7 @@ import by.rudkouski.widget.app.App
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.*
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import org.jetbrains.annotations.NotNull
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.absoluteValue
@@ -164,14 +165,13 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         return getLocationFromDatabaseById(database, locationId)
     }
 
-    fun updateCurrentLocation(locationName: String, latitude: Double, longitude: Double) {
+    fun updateCurrentLocation(@NotNull locationName: String, latitude: Double, longitude: Double) {
         val values = ContentValues()
         values.put(LOCATION_NAME_CODE, locationName)
         values.put(LOCATION_LATITUDE, latitude)
         values.put(LOCATION_LONGITUDE, longitude)
         database.update(LOCATION_TABLE, values, LOCATION_ID + IS_EQUAL_PARAMETER,
             arrayOf(Location.CURRENT_LOCATION_ID.toString()))
-        deleteWeatherForLocation(database, Location.CURRENT_LOCATION_ID)
     }
 
     fun updateCurrentLocationTimeZoneName(timeZoneName: String) {
@@ -494,10 +494,10 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-    private fun deleteWeatherForLocation(db: SQLiteDatabase, locationId: Int) {
-        db.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
-        db.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
-        db.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+    fun deleteWeatherForLocation(locationId: Int) {
+        database.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+        database.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+        database.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
     }
 
 

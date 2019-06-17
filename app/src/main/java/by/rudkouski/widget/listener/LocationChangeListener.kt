@@ -15,6 +15,7 @@ import android.support.v4.app.ActivityCompat
 import android.util.Log
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
+import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 import java.io.IOException
@@ -95,9 +96,12 @@ object LocationChangeListener : LocationListener {
                     address.subAdminArea != null -> address.subAdminArea
                     else -> address.adminArea
                 }
-            val needUpdate = dbHelper.isCurrentLocationNotUpdated()
+            val needUpdate = locationName != dbHelper.getLocationById(Location.CURRENT_LOCATION_ID).name
             dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
-            sendIntentToWidgetUpdate(needUpdate)
+            if (needUpdate) {
+                dbHelper.deleteWeatherForLocation(Location.CURRENT_LOCATION_ID)
+                sendIntentToWidgetUpdate()
+            }
         }
     }
 
@@ -116,11 +120,9 @@ object LocationChangeListener : LocationListener {
         return null
     }
 
-    private fun sendIntentToWidgetUpdate(needUpdate: Boolean) {
-        if (needUpdate) {
-            WidgetProvider.updateWidget(appContext)
-            WeatherUpdateBroadcastReceiver.updateWeather(appContext)
-        }
+    private fun sendIntentToWidgetUpdate() {
+        WidgetProvider.updateWidget(appContext)
+        WeatherUpdateBroadcastReceiver.updateWeather(appContext)
     }
 
     fun updateLocation() {
