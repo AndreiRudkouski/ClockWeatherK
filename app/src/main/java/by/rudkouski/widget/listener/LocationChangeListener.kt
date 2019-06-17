@@ -14,7 +14,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.database.DBHelper
+import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 import java.io.IOException
@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 @SuppressLint("MissingPermission")
 object LocationChangeListener : LocationListener {
 
-    private val dbHelper = DBHelper.INSTANCE
+    private val dbHelper = INSTANCE
     private val isRegistered = AtomicBoolean(false)
     private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
@@ -51,7 +51,7 @@ object LocationChangeListener : LocationListener {
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
             if (dbHelper.isCurrentLocationNotUpdated()) {
-                if (locationManager.isLocationEnabled) {
+                if (isLocationEnabled()) {
                     setLocation(locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER))
                 } else {
                     setRequestLocationUpdates(0)
@@ -60,6 +60,12 @@ object LocationChangeListener : LocationListener {
             }
             setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
         }
+    }
+
+    fun isLocationEnabled(): Boolean {
+        val gpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val networkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        return gpsEnabled || networkEnabled
     }
 
 

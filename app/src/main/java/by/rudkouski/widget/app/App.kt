@@ -2,6 +2,7 @@ package by.rudkouski.widget.app
 
 import android.app.Application
 import android.content.Context
+import by.rudkouski.widget.receiver.WidgetUpdateBroadcastReceiver
 import com.rohitss.uceh.UCEHandler
 import java.util.*
 
@@ -18,6 +19,12 @@ class App : Application() {
         appContext = this
         apiKey = getProperty("apiKey", this)
         UCEHandler.Builder(applicationContext).build()
+        WidgetUpdateBroadcastReceiver.registerReceiver()
+    }
+
+    override fun onTerminate() {
+        super.onTerminate()
+        WidgetUpdateBroadcastReceiver.unregisterReceiver()
     }
 
     private fun getProperty(key: String, context: Context): String {
@@ -26,6 +33,5 @@ class App : Application() {
         val inputStream = assetManager.open("config.properties")
         properties.load(inputStream)
         return properties.getProperty(key)
-
     }
 }

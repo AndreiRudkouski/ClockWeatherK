@@ -12,7 +12,6 @@ import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.listener.LocationChangeListener
 import by.rudkouski.widget.provider.WidgetProvider
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 
 object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
@@ -21,21 +20,14 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
             .also { it.addAction(ACTION_TIME_CHANGED) }.also { it.addAction(ACTION_DATE_CHANGED) }
             .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
             .also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
-    private val isRegistered = AtomicBoolean(false)
     private val dbHelper = INSTANCE
 
     fun registerReceiver() {
-        if (!isRegistered.get()) {
-            appContext.registerReceiver(this, intentFilter)
-            isRegistered.set(true)
-        }
+        appContext.registerReceiver(this, intentFilter)
     }
 
     fun unregisterReceiver() {
-        if (isRegistered.get()) {
-            appContext.applicationContext.unregisterReceiver(this)
-            isRegistered.set(false)
-        }
+        appContext.applicationContext.unregisterReceiver(this)
     }
 
     override fun onReceive(context: Context, intent: Intent) {

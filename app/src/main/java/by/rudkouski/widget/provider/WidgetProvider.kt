@@ -185,7 +185,6 @@ class WidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         UpdateWeatherScheduler.startUpdateWeatherScheduler()
-        WidgetUpdateBroadcastReceiver.registerReceiver()
         LocationChangeListener.startLocationUpdate()
         updateWidget(context)
         WeatherUpdateBroadcastReceiver.updateWeather(context)
