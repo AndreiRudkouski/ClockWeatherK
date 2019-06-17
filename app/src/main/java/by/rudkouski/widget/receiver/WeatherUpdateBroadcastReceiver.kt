@@ -21,7 +21,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private val executorService = Executors.newFixedThreadPool(1)
     private val dbHelper = INSTANCE
-    private val networkChangeBroadcastReceiver = NetworkChangeChecker
 
     companion object {
         private const val WEATHER_UPDATE_REQUEST_CODE = 5678
@@ -43,10 +42,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (WEATHER_UPDATE == intent.action) {
-            if (networkChangeBroadcastReceiver.isOnline()) {
+            if (NetworkChangeChecker.isOnline()) {
                 updateWeather(context)
             } else {
-                networkChangeBroadcastReceiver.registerReceiver()
+                NetworkChangeChecker.registerReceiver()
             }
         }
     }

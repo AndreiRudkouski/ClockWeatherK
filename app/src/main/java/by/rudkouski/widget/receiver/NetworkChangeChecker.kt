@@ -7,26 +7,22 @@ import android.net.NetworkRequest
 import by.rudkouski.widget.app.App
 import java.util.concurrent.atomic.AtomicBoolean
 
-
 object NetworkChangeChecker {
 
-    private val isOnline = AtomicBoolean(false)
     private val isRegistered = AtomicBoolean(false)
+    private val connectivityManager = App.appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            isOnline.set(true)
             WeatherUpdateBroadcastReceiver.updateWeather(App.appContext)
         }
 
         override fun onLost(network: Network) {
-            isOnline.set(false)
             unregisterReceiver()
         }
     }
 
     fun registerReceiver() {
         if (!isRegistered.get()) {
-            val connectivityManager = App.appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             val builder = NetworkRequest.Builder()
             connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
             isRegistered.set(true)
@@ -41,5 +37,10 @@ object NetworkChangeChecker {
         }
     }
 
-    fun isOnline() = isOnline.get()
+    private fun isNetworkAvailable(): Boolean {
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+    fun isOnline() = isNetworkAvailable()
 }

@@ -4,18 +4,14 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.support.design.widget.AppBarLayout
 import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.Snackbar
-import android.support.design.widget.Snackbar.LENGTH_SHORT
-import android.text.Spannable
 import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App
+import by.rudkouski.widget.message.Message
 import by.rudkouski.widget.receiver.NetworkChangeChecker
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 
@@ -80,11 +76,9 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
             WeatherUpdateBroadcastReceiver.updateWeather(context)
-            val message =
-                SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update) else
-                    App.appContext.getString(R.string.no_connection))
-            message.setSpan(ForegroundColorSpan(getLightTextColor()), 0, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            Snackbar.make(target, message, LENGTH_SHORT).show()
+            val message = SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update)
+            else App.appContext.getString(R.string.no_connection))
+            Message.getShortMessage(message, target, context)
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)
@@ -94,12 +88,6 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
         }
         animation.start()
         isFirstTouch = true
-    }
-
-    private fun getLightTextColor(): Int {
-        val typedValue = TypedValue()
-        context.theme.resolveAttribute(R.attr.colorTextMain, typedValue, true)
-        return typedValue.data
     }
 
     private fun changeSettingAfterUpdate(child: AppBarLayout, target: View, valueY: Float) {

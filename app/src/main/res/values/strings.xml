@@ -11,7 +11,8 @@
 
     <string name="update_weather">RELEASE FOR UPDATE</string>
     <string name="update">updating…</string>
-    <string name="no_connection">no connection</string>
+    <string name="no_connection">no network connection</string>
+    <string name="no_location">no connection with geodata</string>
 
     <string name="current_location">Current location</string>
     <string name="amsterdam">Amsterdam</string>

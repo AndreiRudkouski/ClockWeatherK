@@ -11,7 +11,8 @@
 
     <string name="update_weather">ОТПУСТИТЬ ДЛЯ ОБНОВЛЕНИЯ</string>
     <string name="update">обновление…</string>
-    <string name="no_connection">нет соединения</string>
+    <string name="no_connection">нет сетевого соединения</string>
+    <string name="no_location">нет соединения с геоданными</string>
 
     <string name="current_location">Текущее местоположение</string>
     <string name="amsterdam">Амстердам</string>
