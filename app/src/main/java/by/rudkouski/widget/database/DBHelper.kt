@@ -171,6 +171,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         values.put(LOCATION_LONGITUDE, longitude)
         database.update(LOCATION_TABLE, values, LOCATION_ID + IS_EQUAL_PARAMETER,
             arrayOf(Location.CURRENT_LOCATION_ID.toString()))
+        deleteWeatherForLocation(database, Location.CURRENT_LOCATION_ID)
     }
 
     fun updateCurrentLocationTimeZoneName(timeZoneName: String) {
@@ -492,6 +493,13 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             db.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
         }
     }
+
+    private fun deleteWeatherForLocation(db: SQLiteDatabase, locationId: Int) {
+        db.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+        db.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+        db.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+    }
+
 
     //hour weathers methods
 
