@@ -54,12 +54,20 @@ object WeatherUtils {
     }
 
     fun getWeatherImageResource(context: Context, weather: WeatherData): Int {
-        var cloudy = ""
+        var postFix = ""
+        var preFix = ""
         if (weather.iconName.startsWith("partly-cloudy")) {
-            if (weather.cloudCover >= 0.6) cloudy = "_mostly"
-            if (weather.cloudCover < 0.4) cloudy = "_less"
+            if (weather.cloudCover >= 0.6) postFix = "_mostly"
+            if (weather.cloudCover < 0.4) postFix = "_less"
         }
-        return context.resources.getIdentifier(weather.iconName.replace("-", "_") + cloudy, "mipmap",
+        if (weather.iconName.startsWith("rain")) {
+            if (weather.cloudCover < 0.6) {
+                preFix = if (weather.cloudCover < 0.4) "less_" else "mostly_"
+            } else {
+                postFix = if (weather.precipitationProbability >= 0.5) "_mostly" else "_less"
+            }
+        }
+        return context.resources.getIdentifier(preFix + weather.iconName.replace("-", "_") + postFix, "mipmap",
             context.packageName)
     }
 
