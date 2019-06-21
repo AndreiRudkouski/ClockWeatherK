@@ -9,6 +9,7 @@ import by.rudkouski.widget.app.App
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.*
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
 import org.jetbrains.annotations.NotNull
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,7 +23,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     companion object {
         private const val DATABASE_VERSION: Int = 2
         private const val DATABASE_NAME: String = "clock_weather"
-        val INSTANCE = DBHelper(App.appContext, DATABASE_NAME, Factory(), DATABASE_VERSION)
+        val INSTANCE = DBHelper(appContext, DATABASE_NAME, Factory(), DATABASE_VERSION)
 
         private const val LOCATION_TABLE = "locations"
         private const val LOCATION_ID = "location_id"
@@ -182,7 +183,17 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     }
 
     fun isCurrentLocationNotUpdated() =
-        getLocationById(Location.CURRENT_LOCATION_ID).name == appContext.getString(R.string.default_location)
+        getLocationById(CURRENT_LOCATION_ID).name == appContext.getString(R.string.default_location)
+
+    fun resetCurrentLocation() {
+        deleteWeatherForLocation(CURRENT_LOCATION_ID)
+        val values = ContentValues()
+        values.put(LOCATION_NAME_CODE, CURRENT_LOCATION)
+        values.put(LOCATION_LATITUDE, 360)
+        values.put(LOCATION_LONGITUDE, 360)
+        database.update(LOCATION_TABLE, values, LOCATION_ID + IS_EQUAL_PARAMETER,
+            arrayOf(CURRENT_LOCATION_ID.toString()))
+    }
 
     private fun getLocationFromDatabaseById(db: SQLiteDatabase, locationId: Int): Location {
         db.query(LOCATION_TABLE, null, LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()), null, null,
@@ -199,7 +210,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         val tempNameCode = cursor.getString(cursor.getColumnIndexOrThrow(LOCATION_NAME_CODE))
         val name =
             when {
-                tempNameCode == CURRENT_LOCATION -> getNameByCode("default_location")
+                tempNameCode == CURRENT_LOCATION || (id == CURRENT_LOCATION_ID && isPermissionsDenied()) ->
+                    getNameByCode("default_location")
                 id != CURRENT_LOCATION_ID -> getNameByCode(tempNameCode)
                 else -> tempNameCode
             }
@@ -383,6 +395,10 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     }
 
     fun getWeatherByLocationId(locationId: Int): Weather? {
+        if (CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
+            resetCurrentLocation()
+            return null
+        }
         val weathers = getWeathersFromDatabase(database, locationId, WeatherType.CURRENT)
         return if (weathers.isNullOrEmpty()) null else weathers[0]
     }
@@ -495,7 +511,8 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
     }
 
     fun deleteWeatherForLocation(locationId: Int) {
-        database.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
+        database.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER,
+            arrayOf(locationId.toString()))
         database.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
         database.delete(FORECAST_TABLE, FORECAST_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))
     }

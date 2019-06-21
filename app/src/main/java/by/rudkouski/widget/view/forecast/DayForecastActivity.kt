@@ -48,7 +48,7 @@ class DayForecastActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(by.rudkouski.widget.R.layout.day_forecast_activity)
+        setContentView(R.layout.day_forecast_activity)
         val handler = Handler(Looper.getMainLooper())
         handler.post(this::updateActivity)
     }

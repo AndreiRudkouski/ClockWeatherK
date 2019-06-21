@@ -2,7 +2,10 @@ package by.rudkouski.widget.app
 
 import android.app.Application
 import android.content.Context
+import by.rudkouski.widget.listener.LocationChangeListener
+import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.receiver.WidgetUpdateBroadcastReceiver
+import by.rudkouski.widget.scheduler.UpdateWeatherScheduler
 import com.rohitss.uceh.UCEHandler
 import java.util.*
 
@@ -20,11 +23,16 @@ class App : Application() {
         apiKey = getProperty("apiKey", this)
         UCEHandler.Builder(applicationContext).build()
         WidgetUpdateBroadcastReceiver.registerReceiver()
+        UpdateWeatherScheduler.startUpdateWeatherScheduler()
+        LocationChangeListener.startLocationUpdate()
+        WeatherUpdateBroadcastReceiver.updateWeather(this)
     }
 
     override fun onTerminate() {
         super.onTerminate()
         WidgetUpdateBroadcastReceiver.unregisterReceiver()
+        UpdateWeatherScheduler.stopUpdateWeatherScheduler()
+        LocationChangeListener.stopLocationUpdate()
     }
 
     private fun getProperty(key: String, context: Context): String {

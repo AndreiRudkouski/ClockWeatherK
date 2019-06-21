@@ -10,8 +10,9 @@ import by.rudkouski.widget.entity.DayForecast
 import by.rudkouski.widget.entity.HourWeather
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.WeatherData
-import com.google.gson.*
-import java.lang.reflect.Type
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonObject
 import java.util.*
 
 object WeatherUtils {
@@ -23,13 +24,12 @@ object WeatherUtils {
     private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
     private const val DETERMINATION_PATTERN = "%1\$s: %2\$s"
 
-    private val dateJsonDeserializer: JsonDeserializer<Calendar> = object : JsonDeserializer<Calendar> {
-        override fun deserialize(json: JsonElement, typeOfT: Type?, context: JsonDeserializationContext?): Calendar {
+    private val dateJsonDeserializer: JsonDeserializer<Calendar> =
+        JsonDeserializer { json, _, _ ->
             val date = Calendar.getInstance()
             date.time = Date(json.asJsonPrimitive.asLong * 1000)
-            return date
+            date
         }
-    }
 
     private val gson = GsonBuilder().registerTypeAdapter(Calendar::class.java, dateJsonDeserializer).create()
 

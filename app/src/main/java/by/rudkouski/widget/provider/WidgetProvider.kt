@@ -30,7 +30,6 @@ import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.listener.LocationChangeListener
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
-import by.rudkouski.widget.receiver.WidgetUpdateBroadcastReceiver
 import by.rudkouski.widget.scheduler.UpdateWeatherScheduler
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
@@ -188,13 +187,6 @@ class WidgetProvider : AppWidgetProvider() {
         LocationChangeListener.startLocationUpdate()
         updateWidget(context)
         WeatherUpdateBroadcastReceiver.updateWeather(context)
-    }
-
-    override fun onDisabled(context: Context) {
-        super.onDisabled(context)
-        UpdateWeatherScheduler.stopUpdateWeatherScheduler()
-        WidgetUpdateBroadcastReceiver.unregisterReceiver()
-        LocationChangeListener.stopLocationUpdate()
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

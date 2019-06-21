@@ -44,8 +44,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val menuItem = item.itemId
-        when (menuItem) {
+        when (item.itemId) {
             R.id.change_location_menu -> {
                 val intent = LocationActivity.startIntent(this, widgetId)
                 startActivity(intent)

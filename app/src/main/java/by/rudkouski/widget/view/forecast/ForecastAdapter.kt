@@ -12,7 +12,7 @@ class ForecastAdapter(private val forecasts: List<Forecast>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.forecast_item, parent, false)
-        return ForecastAdapter.ForecastViewHolder(view)
+        return ForecastViewHolder(view)
     }
 
     override fun getItemCount() = forecasts.size

@@ -18,7 +18,7 @@ class HourWeatherAdapter(private val hourWeathers: List<Weather>) :
         val view =
             LayoutInflater.from(parent.context).inflate(by.rudkouski.widget.R.layout.hour_weather_item, parent, false)
         view.layoutParams.width = getViewWidth()
-        return HourWeatherAdapter.HourWeatherViewHolder(view)
+        return HourWeatherViewHolder(view)
     }
 
     override fun getItemCount() = hourWeathers.size

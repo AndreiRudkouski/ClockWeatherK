@@ -7,7 +7,6 @@ import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.SECOND_IN_MILLIS
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
-import java.util.*
 import java.util.Calendar.*
 
 object UpdateWeatherScheduler {
@@ -19,7 +18,7 @@ object UpdateWeatherScheduler {
     }
 
     private fun getUpdateStart(): Long {
-        val currentTime = Calendar.getInstance()
+        val currentTime = getInstance()
         val millisInCurrentHour = currentTime.get(MINUTE) * MINUTE_IN_MILLIS + (currentTime.get(SECOND)
             * SECOND_IN_MILLIS - currentTime.get(MILLISECOND))
         return when {

@@ -9,6 +9,7 @@ import android.util.Log
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.weather.WeatherUtils
@@ -54,12 +55,17 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         executorService.execute {
             val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
             for (locationId in locationIds) {
+                if (CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
+                    dbHelper.resetCurrentLocation()
+                    continue
+                }
                 val location = dbHelper.getLocationById(locationId)
                 try {
                     val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
                     if (responseBody != null) {
                         if (location.id == CURRENT_LOCATION_ID) {
-                            val currentTimeZoneName = WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
+                            val currentTimeZoneName =
+                                WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
                             dbHelper.updateCurrentLocationTimeZoneName(currentTimeZoneName)
                         }
                         val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
