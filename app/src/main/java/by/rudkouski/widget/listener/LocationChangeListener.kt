@@ -6,13 +6,13 @@ import android.annotation.SuppressLint
 import android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES
 import android.content.Context.LOCATION_SERVICE
 import android.content.pm.PackageManager.PERMISSION_DENIED
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
+import android.location.LocationProvider.AVAILABLE
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.util.Log
@@ -21,32 +21,31 @@ import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.view.location.LocationActivity
 import java.io.IOException
 import java.util.*
-import java.util.concurrent.atomic.AtomicBoolean
 
 
 @SuppressLint("MissingPermission")
 object LocationChangeListener : LocationListener {
 
     private val dbHelper = INSTANCE
-    private val isRegistered = AtomicBoolean(false)
     private val locationManager = appContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
     override fun onLocationChanged(lastLocation: android.location.Location?) {
         if (lastLocation != null) {
-            if (dbHelper.isCurrentLocationNotUpdated()) {
-                locationManager.removeUpdates(this)
-                setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
-            }
             setLocation(lastLocation)
         }
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        if (status == AVAILABLE) {
+            setLocation(chooseLocation())
+        }
     }
 
     override fun onProviderEnabled(provider: String?) {
+        setLocation(chooseLocation())
     }
 
     override fun onProviderDisabled(provider: String?) {
@@ -54,15 +53,7 @@ object LocationChangeListener : LocationListener {
 
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
-            if (dbHelper.isCurrentLocationNotUpdated()) {
-                if (isLocationEnabled()) {
-                    val location = chooseLocation()
-                    if (location != null) setLocation(location)
-                } else {
-                    setRequestLocationUpdates(0)
-                    return
-                }
-            }
+            setLocation(chooseLocation())
             setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
         }
     }
@@ -74,12 +65,15 @@ object LocationChangeListener : LocationListener {
     }
 
     private fun chooseLocation(): android.location.Location? {
-        val gpsLocation = locationManager.getLastKnownLocation(GPS_PROVIDER)
-        val networkLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER)
-        if (gpsLocation == null && networkLocation == null) return null
-        if (gpsLocation != null && networkLocation == null) return gpsLocation
-        if (networkLocation != null && gpsLocation == null) return networkLocation
-        return if (gpsLocation.time >= networkLocation.time) gpsLocation else networkLocation
+        if (isLocationEnabled()) {
+            val gpsLocation = locationManager.getLastKnownLocation(GPS_PROVIDER)
+            val networkLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER)
+            if (gpsLocation == null && networkLocation == null) return null
+            if (gpsLocation != null && networkLocation == null) return gpsLocation
+            if (networkLocation != null && gpsLocation == null) return networkLocation
+            return if (gpsLocation.time >= networkLocation.time) gpsLocation else networkLocation
+        }
+        return null
     }
 
 
@@ -89,36 +83,32 @@ object LocationChangeListener : LocationListener {
     }
 
     fun stopLocationUpdate() {
-        if (isRegistered.get()) {
-            locationManager.removeUpdates(this)
-            isRegistered.set(false)
-        }
+        locationManager.removeUpdates(this)
     }
 
-    private fun isPermissionsGranted(): Boolean {
-        return ActivityCompat.checkSelfPermission(appContext, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED
-            || ActivityCompat.checkSelfPermission(appContext, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED
-    }
+    private fun isPermissionsGranted() = !isPermissionsDenied()
 
     fun isPermissionsDenied(): Boolean {
         return ActivityCompat.checkSelfPermission(appContext, ACCESS_FINE_LOCATION) == PERMISSION_DENIED
             || ActivityCompat.checkSelfPermission(appContext, ACCESS_COARSE_LOCATION) == PERMISSION_DENIED
     }
 
-    private fun setLocation(lastLocation: android.location.Location) {
-        val address = getAddress(lastLocation)
-        if (address != null && (address.locality != null || address.subAdminArea != null || address.adminArea != null)) {
-            val locationName =
-                when {
-                    address.locality != null -> address.locality
-                    address.subAdminArea != null -> address.subAdminArea
-                    else -> address.adminArea
+    private fun setLocation(lastLocation: android.location.Location?) {
+        if (lastLocation != null) {
+            val address = getAddress(lastLocation)
+            if (address != null && (address.locality != null || address.subAdminArea != null || address.adminArea != null)) {
+                val locationName =
+                    when {
+                        address.locality != null -> address.locality
+                        address.subAdminArea != null -> address.subAdminArea
+                        else -> address.adminArea
+                    }
+                val needUpdate = locationName != dbHelper.getLocationById(CURRENT_LOCATION_ID).name
+                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
+                if (needUpdate) {
+                    dbHelper.deleteWeatherForLocation(CURRENT_LOCATION_ID)
+                    sendIntentToWidgetUpdate()
                 }
-            val needUpdate = locationName != dbHelper.getLocationById(CURRENT_LOCATION_ID).name
-            dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
-            if (needUpdate) {
-                dbHelper.deleteWeatherForLocation(CURRENT_LOCATION_ID)
-                sendIntentToWidgetUpdate()
             }
         }
     }
@@ -141,12 +131,12 @@ object LocationChangeListener : LocationListener {
     private fun sendIntentToWidgetUpdate() {
         WidgetProvider.updateWidget(appContext)
         WeatherUpdateBroadcastReceiver.updateWeather(appContext)
+        LocationActivity.updateActivityBroadcast(appContext)
     }
 
     fun updateLocation() {
         if (isPermissionsGranted()) {
-            val location = chooseLocation()
-            if (location != null) setLocation(location)
+            setLocation(chooseLocation())
         }
     }
 }

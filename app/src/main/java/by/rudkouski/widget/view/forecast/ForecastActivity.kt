@@ -34,7 +34,7 @@ import kotlin.collections.ArrayList
 
 class ForecastActivity : BaseActivity() {
 
-    private var activityUpdateBroadcastReceiver: ForecastActivityUpdateBroadcastReceiver? = null
+    private lateinit var activityUpdateBroadcastReceiver: ForecastActivityUpdateBroadcastReceiver
     private val hourWeathers = ArrayList<Weather>()
 
     companion object {
@@ -132,9 +132,7 @@ class ForecastActivity : BaseActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (activityUpdateBroadcastReceiver != null) {
-            unregisterReceiver(activityUpdateBroadcastReceiver)
-        }
+        unregisterReceiver(activityUpdateBroadcastReceiver)
         WidgetProvider.updateWidget(this)
         finish()
     }

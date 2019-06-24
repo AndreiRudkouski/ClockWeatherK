@@ -182,9 +182,6 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
             arrayOf(Location.CURRENT_LOCATION_ID.toString()))
     }
 
-    fun isCurrentLocationNotUpdated() =
-        getLocationById(CURRENT_LOCATION_ID).name == appContext.getString(R.string.default_location)
-
     fun resetCurrentLocation() {
         deleteWeatherForLocation(CURRENT_LOCATION_ID)
         val values = ContentValues()
