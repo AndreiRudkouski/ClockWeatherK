@@ -32,7 +32,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
     private lateinit var activityUpdateBroadcastReceiver: LocationActivityUpdateBroadcastReceiver
 
     companion object {
-        private const val requestPermissionCode = 12345
+        private const val REQUEST_PERMISSION_CODE = 12345
         private const val LOCATION_ACTIVITY_UPDATE = "by.rudkouski.widget.LOCATION_ACTIVITY_UPDATE"
 
         fun startIntent(context: Context, widgetId: Int): Intent {
@@ -56,7 +56,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
             dbHelper.resetCurrentLocation()
             ActivityCompat.requestPermissions(this,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                requestPermissionCode)
+                REQUEST_PERMISSION_CODE)
         } else {
             initActivity()
         }
@@ -112,7 +112,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
-            requestPermissionCode -> {
+            REQUEST_PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                     startLocationUpdate()
                     initActivity()
