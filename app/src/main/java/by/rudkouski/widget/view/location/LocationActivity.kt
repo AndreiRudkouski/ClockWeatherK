@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -110,9 +111,13 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        if (requestCode == requestPermissionCode) {
-            startLocationUpdate()
-            initActivity()
+        when (requestCode) {
+            requestPermissionCode -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
+                    startLocationUpdate()
+                    initActivity()
+                }
+            }
         }
     }
 
