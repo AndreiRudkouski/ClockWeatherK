@@ -74,7 +74,7 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (isDisplayOn(context) && WIDGET_UPDATE == intent.action) {
+        if (WIDGET_UPDATE == intent.action) {
             val componentName = ComponentName(context, javaClass.name)
             val widgetManager = AppWidgetManager.getInstance(context)
             val widgetIds = widgetManager.getAppWidgetIds(componentName)
@@ -86,20 +86,6 @@ class WidgetProvider : AppWidgetProvider() {
                 }
             }
         }
-    }
-
-    private fun isDisplayOn(context: Context): Boolean {
-        val displayManager = context.getSystemService(DISPLAY_SERVICE) as DisplayManager
-        return isAnyDisplayNotOff(displayManager.displays)
-    }
-
-    private fun isAnyDisplayNotOff(displays: Array<Display>): Boolean {
-        for (display in displays) {
-            if (display.state != STATE_OFF) {
-                return true
-            }
-        }
-        return false
     }
 
     private fun updateWidget(context: Context, widgetId: Int): RemoteViews {
