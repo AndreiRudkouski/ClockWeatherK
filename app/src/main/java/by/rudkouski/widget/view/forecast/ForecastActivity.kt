@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,6 +18,7 @@ import android.text.SpannableStringBuilder
 import android.text.TextUtils.isEmpty
 import android.text.format.DateUtils.DAY_IN_MILLIS
 import android.view.View
+import android.widget.Toast
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Location
@@ -60,6 +62,11 @@ class ForecastActivity : BaseActivity() {
         activityUpdateBroadcastReceiver = ForecastActivityUpdateBroadcastReceiver()
         registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(FORECAST_ACTIVITY_UPDATE))
         updateActivity()
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        initToolbar(widgetId)
     }
 
     private fun updateActivity() {
