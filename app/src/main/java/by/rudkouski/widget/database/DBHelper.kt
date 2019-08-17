@@ -507,7 +507,7 @@ class DBHelper private constructor(context: Context, dbName: String, factory: SQ
         }
     }
 
-    fun deleteWeatherForLocation(locationId: Int) {
+    private fun deleteWeatherForLocation(locationId: Int) {
         database.delete(WEATHER_DATA_TABLE, WEATHER_DATA_LOCATION_ID + IS_EQUAL_PARAMETER,
             arrayOf(locationId.toString()))
         database.delete(WEATHER_TABLE, WEATHER_LOCATION_ID + IS_EQUAL_PARAMETER, arrayOf(locationId.toString()))

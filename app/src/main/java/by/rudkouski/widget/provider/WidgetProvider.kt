@@ -7,12 +7,10 @@ import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
-import android.content.Context.DISPLAY_SERVICE
 import android.content.Intent
 import android.content.Intent.ACTION_QUICK_CLOCK
 import android.graphics.Typeface.BOLD
 import android.graphics.Typeface.NORMAL
-import android.hardware.display.DisplayManager
 import android.os.Handler
 import android.os.Looper
 import android.provider.AlarmClock.ACTION_SHOW_ALARMS
@@ -20,8 +18,6 @@ import android.provider.Settings
 import android.provider.Settings.System.TIME_12_24
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.view.Display
-import android.view.Display.STATE_OFF
 import android.view.View
 import android.widget.RemoteViews
 import by.rudkouski.widget.R
@@ -47,7 +43,7 @@ class WidgetProvider : AppWidgetProvider() {
         private const val TIME_FORMAT_12 = "h:mm"
         private const val TIME_FORMAT_24 = "H:mm"
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
-        private const val WIDGET_CLOCK_UPDATE_REQUEST_CODE = 1234
+        private const val WIDGET_CLOCK_UPDATE_REQUEST_CODE = 1001
         private const val SYSTEM_TIME_FORMAT_24 = 24
 
         fun updateWidget(context: Context) {
@@ -172,7 +168,7 @@ class WidgetProvider : AppWidgetProvider() {
         UpdateWeatherScheduler.startUpdateWeatherScheduler()
         LocationChangeListener.startLocationUpdate()
         updateWidget(context)
-        WeatherUpdateBroadcastReceiver.updateWeather(context)
+        WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

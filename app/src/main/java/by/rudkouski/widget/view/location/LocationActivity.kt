@@ -13,16 +13,13 @@ import android.os.Handler
 import android.os.Looper
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.Toolbar
-import android.text.SpannableString
 import android.view.View
 import android.widget.ListView
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.listener.LocationChangeListener
 import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.listener.LocationChangeListener.startLocationUpdate
-import by.rudkouski.widget.message.Message
+import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.BaseActivity
@@ -82,19 +79,12 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         if (isPermissionsDenied()) {
             locations = locations.filter { location -> location.id != CURRENT_LOCATION_ID }
         } else {
-            checkLocationEnabled(locationsView)
+            showNetworkAndLocationEnableMessage(locationsView, CURRENT_LOCATION_ID, this)
         }
         locationsView.adapter = LocationsViewAdapter(this, this, locations, getSelectedLocationId())
     }
 
     private fun getSelectedLocationId(): Int = dbHelper.getLocationByWidgetId(widgetId)
-
-    private fun checkLocationEnabled(view: View) {
-        if (!LocationChangeListener.isLocationEnabled()) {
-            val message = SpannableString(App.appContext.getString(R.string.no_location))
-            Message.getShortMessage(message, view, this)
-        }
-    }
 
     override fun onLocationItemClick(view: View, locationId: Int) {
         val handler = Handler(Looper.getMainLooper())
@@ -123,7 +113,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     private fun updateWidgetAndWeather() {
         WidgetProvider.updateWidget(this)
-        WeatherUpdateBroadcastReceiver.updateWeather(this)
+        WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
     }
 
     private fun setResultIntent() {

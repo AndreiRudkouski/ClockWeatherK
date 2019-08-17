@@ -18,7 +18,6 @@ import android.support.v4.app.ActivityCompat
 import android.util.Log
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
-import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.location.LocationActivity
@@ -31,6 +30,9 @@ object LocationChangeListener : LocationListener {
 
     private val dbHelper = INSTANCE
     private val locationManager = appContext.getSystemService(LOCATION_SERVICE) as LocationManager
+
+    private const val LOCATION_UPDATE_INTERVAL = INTERVAL_FIFTEEN_MINUTES
+    private const val LOCATION_UPDATE_DISTANCE = 0f
 
     override fun onLocationChanged(lastLocation: android.location.Location?) {
         if (lastLocation != null) {
@@ -54,7 +56,7 @@ object LocationChangeListener : LocationListener {
     fun startLocationUpdate() {
         if (isPermissionsGranted()) {
             setLocation(chooseLocation())
-            setRequestLocationUpdates(INTERVAL_FIFTEEN_MINUTES)
+            setRequestLocationUpdates()
         }
     }
 
@@ -77,9 +79,10 @@ object LocationChangeListener : LocationListener {
     }
 
 
-    private fun setRequestLocationUpdates(period: Long) {
-        locationManager.requestLocationUpdates(NETWORK_PROVIDER, period, 0f, this)
-        locationManager.requestLocationUpdates(GPS_PROVIDER, period, 0f, this)
+    private fun setRequestLocationUpdates() {
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE,
+            this)
+        locationManager.requestLocationUpdates(GPS_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, this)
     }
 
     fun stopLocationUpdate() {
@@ -103,13 +106,10 @@ object LocationChangeListener : LocationListener {
                         address.subAdminArea != null -> address.subAdminArea
                         else -> address.adminArea
                     }
-                val needUpdate = locationName != dbHelper.getLocationById(CURRENT_LOCATION_ID).name
-                dbHelper.updateCurrentLocation(locationName, address.latitude, address.longitude)
-                if (needUpdate) {
-                    dbHelper.deleteWeatherForLocation(CURRENT_LOCATION_ID)
-                    sendIntentToWidgetUpdate()
-                }
+                dbHelper.updateCurrentLocation(locationName, lastLocation.latitude, lastLocation.longitude)
+                sendIntentToWidgetUpdate()
             }
+
         }
     }
 
@@ -130,8 +130,8 @@ object LocationChangeListener : LocationListener {
 
     private fun sendIntentToWidgetUpdate() {
         WidgetProvider.updateWidget(appContext)
-        WeatherUpdateBroadcastReceiver.updateWeather(appContext)
         LocationActivity.updateActivityBroadcast(appContext)
+        WeatherUpdateBroadcastReceiver.updateCurrentWeather(appContext)
     }
 
     fun updateLocation() {

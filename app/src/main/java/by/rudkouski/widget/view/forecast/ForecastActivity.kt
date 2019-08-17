@@ -13,21 +13,12 @@ import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
-import android.text.TextUtils.isEmpty
 import android.text.format.DateUtils.DAY_IN_MILLIS
-import android.view.View
-import android.widget.Toast
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App
-import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
-import by.rudkouski.widget.listener.LocationChangeListener
-import by.rudkouski.widget.message.Message
+import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider
-import by.rudkouski.widget.receiver.NetworkChangeChecker
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
@@ -93,24 +84,8 @@ class ForecastActivity : BaseActivity() {
                 val weather = dbHelper.getWeatherByLocationId(widget.location.id)
                 weatherView.updateWeatherItemView(weather)
                 hourWeatherViewUpdate(widget, adapter)
-                checkNetworkAndLocationEnabled(weatherView, widget.location.id)
+                showNetworkAndLocationEnableMessage(weatherView, widget.location.id, this)
             }
-        }
-    }
-
-    private fun checkNetworkAndLocationEnabled(view: View, locationId: Int) {
-        val message = SpannableStringBuilder()
-        if (!NetworkChangeChecker.isOnline()) {
-            message.append(SpannableString(App.appContext.getString(R.string.no_connection)))
-        }
-        if (Location.CURRENT_LOCATION_ID == locationId && !LocationChangeListener.isLocationEnabled()) {
-            if (!isEmpty(message)) {
-                message.append(SpannableString("\n"))
-            }
-            message.append(SpannableString(App.appContext.getString(R.string.no_location)))
-        }
-        if (!isEmpty(message)) {
-            Message.getShortMessage(SpannableString.valueOf(message), view, this)
         }
     }
 

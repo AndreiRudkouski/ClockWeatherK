@@ -32,6 +32,7 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="by.rudkouski.widget.WEATHER_UPDATE"/>
+                <action android:name="by.rudkouski.widget.CURRENT_WEATHER_UPDATE"/>
             </intent-filter>
         </receiver>
 

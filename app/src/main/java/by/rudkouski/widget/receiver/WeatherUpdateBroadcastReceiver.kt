@@ -24,63 +24,87 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     private val dbHelper = INSTANCE
 
     companion object {
-        private const val WEATHER_UPDATE_REQUEST_CODE = 5678
+        private const val WEATHER_UPDATE_REQUEST_CODE = 1002
+        private const val CURRENT_WEATHER_UPDATE_REQUEST_CODE = 1003
         private const val WEATHER_UPDATE = "by.rudkouski.widget.WEATHER_UPDATE"
+        private const val CURRENT_WEATHER_UPDATE = "by.rudkouski.widget.CURRENT_WEATHER_UPDATE"
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES =
             "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
 
         fun getUpdateWeatherPendingIntent(context: Context): PendingIntent {
-            val intent = Intent(context, WeatherUpdateBroadcastReceiver::class.java)
-            intent.action = WEATHER_UPDATE
-            return PendingIntent.getBroadcast(context, WEATHER_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT)
+            return getPendingIntent(context, WEATHER_UPDATE, WEATHER_UPDATE_REQUEST_CODE)
         }
 
-        fun updateWeather(context: Context) {
+        fun updateAllWeathers(context: Context) {
             getUpdateWeatherPendingIntent(context).send()
+        }
+
+        fun updateCurrentWeather(context: Context) {
+            getPendingIntent(context, CURRENT_WEATHER_UPDATE, CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
+        }
+
+        private fun getPendingIntent(context: Context, action: String, actionCode: Int): PendingIntent {
+            val intent = Intent(context, WeatherUpdateBroadcastReceiver::class.java)
+            intent.action = action
+            return PendingIntent.getBroadcast(context, actionCode, intent, FLAG_UPDATE_CURRENT)
         }
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (WEATHER_UPDATE == intent.action) {
+        if (WEATHER_UPDATE == intent.action || CURRENT_WEATHER_UPDATE == intent.action) {
             if (NetworkChangeChecker.isOnline()) {
-                updateWeather(context)
+                if (WEATHER_UPDATE == intent.action) {
+                    updateAllWeathers(context)
+                } else {
+                    updateCurrentWeather(context)
+                }
             } else {
                 NetworkChangeChecker.registerReceiver()
             }
         }
     }
 
-    private fun updateWeather(context: Context) {
+    private fun updateAllWeathers(context: Context) {
         executorService.execute {
             val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
             for (locationId in locationIds) {
-                if (CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
-                    dbHelper.resetCurrentLocation()
-                    continue
-                }
-                val location = dbHelper.getLocationById(locationId)
-                try {
-                    val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
-                    if (responseBody != null) {
-                        if (location.id == CURRENT_LOCATION_ID) {
-                            val currentTimeZoneName =
-                                WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
-                            dbHelper.updateCurrentLocationTimeZoneName(currentTimeZoneName)
-                        }
-                        val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
-                        val hourWeather = WeatherUtils.getHourWeatherFromResponseBody(responseBody)
-                        val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)
-                        dbHelper.setWeatherByLocationId(currentWeather, locationId)
-                        dbHelper.setHourWeathersByLocationId(hourWeather, locationId)
-                        dbHelper.setDayForecastByLocationId(dayForecast, locationId)
-                    }
-                } catch (e: Throwable) {
-                    Log.e(this.javaClass.simpleName, e.toString())
-                    continue
-                }
+                updateWeather(locationId)
             }
             sendIntentsForWidgetUpdate(context)
+        }
+    }
+
+    private fun updateCurrentWeather(context: Context) {
+        executorService.execute {
+            updateWeather(CURRENT_LOCATION_ID)
+            sendIntentsForWidgetUpdate(context)
+        }
+    }
+
+    private fun updateWeather(locationId: Int) {
+        if (CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
+            dbHelper.resetCurrentLocation()
+            return
+        }
+        val location = dbHelper.getLocationById(locationId)
+        try {
+            val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
+            if (responseBody != null) {
+                if (location.id == CURRENT_LOCATION_ID) {
+                    val currentTimeZoneName =
+                        WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
+                    dbHelper.updateCurrentLocationTimeZoneName(currentTimeZoneName)
+                }
+                val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
+                val hourWeather = WeatherUtils.getHourWeatherFromResponseBody(responseBody)
+                val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)
+                dbHelper.setWeatherByLocationId(currentWeather, locationId)
+                dbHelper.setHourWeathersByLocationId(hourWeather, locationId)
+                dbHelper.setDayForecastByLocationId(dayForecast, locationId)
+            }
+        } catch (e: Throwable) {
+            Log.e(this.javaClass.simpleName, e.toString())
         }
     }
 

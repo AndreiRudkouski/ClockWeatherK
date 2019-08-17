@@ -25,7 +25,7 @@ class App : Application() {
         WidgetUpdateBroadcastReceiver.registerReceiver()
         UpdateWeatherScheduler.startUpdateWeatherScheduler()
         LocationChangeListener.startLocationUpdate()
-        WeatherUpdateBroadcastReceiver.updateWeather(this)
+        WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
     }
 
     override fun onTerminate() {

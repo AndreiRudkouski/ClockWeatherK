@@ -32,7 +32,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (ACTION_LOCALE_CHANGED == intent.action) {
-            WeatherUpdateBroadcastReceiver.updateWeather(context)
+            WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
             LocationChangeListener.updateLocation()
         }
         if (ACTION_SCREEN_ON == intent.action) {
@@ -41,7 +41,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
                 val location = dbHelper.getLocationById(locationId)
                 val weather = dbHelper.getWeatherByLocationId(locationId)
                 if (isWeatherNeedUpdate(weather, location.timeZone)) {
-                    WeatherUpdateBroadcastReceiver.updateWeather(context)
+                    WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
                     return
                 }
             }

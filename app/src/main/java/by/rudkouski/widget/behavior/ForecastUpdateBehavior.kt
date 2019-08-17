@@ -75,10 +75,10 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
-            WeatherUpdateBroadcastReceiver.updateWeather(context)
+            WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
             val message = SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update)
             else App.appContext.getString(R.string.no_connection))
-            Message.getShortMessage(message, target, context)
+            Message.showShortMessage(message, target, context)
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)

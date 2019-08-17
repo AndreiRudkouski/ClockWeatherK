@@ -13,7 +13,7 @@ object NetworkChangeChecker {
     private val connectivityManager = App.appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            WeatherUpdateBroadcastReceiver.updateWeather(App.appContext)
+            WeatherUpdateBroadcastReceiver.updateAllWeathers(App.appContext)
         }
 
         override fun onLost(network: Network) {
