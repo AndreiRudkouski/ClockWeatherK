@@ -1,4 +1,4 @@
-package by.rudkouski.widget.listener
+package by.rudkouski.widget.update.listener
 
 import android.Manifest.permission.ACCESS_COARSE_LOCATION
 import android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -19,10 +19,9 @@ import android.util.Log
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.provider.WidgetProvider
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.location.LocationActivity
 import java.io.IOException
-import java.util.*
 
 
 @SuppressLint("MissingPermission")
@@ -116,7 +115,8 @@ object LocationChangeListener : LocationListener {
     private fun getAddress(location: android.location.Location): Address? {
         val longitude = location.longitude
         val latitude = location.latitude
-        val geoCoder = Geocoder(appContext, Locale.getDefault())
+        val locale = appContext.resources.configuration.locales[0]
+        val geoCoder = Geocoder(appContext, locale)
         try {
             val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
             if (addresses != null && addresses.size > 0) {

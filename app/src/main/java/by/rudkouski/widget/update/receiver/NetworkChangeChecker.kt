@@ -1,4 +1,4 @@
-package by.rudkouski.widget.receiver
+package by.rudkouski.widget.update.receiver
 
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager

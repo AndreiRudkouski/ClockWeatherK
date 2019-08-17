@@ -17,11 +17,11 @@ import android.view.View
 import android.widget.ListView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
-import by.rudkouski.widget.listener.LocationChangeListener.startLocationUpdate
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
+import by.rudkouski.widget.update.listener.LocationChangeListener.startLocationUpdate
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.BaseActivity
 
 class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClickListener {

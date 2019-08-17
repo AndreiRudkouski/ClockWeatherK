@@ -1,4 +1,4 @@
-package by.rudkouski.widget.receiver
+package by.rudkouski.widget.update.receiver
 
 import android.app.AlarmManager
 import android.content.BroadcastReceiver
@@ -9,7 +9,7 @@ import android.content.IntentFilter
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.listener.LocationChangeListener
+import by.rudkouski.widget.update.listener.LocationChangeListener
 import by.rudkouski.widget.provider.WidgetProvider
 import java.util.*
 

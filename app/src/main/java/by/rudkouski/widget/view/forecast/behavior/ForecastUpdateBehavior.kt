@@ -1,4 +1,4 @@
-package by.rudkouski.widget.behavior
+package by.rudkouski.widget.view.forecast.behavior
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -12,8 +12,8 @@ import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.message.Message
-import by.rudkouski.widget.receiver.NetworkChangeChecker
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".

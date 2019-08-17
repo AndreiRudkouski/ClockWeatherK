@@ -1,4 +1,4 @@
-package by.rudkouski.widget.receiver
+package by.rudkouski.widget.update.receiver
 
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
@@ -9,7 +9,7 @@ import android.util.Log
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.weather.WeatherUtils

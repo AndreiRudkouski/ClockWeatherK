@@ -9,7 +9,7 @@ import by.rudkouski.widget.app.App
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.*
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.listener.LocationChangeListener.isPermissionsDenied
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import org.jetbrains.annotations.NotNull
 import java.util.*
 import kotlin.collections.ArrayList

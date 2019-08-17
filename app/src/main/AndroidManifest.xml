@@ -28,7 +28,7 @@
                 android:resource="@xml/widget_info"/>
         </receiver>
         <receiver
-            android:name=".receiver.WeatherUpdateBroadcastReceiver"
+            android:name=".update.receiver.WeatherUpdateBroadcastReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="by.rudkouski.widget.WEATHER_UPDATE"/>

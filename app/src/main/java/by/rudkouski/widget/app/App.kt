@@ -2,10 +2,10 @@ package by.rudkouski.widget.app
 
 import android.app.Application
 import android.content.Context
-import by.rudkouski.widget.listener.LocationChangeListener
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
-import by.rudkouski.widget.receiver.WidgetUpdateBroadcastReceiver
-import by.rudkouski.widget.scheduler.UpdateWeatherScheduler
+import by.rudkouski.widget.update.listener.LocationChangeListener
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
 import com.rohitss.uceh.UCEHandler
 import java.util.*
 

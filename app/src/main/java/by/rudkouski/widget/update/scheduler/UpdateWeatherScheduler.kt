@@ -1,4 +1,4 @@
-package by.rudkouski.widget.scheduler
+package by.rudkouski.widget.update.scheduler
 
 import android.app.AlarmManager
 import android.app.AlarmManager.*
@@ -6,7 +6,7 @@ import android.content.Context.ALARM_SERVICE
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.SECOND_IN_MILLIS
 import by.rudkouski.widget.app.App
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import java.util.Calendar.*
 
 object UpdateWeatherScheduler {

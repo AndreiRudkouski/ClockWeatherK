@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         android:background="?android:attr/colorPrimaryDark"
-        app:layout_behavior="by.rudkouski.widget.behavior.ForecastUpdateBehavior">
+        app:layout_behavior=".view.forecast.behavior.ForecastUpdateBehavior">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar_forecast"

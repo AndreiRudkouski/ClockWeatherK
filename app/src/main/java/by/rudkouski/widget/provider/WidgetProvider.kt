@@ -24,9 +24,9 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.listener.LocationChangeListener
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
-import by.rudkouski.widget.scheduler.UpdateWeatherScheduler
+import by.rudkouski.widget.update.listener.LocationChangeListener
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.weather.WeatherUtils

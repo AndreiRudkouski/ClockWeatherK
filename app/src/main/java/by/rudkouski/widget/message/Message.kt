@@ -11,8 +11,8 @@ import android.util.TypedValue
 import android.view.View
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.listener.LocationChangeListener.isLocationEnabled
-import by.rudkouski.widget.receiver.NetworkChangeChecker
+import by.rudkouski.widget.update.listener.LocationChangeListener.isLocationEnabled
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 
 object Message {
 
