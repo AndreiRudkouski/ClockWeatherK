@@ -14,8 +14,8 @@ import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
 import android.location.LocationProvider.AVAILABLE
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
 import android.util.Log
+import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.provider.WidgetProvider

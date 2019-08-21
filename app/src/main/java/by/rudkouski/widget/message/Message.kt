@@ -1,7 +1,6 @@
 package by.rudkouski.widget.message
 
 import android.content.Context
-import android.support.design.widget.Snackbar
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
@@ -13,6 +12,7 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.update.listener.LocationChangeListener.isLocationEnabled
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
+import com.google.android.material.snackbar.Snackbar
 
 object Message {
 

@@ -1,9 +1,9 @@
 package by.rudkouski.widget.view.forecast
 
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
 

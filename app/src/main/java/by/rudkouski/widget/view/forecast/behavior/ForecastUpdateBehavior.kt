@@ -2,18 +2,18 @@ package by.rudkouski.widget.view.forecast.behavior
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CoordinatorLayout
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.message.Message
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
+import com.google.android.material.appbar.AppBarLayout
 
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".

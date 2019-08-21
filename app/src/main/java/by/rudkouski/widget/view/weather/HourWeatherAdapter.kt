@@ -2,11 +2,11 @@ package by.rudkouski.widget.view.weather
 
 import android.content.Context
 import android.graphics.Point
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Weather
 

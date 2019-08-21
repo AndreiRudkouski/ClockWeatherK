@@ -9,11 +9,10 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.design.widget.CollapsingToolbarLayout
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.text.format.DateUtils.DAY_IN_MILLIS
+import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
@@ -22,6 +21,7 @@ import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
+import com.google.android.material.appbar.CollapsingToolbarLayout
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -79,7 +79,7 @@ class ForecastActivity : BaseActivity() {
         handler.post {
             val widget = dbHelper.getWidgetById(widgetId)
             if (widget != null) {
-                val title = widget.location.name
+                val title = widget.location.getName()
                 toolbarLayout.title = title
                 val weather = dbHelper.getWeatherByLocationId(widget.location.id)
                 weatherView.updateWeatherItemView(weather)

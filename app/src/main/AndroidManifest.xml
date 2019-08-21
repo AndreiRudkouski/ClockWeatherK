@@ -4,7 +4,7 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -59,10 +59,6 @@
         <activity android:name=".view.forecast.DayForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>
-        <activity
-            android:name="com.rohitss.uceh.UCEDefaultActivity"
-            android:process=":error_activity"/>
-
     </application>
 
 </manifest>

@@ -11,16 +11,18 @@ import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.support.v4.app.ActivityCompat
-import android.support.v7.widget.Toolbar
 import android.view.View
 import android.widget.ListView
+import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.App.Companion.db
+import by.rudkouski.widget.app.App.Companion.uiScope
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
-import by.rudkouski.widget.update.listener.LocationChangeListener.startLocationUpdate
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
+import by.rudkouski.widget.update.listener.LocationChangeListener.startLocationUpdate
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.BaseActivity
 
