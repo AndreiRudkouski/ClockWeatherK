@@ -1,10 +1,9 @@
 package by.rudkouski.widget.view.forecast
 
+import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -19,6 +18,7 @@ import androidx.appcompat.widget.Toolbar
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.ForecastRepository.getForecastById
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
@@ -38,8 +38,9 @@ class DayForecastActivity : BaseActivity() {
     companion object {
         const val EXTRA_FORECAST_ID = "forecastId"
 
-        fun start(context: Context, forecastId: Long) {
+        fun start(context: Context, widgetId: Int, forecastId: Int) {
             val intent = Intent(context, DayForecastActivity::class.java)
+            intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
             intent.putExtra(EXTRA_FORECAST_ID, forecastId)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
@@ -49,12 +50,11 @@ class DayForecastActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.day_forecast_activity)
-        val handler = Handler(Looper.getMainLooper())
-        handler.post(this::updateActivity)
+        updateActivity()
     }
 
     private fun updateActivity() {
-        val forecast = dbHelper.getDayForecastById(forecastId)
+        val forecast = getForecastById(forecastId)
         val view = findViewById<View>(R.id.day_forecast)
         setDescriptionText(view, forecast)
         if (forecast != null) {
@@ -88,13 +88,13 @@ class DayForecastActivity : BaseActivity() {
 
     private fun setImage(view: View, forecast: Forecast) {
         val imageView = view.findViewById<ImageView>(R.id.image_day_forecast)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResource(this, forecast))
+        imageView.setImageResource(
+            WeatherUtils.getIconWeatherImageResource(this, forecast.iconName, forecast.cloudCover, forecast.precipitationProbability))
     }
 
     private fun setDescriptionText(view: View, forecast: Forecast?) {
         val descriptionTextView = view.findViewById<TextView>(R.id.description_day_forecast)
-        descriptionTextView.text =
-            forecast?.description?.toLowerCase()?.capitalize() ?: this.getString(R.string.default_weather)
+        descriptionTextView.text = forecast?.description?.toLowerCase()?.capitalize() ?: this.getString(R.string.default_weather)
     }
 
     private fun setDegreeText(view: View, forecast: Forecast) {
@@ -159,8 +159,7 @@ class DayForecastActivity : BaseActivity() {
         val description = getSpannableStringDescription(R.string.wind)
         val value = getSpannableStringValue(if (forecast.windSpeed != 0.0) "${convertWindDirection(
             forecast.windDirection)}, ${mathRound(forecast.windSpeed)} ${getString(R.string.speed_unit)}, " +
-            "${getString(R.string.gust)} ${mathRound(forecast.windGust)} ${getString(R.string.speed_unit)}"
-        else getString(R.string.windless))
+            "${getString(R.string.gust)} ${mathRound(forecast.windGust)} ${getString(R.string.speed_unit)}" else getString(R.string.windless))
         setDataToView(view, R.id.wind_day_forecast, description, value)
     }
 
@@ -210,8 +209,7 @@ class DayForecastActivity : BaseActivity() {
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            val handler = Handler(Looper.getMainLooper())
-            handler.post(this::callPreviousActivity)
+            callPreviousActivity()
         }
         return super.onKeyDown(keyCode, event)
     }

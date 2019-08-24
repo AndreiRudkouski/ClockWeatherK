@@ -35,16 +35,17 @@ class HourWeatherItemView : LinearLayout {
 
     private fun setTime(view: View, weather: Weather) {
         val timeTextView = view.findViewById<TextView>(R.id.time_hour_weather)
-        val timeFormat = SimpleDateFormat(
-            WidgetProvider.chooseSystemTimeFormat(context, WeatherItemView.FULL_TIME_FORMAT_12,
-                WeatherItemView.TIME_FORMAT_24), Locale.getDefault())
+        val timeFormat =
+            SimpleDateFormat(WidgetProvider.chooseSystemTimeFormat(context, WeatherItemView.FULL_TIME_FORMAT_12, WeatherItemView.TIME_FORMAT_24),
+                Locale.getDefault())
         timeFormat.timeZone = weather.date.timeZone
         timeTextView.text = timeFormat.format(weather.date.time)
     }
 
     private fun setImage(view: View, weather: Weather) {
         val imageView = view.findViewById<ImageView>(R.id.hour_weather_image)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, weather))
+        imageView.setImageResource(
+            WeatherUtils.getIconWeatherImageResource(context, weather.iconName, weather.cloudCover, weather.precipitationProbability))
     }
 
     private fun setDegree(view: View, weather: Weather) {

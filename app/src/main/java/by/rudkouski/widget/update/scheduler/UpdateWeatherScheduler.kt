@@ -19,8 +19,8 @@ object UpdateWeatherScheduler {
 
     private fun getUpdateStart(): Long {
         val currentTime = getInstance()
-        val millisInCurrentHour = currentTime.get(MINUTE) * MINUTE_IN_MILLIS + (currentTime.get(SECOND)
-            * SECOND_IN_MILLIS - currentTime.get(MILLISECOND))
+        val millisInCurrentHour =
+            currentTime.get(MINUTE) * MINUTE_IN_MILLIS + (currentTime.get(SECOND) * SECOND_IN_MILLIS - currentTime.get(MILLISECOND))
         return when {
             millisInCurrentHour < INTERVAL_FIFTEEN_MINUTES -> INTERVAL_FIFTEEN_MINUTES - millisInCurrentHour
             millisInCurrentHour < INTERVAL_FIFTEEN_MINUTES * 3 -> INTERVAL_FIFTEEN_MINUTES * 3 - millisInCurrentHour

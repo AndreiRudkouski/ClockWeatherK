@@ -59,7 +59,8 @@ class WeatherItemView : LinearLayout {
 
     private fun setImage(view: View, weather: Weather?) {
         val imageView = view.findViewById<ImageView>(R.id.image_current_weather)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, weather!!))
+        imageView.setImageResource(
+            WeatherUtils.getIconWeatherImageResource(context, weather!!.iconName, weather.cloudCover, weather.precipitationProbability))
     }
 
     private fun setDegreeText(view: View, weather: Weather?) {

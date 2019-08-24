@@ -3,35 +3,31 @@ package by.rudkouski.widget.view
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.WidgetRepository
+import by.rudkouski.widget.repository.WidgetRepository.changeWidgetTextBold
+import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.view.forecast.DayForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected val dbHelper = DBHelper.INSTANCE
     protected var widgetId = 0
-    protected var forecastId = 0L
+    protected var forecastId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID) ?: 0
-        forecastId = intent?.extras?.getLong(DayForecastActivity.EXTRA_FORECAST_ID) ?: 0L
-        if (widgetId == 0 && forecastId != 0L) {
-            widgetId = dbHelper.getWidgetIdByForecastId(forecastId)
-        }
+        forecastId = intent?.extras?.getInt(DayForecastActivity.EXTRA_FORECAST_ID) ?: 0
         changeWidgetTheme()
         super.onCreate(savedInstanceState)
     }
 
     private fun changeWidgetTheme() {
-        val widget = dbHelper.getWidgetById(widgetId)
+        val widget = getWidgetById(widgetId)
         if (widget != null) {
             applicationInfo.theme = widget.themeId
             setTheme(widget.themeId)
@@ -51,8 +47,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 return true
             }
             R.id.change_text_menu -> {
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTextBold(widgetId) }
+                changeWidgetTextBold(widgetId)
                 WidgetProvider.updateWidget(this)
                 return true
             }
@@ -60,8 +55,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 val darkThemeId = resources.getIdentifier("DarkTheme", "style", packageName)
                 val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
                 val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTheme(widgetId, themeId) }
+                WidgetRepository.changeWidgetTheme(widgetId, themeId)
                 WidgetProvider.updateWidget(this)
                 finish()
                 intent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK

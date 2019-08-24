@@ -6,20 +6,22 @@ import android.view.View
 import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.entity.DayForecast
-import by.rudkouski.widget.entity.HourWeather
+import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.entity.WeatherData
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import java.util.*
+import java.util.TimeZone.getTimeZone
+import kotlin.math.roundToInt
 
 object WeatherUtils {
 
     private const val CURRENT_WEATHER = "currently"
     private const val HOUR_WEATHER = "hourly"
     private const val DAY_WEATHER = "daily"
+    private const val LIST_DATA = "data"
 
     private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
     private const val DETERMINATION_PATTERN = "%1\$s: %2\$s"
@@ -28,46 +30,48 @@ object WeatherUtils {
         JsonDeserializer { json, _, _ ->
             val date = Calendar.getInstance()
             date.time = Date(json.asJsonPrimitive.asLong * 1000)
-            date
+            return@JsonDeserializer date
         }
 
     private val gson = GsonBuilder().registerTypeAdapter(Calendar::class.java, dateJsonDeserializer).create()
 
-    fun getCurrentTimeZoneNameFromResponseBody(responseBody: String): String {
+    fun getCurrentTimeZoneNameFromResponseBody(responseBody: String): TimeZone {
         val jsonObject = gson.fromJson(responseBody, JsonObject::class.java)
-        return jsonObject.get("timezone").asString
+        return getTimeZone(jsonObject.get("timezone").asString)
     }
 
-    fun getWeatherFromResponseBody(responseBody: String): Weather {
+    fun getCurrentWeatherFromResponseBody(responseBody: String): Weather {
         val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(CURRENT_WEATHER)
         return gson.fromJson(jsonObject, Weather::class.java)
     }
 
-    fun getHourWeatherFromResponseBody(responseBody: String): HourWeather {
-        val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(HOUR_WEATHER)
-        return gson.fromJson(jsonObject, HourWeather::class.java)
+    fun getHourWeathersFromResponseBody(responseBody: String): List<Weather> {
+        val jsonArray = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(HOUR_WEATHER).getAsJsonArray(LIST_DATA)
+        val type = object : TypeToken<List<Weather>>(){}.type
+        return gson.fromJson(jsonArray, type)
     }
 
-    fun getDayForecastFromResponseBody(responseBody: String): DayForecast {
-        val jsonObject = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(DAY_WEATHER)
-        return gson.fromJson(jsonObject, DayForecast::class.java)
+    fun getDayForecastFromResponseBody(responseBody: String): List<Forecast> {
+        val jsonArray = gson.fromJson(responseBody, JsonObject::class.java).getAsJsonObject(DAY_WEATHER).getAsJsonArray(LIST_DATA)
+        val type = object : TypeToken<List<Forecast>>(){}.type
+        return gson.fromJson(jsonArray, type)
     }
 
-    fun getWeatherImageResource(context: Context, weather: WeatherData): Int {
+    fun getIconWeatherImageResource(context: Context, iconName: String, cloudCover: Double, precipitationProbability: Double): Int {
         var postFix = ""
         var preFix = ""
-        if (weather.iconName.startsWith("partly-cloudy")) {
-            if (weather.cloudCover >= 0.6) postFix = "_mostly"
-            if (weather.cloudCover < 0.4) postFix = "_less"
+        if (iconName.startsWith("partly-cloudy")) {
+            if (cloudCover >= 0.6) postFix = "_mostly"
+            if (cloudCover < 0.4) postFix = "_less"
         }
-        if (weather.iconName.startsWith("rain")) {
-            if (weather.cloudCover < 0.6) {
-                preFix = if (weather.cloudCover < 0.4) "less_" else "mostly_"
+        if (iconName.startsWith("rain")) {
+            if (cloudCover < 0.6) {
+                preFix = if (cloudCover < 0.4) "less_" else "mostly_"
             } else {
-                postFix = if (weather.precipitationProbability >= 0.5) "_mostly" else "_less"
+                postFix = if (precipitationProbability >= 0.5) "_mostly" else "_less"
             }
         }
-        return context.resources.getIdentifier(preFix + weather.iconName.replace("-", "_") + postFix, "mipmap",
+        return context.resources.getIdentifier(preFix + iconName.replace("-", "_") + postFix, "mipmap",
             context.packageName)
     }
 
@@ -78,7 +82,7 @@ object WeatherUtils {
         String.format(Locale.getDefault(), WEATHER_DEGREE_FORMAT, mathRound(temperature),
             appContext.getString(R.string.temperature_unit))
 
-    fun mathRound(double: Double) = Math.round(double)
+    fun mathRound(double: Double) = double.roundToInt()
 
     fun setDataToView(view: View, identifier: Int, description: String?, value: String?) {
         val textView = view.findViewById<TextView>(identifier)

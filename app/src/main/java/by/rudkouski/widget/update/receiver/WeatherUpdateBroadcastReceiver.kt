@@ -7,10 +7,17 @@ import android.content.Context
 import android.content.Intent
 import android.util.Log
 import by.rudkouski.widget.app.App
-import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
+import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.ForecastRepository.setForecastsByLocationId
+import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
+import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
+import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationTimeZoneName
+import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
+import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.weather.WeatherUtils
 import okhttp3.OkHttpClient
@@ -21,19 +28,18 @@ import java.util.concurrent.Executors
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private val executorService = Executors.newFixedThreadPool(1)
-    private val dbHelper = INSTANCE
 
     companion object {
         private const val WEATHER_UPDATE_REQUEST_CODE = 1002
         private const val CURRENT_WEATHER_UPDATE_REQUEST_CODE = 1003
-        private const val WEATHER_UPDATE = "by.rudkouski.widget.WEATHER_UPDATE"
-        private const val CURRENT_WEATHER_UPDATE = "by.rudkouski.widget.CURRENT_WEATHER_UPDATE"
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
-        private const val WEATHER_QUERY_BY_COORDINATES =
-            "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
+        private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
+
+        private val weatherUpdateAction = "${WeatherUpdateBroadcastReceiver::class.java.`package`}.WEATHER_UPDATE"
+        private val currentWeatherUpdateAction = "${WeatherUpdateBroadcastReceiver::class.java.`package`}.CURRENT_WEATHER_UPDATE"
 
         fun getUpdateWeatherPendingIntent(context: Context): PendingIntent {
-            return getPendingIntent(context, WEATHER_UPDATE, WEATHER_UPDATE_REQUEST_CODE)
+            return getPendingIntent(context, weatherUpdateAction, WEATHER_UPDATE_REQUEST_CODE)
         }
 
         fun updateAllWeathers(context: Context) {
@@ -41,7 +47,8 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun updateCurrentWeather(context: Context) {
-            getPendingIntent(context, CURRENT_WEATHER_UPDATE, CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
+            getPendingIntent(context, currentWeatherUpdateAction,
+                CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
         }
 
         private fun getPendingIntent(context: Context, action: String, actionCode: Int): PendingIntent {
@@ -52,9 +59,9 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (WEATHER_UPDATE == intent.action || CURRENT_WEATHER_UPDATE == intent.action) {
+        if (weatherUpdateAction == intent.action || currentWeatherUpdateAction == intent.action) {
             if (NetworkChangeChecker.isOnline()) {
-                if (WEATHER_UPDATE == intent.action) {
+                if (weatherUpdateAction == intent.action) {
                     updateAllWeathers(context)
                 } else {
                     updateCurrentWeather(context)
@@ -67,50 +74,50 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private fun updateAllWeathers(context: Context) {
         executorService.execute {
-            val locationIds = dbHelper.getLocationIdsContainedInAllWidgets()
-            for (locationId in locationIds) {
-                updateWeather(locationId)
+            val locations = getAllUsedLocations()
+            if (locations != null) {
+                for (location in locations) {
+                    updateWeather(location)
+                }
+                sendIntentsForWidgetUpdate(context)
             }
-            sendIntentsForWidgetUpdate(context)
         }
     }
 
     private fun updateCurrentWeather(context: Context) {
         executorService.execute {
-            updateWeather(CURRENT_LOCATION_ID)
+            val location = getLocationById(CURRENT_LOCATION_ID)
+            updateWeather(location)
             sendIntentsForWidgetUpdate(context)
         }
     }
 
-    private fun updateWeather(locationId: Int) {
-        if (CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
-            dbHelper.resetCurrentLocation()
+    private fun updateWeather(location: Location) {
+        if (CURRENT_LOCATION_ID == location.id && isPermissionsDenied()) {
+            resetCurrentLocation()
             return
         }
-        val location = dbHelper.getLocationById(locationId)
         try {
             val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
             if (responseBody != null) {
                 if (location.id == CURRENT_LOCATION_ID) {
-                    val currentTimeZoneName =
-                        WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
-                    dbHelper.updateCurrentLocationTimeZoneName(currentTimeZoneName)
+                    val currentTimeZone = WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
+                    updateCurrentLocationTimeZoneName(currentTimeZone)
                 }
-                val currentWeather = WeatherUtils.getWeatherFromResponseBody(responseBody)
-                val hourWeather = WeatherUtils.getHourWeatherFromResponseBody(responseBody)
-                val dayForecast = WeatherUtils.getDayForecastFromResponseBody(responseBody)
-                dbHelper.setWeatherByLocationId(currentWeather, locationId)
-                dbHelper.setHourWeathersByLocationId(hourWeather, locationId)
-                dbHelper.setDayForecastByLocationId(dayForecast, locationId)
+                val currentWeather = WeatherUtils.getCurrentWeatherFromResponseBody(responseBody)
+                setCurrentWeather(currentWeather, location.id)
+                val hourWeathers = WeatherUtils.getHourWeathersFromResponseBody(responseBody)
+                setHourWeathersByLocationId(hourWeathers, location.id)
+                val forecasts = WeatherUtils.getDayForecastFromResponseBody(responseBody)
+                setForecastsByLocationId(forecasts, location.id)
             }
         } catch (e: Throwable) {
-            Log.e(this.javaClass.simpleName, e.toString())
+            Log.e(this.javaClass.simpleName, e.message)
         }
     }
 
     private fun getResponseBodyForLocationCoordinates(latitude: Double, longitude: Double): String? {
-        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, App.apiKey, latitude, longitude,
-            Locale.getDefault().language)
+        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, App.apiKey, latitude, longitude, Locale.getDefault().language)
         return getResponseBodyForRequest(request)
     }
 

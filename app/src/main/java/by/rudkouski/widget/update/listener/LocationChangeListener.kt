@@ -12,13 +12,12 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationManager.GPS_PROVIDER
 import android.location.LocationManager.NETWORK_PROVIDER
-import android.location.LocationProvider.AVAILABLE
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.location.LocationActivity
 import java.io.IOException
@@ -27,7 +26,6 @@ import java.io.IOException
 @SuppressLint("MissingPermission")
 object LocationChangeListener : LocationListener {
 
-    private val dbHelper = INSTANCE
     private val locationManager = appContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
     private const val LOCATION_UPDATE_INTERVAL = INTERVAL_FIFTEEN_MINUTES
@@ -40,13 +38,9 @@ object LocationChangeListener : LocationListener {
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        if (status == AVAILABLE) {
-            setLocation(chooseLocation())
-        }
     }
 
     override fun onProviderEnabled(provider: String?) {
-        setLocation(chooseLocation())
     }
 
     override fun onProviderDisabled(provider: String?) {
@@ -77,10 +71,8 @@ object LocationChangeListener : LocationListener {
         return null
     }
 
-
     private fun setRequestLocationUpdates() {
-        locationManager.requestLocationUpdates(NETWORK_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE,
-            this)
+        locationManager.requestLocationUpdates(NETWORK_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, this)
         locationManager.requestLocationUpdates(GPS_PROVIDER, LOCATION_UPDATE_INTERVAL, LOCATION_UPDATE_DISTANCE, this)
     }
 
@@ -105,7 +97,7 @@ object LocationChangeListener : LocationListener {
                         address.subAdminArea != null -> address.subAdminArea
                         else -> address.adminArea
                     }
-                dbHelper.updateCurrentLocation(locationName, lastLocation.latitude, lastLocation.longitude)
+                updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
                 sendIntentToWidgetUpdate()
             }
 

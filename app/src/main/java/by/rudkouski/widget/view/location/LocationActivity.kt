@@ -9,18 +9,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
 import android.widget.ListView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App.Companion.db
-import by.rudkouski.widget.app.App.Companion.uiScope
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.LocationRepository.getAllLocations
+import by.rudkouski.widget.repository.LocationRepository.getLocationByWidgetId
+import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
+import by.rudkouski.widget.repository.WidgetRepository.setWidgetByIdAndLocationId
 import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.update.listener.LocationChangeListener.startLocationUpdate
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
@@ -32,7 +32,8 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     companion object {
         private const val REQUEST_PERMISSION_CODE = 12345
-        private const val LOCATION_ACTIVITY_UPDATE = "by.rudkouski.widget.LOCATION_ACTIVITY_UPDATE"
+
+        private val locationActivityUpdateAction = "${LocationActivity::class.java.`package`}.LOCATION_ACTIVITY_UPDATE"
 
         fun startIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, LocationActivity::class.java)
@@ -41,7 +42,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         }
 
         fun updateActivityBroadcast(context: Context) {
-            val intent = Intent(LOCATION_ACTIVITY_UPDATE)
+            val intent = Intent(locationActivityUpdateAction)
             context.sendBroadcast(intent)
         }
     }
@@ -50,11 +51,10 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         super.onCreate(savedInstanceState)
         setContentView(R.layout.location_activity)
         activityUpdateBroadcastReceiver = LocationActivityUpdateBroadcastReceiver()
-        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(LOCATION_ACTIVITY_UPDATE))
+        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(locationActivityUpdateAction))
         if (isPermissionsDenied()) {
-            dbHelper.resetCurrentLocation()
-            ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            resetCurrentLocation()
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_PERMISSION_CODE)
         } else {
             initActivity()
@@ -71,13 +71,12 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         val toolbar: Toolbar = findViewById(R.id.toolbar_config)
         setSupportActionBar(toolbar)
         setResult(RESULT_CANCELED)
-        val handler = Handler(Looper.getMainLooper())
-        handler.post(this::setLocations)
+        setLocations()
     }
 
     private fun setLocations() {
         val locationsView: ListView = findViewById(R.id.locations_config)
-        var locations = dbHelper.getAllLocations()
+        var locations = getAllLocations()
         if (isPermissionsDenied()) {
             locations = locations.filter { location -> location.id != CURRENT_LOCATION_ID }
         } else {
@@ -86,15 +85,14 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         locationsView.adapter = LocationsViewAdapter(this, this, locations, getSelectedLocationId())
     }
 
-    private fun getSelectedLocationId(): Int = dbHelper.getLocationByWidgetId(widgetId)
+    private fun getSelectedLocationId(): Int = getLocationByWidgetId(widgetId)?.id ?: 0
 
     override fun onLocationItemClick(view: View, locationId: Int) {
-        val handler = Handler(Looper.getMainLooper())
-        handler.post { locationItemClickEvent(locationId) }
+        locationItemClickEvent(locationId)
     }
 
     private fun locationItemClickEvent(locationId: Int) {
-        if (dbHelper.setWidgetById(widgetId, locationId)) {
+        if (setWidgetByIdAndLocationId(widgetId, locationId)) {
             updateWidgetAndWeather()
             setResultIntent()
         } else {

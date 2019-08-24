@@ -11,12 +11,10 @@ import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Weather
 
 
-class HourWeatherAdapter(private val hourWeathers: List<Weather>) :
-    RecyclerView.Adapter<HourWeatherAdapter.HourWeatherViewHolder>() {
+class HourWeatherAdapter(private val hourWeathers: List<Weather>) : RecyclerView.Adapter<HourWeatherAdapter.HourWeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HourWeatherViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(by.rudkouski.widget.R.layout.hour_weather_item, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(by.rudkouski.widget.R.layout.hour_weather_item, parent, false)
         view.layoutParams.width = getViewWidth()
         return HourWeatherViewHolder(view)
     }

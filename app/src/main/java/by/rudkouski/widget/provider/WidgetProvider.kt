@@ -11,8 +11,6 @@ import android.content.Intent
 import android.content.Intent.ACTION_QUICK_CLOCK
 import android.graphics.Typeface.BOLD
 import android.graphics.Typeface.NORMAL
-import android.os.Handler
-import android.os.Looper
 import android.provider.AlarmClock.ACTION_SHOW_ALARMS
 import android.provider.Settings
 import android.provider.Settings.System.TIME_12_24
@@ -21,9 +19,12 @@ import android.text.style.StyleSpan
 import android.view.View
 import android.widget.RemoteViews
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Weather
+import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
+import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
+import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.listener.LocationChangeListener
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
@@ -33,28 +34,27 @@ import by.rudkouski.widget.view.weather.WeatherUtils
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.HOUR
+import kotlin.math.roundToInt
 
 class WidgetProvider : AppWidgetProvider() {
 
-    private val dbHelper = INSTANCE
-
     companion object {
-        private val WIDGET_UPDATE = "${WidgetProvider::class.java.`package`} WIDGET_UPDATE"
         private const val TIME_FORMAT_12 = "h:mm"
         private const val TIME_FORMAT_24 = "H:mm"
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
         private const val WIDGET_CLOCK_UPDATE_REQUEST_CODE = 1001
         private const val SYSTEM_TIME_FORMAT_24 = 24
 
+        private val widgetUpdateAction = "${WidgetProvider::class.java.`package`}.WIDGET_UPDATE"
+
         fun updateWidget(context: Context) {
             val intent = Intent(context, WidgetProvider::class.java)
-            intent.action = WIDGET_UPDATE
+            intent.action = widgetUpdateAction
             PendingIntent.getBroadcast(context, WIDGET_CLOCK_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT).send()
         }
 
         fun chooseSystemTimeFormat(context: Context, timeFormat12: String, timeFormat24: String): String {
-            return if (Settings.System.getInt(context.contentResolver, TIME_12_24, 0) == SYSTEM_TIME_FORMAT_24)
-                timeFormat24 else timeFormat12
+            return if (Settings.System.getInt(context.contentResolver, TIME_12_24, 0) == SYSTEM_TIME_FORMAT_24) timeFormat24 else timeFormat12
         }
 
         fun isActualWeather(weather: Weather?): Boolean {
@@ -70,27 +70,25 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (WIDGET_UPDATE == intent.action) {
+        if (widgetUpdateAction == intent.action) {
             val componentName = ComponentName(context, javaClass.name)
             val widgetManager = AppWidgetManager.getInstance(context)
             val widgetIds = widgetManager.getAppWidgetIds(componentName)
             for (widgetId in widgetIds) {
-                val handler = Handler(Looper.getMainLooper())
-                handler.post {
-                    val remoteViews = updateWidget(context, widgetId)
-                    widgetManager.updateAppWidget(widgetId, remoteViews)
-                }
+                val remoteViews = updateWidget(context, widgetId)
+                widgetManager.updateAppWidget(widgetId, remoteViews)
             }
         }
     }
 
     private fun updateWidget(context: Context, widgetId: Int): RemoteViews {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
-        val widget = dbHelper.getWidgetById(widgetId)
+        val widget = getWidgetById(widgetId)
         if (widget != null) {
-            updateClockAndDate(remoteViews, context, widget.location.timeZone, widget.isBold)
-            updateLocation(remoteViews, widget.location, widget.isBold)
-            updateWeather(remoteViews, context, widget.location.id, widget.isBold)
+            val location = getLocationById(widget.locationId)
+            updateClockAndDate(remoteViews, context, location.timeZone, widget.isBold)
+            updateLocation(remoteViews, location, widget.isBold)
+            updateWeather(remoteViews, context, location.id, widget.isBold)
             setPendingIntents(remoteViews, context, widgetId)
         }
         return remoteViews
@@ -98,8 +96,7 @@ class WidgetProvider : AppWidgetProvider() {
 
     private fun updateClockAndDate(remoteViews: RemoteViews, context: Context, timeZone: TimeZone, isBold: Boolean) {
         val currentTime = Calendar.getInstance()
-        val timeFormat =
-            SimpleDateFormat(chooseSystemTimeFormat(context, TIME_FORMAT_12, TIME_FORMAT_24), Locale.getDefault())
+        val timeFormat = SimpleDateFormat(chooseSystemTimeFormat(context, TIME_FORMAT_12, TIME_FORMAT_24), Locale.getDefault())
         timeFormat.timeZone = timeZone
         remoteViews.setTextViewText(R.id.clock_widget, timeFormat.format(currentTime.time))
         val dateFormat = SimpleDateFormat(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault())
@@ -115,20 +112,18 @@ class WidgetProvider : AppWidgetProvider() {
     }
 
     private fun updateLocation(remoteViews: RemoteViews, location: Location, isBold: Boolean) {
-        val spanLocationText = createSpannableString("  ${location.name}", isBold)
+        val spanLocationText = createSpannableString("  ${location.getName()}", isBold)
         remoteViews.setTextViewText(R.id.location_widget, spanLocationText)
     }
 
     private fun updateWeather(remoteViews: RemoteViews, context: Context, locationId: Int, isBold: Boolean) {
-        val weather = dbHelper.getWeatherByLocationId(locationId)
+        val weather = getCurrentWeatherByLocationId(locationId)
         if (isActualWeather(weather)) {
             remoteViews.setViewVisibility(R.id.weather_widget, View.VISIBLE)
             remoteViews.setImageViewResource(R.id.weather_image_widget,
-                WeatherUtils.getWeatherImageResource(context, weather!!))
-            remoteViews.setTextViewText(R.id.degrees_widget,
-                createSpannableString(Math.round(weather.temperature).toString(), isBold))
-            remoteViews.setTextViewText(R.id.degrees_text_widget,
-                createSpannableString(context.getString(R.string.temperature_unit), isBold))
+                WeatherUtils.getIconWeatherImageResource(context, weather!!.iconName, weather.cloudCover, weather.precipitationProbability))
+            remoteViews.setTextViewText(R.id.degrees_widget, createSpannableString(weather.temperature.roundToInt().toString(), isBold))
+            remoteViews.setTextViewText(R.id.degrees_text_widget, createSpannableString(context.getString(R.string.temperature_unit), isBold))
         } else {
             remoteViews.setViewVisibility(R.id.weather_widget, View.INVISIBLE)
         }
@@ -173,12 +168,8 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
-
-        val handler = Handler(Looper.getMainLooper())
-        handler.post {
-            for (appWidgetId in appWidgetIds) {
-                dbHelper.deleteWidgetById(appWidgetId)
-            }
+        for (appWidgetId in appWidgetIds) {
+            deleteWidgetById(appWidgetId)
         }
     }
 }

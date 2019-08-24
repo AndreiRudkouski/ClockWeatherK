@@ -31,6 +31,6 @@ class LocationItemView : LinearLayout {
             "${context.getString(R.string.current_location)}: "
         } else {
             ""
-        } + location.name
+        } + location.getName()
     }
 }

@@ -16,6 +16,7 @@ import java.util.*
 
 class ForecastItemView : LinearLayout, View.OnClickListener {
 
+    private var widgetId = 0
     private lateinit var forecast: Forecast
 
     constructor(context: Context) : super(context)
@@ -29,7 +30,8 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
         const val FORECAST_DEGREE_FORMAT = "%1\$s / %2\$s"
     }
 
-    fun updateForecastItemView(forecast: Forecast) {
+    fun updateForecastItemView(widgetId: Int, forecast: Forecast) {
+        this.widgetId = widgetId
         this.forecast = forecast
         val view = findViewById<View>(R.id.forecast_item)
         setImage(view, forecast)
@@ -41,7 +43,8 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
 
     private fun setImage(view: View, forecast: Forecast) {
         val imageView = view.findViewById<ImageView>(R.id.weather_image_forecast)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, forecast))
+        imageView.setImageResource(
+            WeatherUtils.getIconWeatherImageResource(context, forecast.iconName, forecast.cloudCover, forecast.precipitationProbability))
     }
 
     private fun setDateText(view: View, forecast: Forecast) {
@@ -62,6 +65,6 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        DayForecastActivity.start(App.appContext, forecast.id)
+        DayForecastActivity.start(App.appContext, widgetId, forecast.id)
     }
 }
