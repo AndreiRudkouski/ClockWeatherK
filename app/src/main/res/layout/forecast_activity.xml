@@ -30,7 +30,7 @@
                           android:layout_height="wrap_content"
                           android:orientation="vertical">
 
-                <include layout="@layout/weather_item"/>
+                <include layout="@layout/forecast_weather_item"/>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/hour_weather_recycler_view"

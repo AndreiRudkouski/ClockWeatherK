@@ -53,6 +53,9 @@
                       android:scheme="http"/>
             </intent-filter>
         </activity>
+        <activity android:name=".view.weather.HourWeatherActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"/>
         <activity android:name=".view.forecast.ForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>

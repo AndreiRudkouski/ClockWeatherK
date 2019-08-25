@@ -19,7 +19,10 @@ import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
 import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
 import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import by.rudkouski.widget.view.forecast.ForecastActivity
-import by.rudkouski.widget.view.weather.WeatherUtils
+import by.rudkouski.widget.view.weather.WeatherUtils.getCurrentTimeZoneNameFromResponseBody
+import by.rudkouski.widget.view.weather.WeatherUtils.getCurrentWeatherFromResponseBody
+import by.rudkouski.widget.view.weather.WeatherUtils.getDayForecastFromResponseBody
+import by.rudkouski.widget.view.weather.WeatherUtils.getHourWeathersFromResponseBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.*
@@ -100,15 +103,19 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         try {
             val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
             if (responseBody != null) {
-                if (location.id == CURRENT_LOCATION_ID) {
-                    val currentTimeZone = WeatherUtils.getCurrentTimeZoneNameFromResponseBody(responseBody)
-                    updateCurrentLocationTimeZoneName(currentTimeZone)
-                }
-                val currentWeather = WeatherUtils.getCurrentWeatherFromResponseBody(responseBody)
+                val timeZone =
+                    if (location.id == CURRENT_LOCATION_ID) {
+                        val currentTimeZone = getCurrentTimeZoneNameFromResponseBody(responseBody)
+                        updateCurrentLocationTimeZoneName(currentTimeZone)
+                        currentTimeZone
+                    } else {
+                        location.timeZone
+                    }
+                val currentWeather = getCurrentWeatherFromResponseBody(responseBody, timeZone)
                 setCurrentWeather(currentWeather, location.id)
-                val hourWeathers = WeatherUtils.getHourWeathersFromResponseBody(responseBody)
+                val hourWeathers = getHourWeathersFromResponseBody(responseBody, timeZone)
                 setHourWeathersByLocationId(hourWeathers, location.id)
-                val forecasts = WeatherUtils.getDayForecastFromResponseBody(responseBody)
+                val forecasts = getDayForecastFromResponseBody(responseBody, timeZone)
                 setForecastsByLocationId(forecasts, location.id)
             }
         } catch (e: Throwable) {

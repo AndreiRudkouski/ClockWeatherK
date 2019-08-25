@@ -12,6 +12,9 @@ interface WeatherDao {
     @Query("SELECT * FROM weathers WHERE weather_location_id =:locationId AND weather_type = :type")
     suspend fun getAllByLocationIdAndType(locationId: Int, type: String): List<Weather>?
 
+    @Query("SELECT * FROM weathers WHERE weather_id =:weatherId")
+    suspend fun getById(weatherId: Int): Weather?
+
     @Insert
     suspend fun insert(weather: Weather)
 

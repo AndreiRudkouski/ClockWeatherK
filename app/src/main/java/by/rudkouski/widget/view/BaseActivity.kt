@@ -11,17 +11,14 @@ import by.rudkouski.widget.provider.WidgetProvider
 import by.rudkouski.widget.repository.WidgetRepository
 import by.rudkouski.widget.repository.WidgetRepository.changeWidgetTextBold
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
-import by.rudkouski.widget.view.forecast.DayForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
 
 abstract class BaseActivity : AppCompatActivity() {
 
     protected var widgetId = 0
-    protected var forecastId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID) ?: 0
-        forecastId = intent?.extras?.getInt(DayForecastActivity.EXTRA_FORECAST_ID) ?: 0
         changeWidgetTheme()
         super.onCreate(savedInstanceState)
     }

@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App
+import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.view.weather.WeatherUtils
 import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
@@ -65,6 +65,6 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
     }
 
     override fun onClick(v: View) {
-        DayForecastActivity.start(App.appContext, widgetId, forecast.id)
+        DayForecastActivity.start(appContext, widgetId, forecast.id)
     }
 }

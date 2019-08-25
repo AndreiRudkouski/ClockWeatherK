@@ -12,6 +12,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
@@ -30,7 +31,6 @@ import kotlin.collections.ArrayList
 class ForecastActivity : BaseActivity() {
 
     private lateinit var activityUpdateBroadcastReceiver: ForecastActivityUpdateBroadcastReceiver
-    private val hourWeathers = ArrayList<Weather>()
 
     companion object {
         private val forecastActivityUpdateAction = "${ForecastActivity::class.java.`package`}.FORECAST_ACTIVITY_UPDATE"
@@ -76,7 +76,8 @@ class ForecastActivity : BaseActivity() {
         val weatherView = findViewById<WeatherItemView>(R.id.current_weather)
         val hourWeatherRecycler = findViewById<RecyclerView>(R.id.hour_weather_recycler_view)
         hourWeatherRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-        val adapter = HourWeatherAdapter(hourWeathers)
+        val hourWeathers = ArrayList<Weather>()
+        val adapter = HourWeatherAdapter(widgetId, hourWeathers)
         hourWeatherRecycler.adapter = adapter
         val widget = getWidgetById(widgetId)
         if (widget != null) {
@@ -84,22 +85,23 @@ class ForecastActivity : BaseActivity() {
             toolbarLayout.title = title
             val weather = getCurrentWeatherByLocationId(widget.locationId)
             weatherView.updateWeatherItemView(weather)
-            hourWeatherViewUpdate(widget, adapter)
+            hourWeatherViewUpdate(widget, adapter, hourWeathers)
             showNetworkAndLocationEnableMessage(weatherView, widget.locationId, this)
         }
     }
 
-    private fun hourWeatherViewUpdate(widget: Widget, adapter: HourWeatherAdapter) {
+    private fun hourWeatherViewUpdate(widget: Widget, adapter: HourWeatherAdapter, hourWeathers: ArrayList<Weather>) {
         if (hourWeathers.isNotEmpty()) hourWeathers.clear()
-        hourWeathers.addAll(checkWeatherTime(getHourWeathersByLocationId(widget.locationId)))
+        val location = getLocationById(widget.locationId)
+        hourWeathers.addAll(checkWeatherTime(location, getHourWeathersByLocationId(widget.locationId)))
         adapter.notifyDataSetChanged()
     }
 
-    private fun checkWeatherTime(weathers: List<Weather>?): List<Weather> {
+    private fun checkWeatherTime(location: Location, weathers: List<Weather>?): List<Weather> {
         val correctWeathers = ArrayList<Weather>()
         if (weathers != null) {
             for (weather in weathers) {
-                if (isWeatherTimeCorrect(weather.date)) {
+                if (isWeatherTimeCorrect(weather.date, location.timeZone)) {
                     correctWeathers.add(weather)
                 }
             }
@@ -107,8 +109,8 @@ class ForecastActivity : BaseActivity() {
         return correctWeathers
     }
 
-    private fun isWeatherTimeCorrect(weatherTime: Calendar): Boolean {
-        val currentTime = Calendar.getInstance(weatherTime.timeZone)
+    private fun isWeatherTimeCorrect(weatherTime: Calendar, locationTimeZone: TimeZone): Boolean {
+        val currentTime = Calendar.getInstance(locationTimeZone)
         return weatherTime.time.time - currentTime.time.time in 0..DAY_IN_MILLIS
     }
 

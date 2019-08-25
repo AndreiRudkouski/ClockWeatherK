@@ -5,7 +5,7 @@ import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
 import by.rudkouski.widget.database.AppDatabase.Companion.defaultLocation
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.repository.WeatherRepository.deleteWeatherForLocationId
+import by.rudkouski.widget.repository.WeatherRepository.deleteWeathersForLocationId
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -62,7 +62,7 @@ object LocationRepository {
     @Transaction
     fun resetCurrentLocation() {
         GlobalScope.launch {
-            deleteWeatherForLocationId(CURRENT_LOCATION_ID)
+            deleteWeathersForLocationId(CURRENT_LOCATION_ID)
             locationDao.update(defaultLocation)
         }
     }
