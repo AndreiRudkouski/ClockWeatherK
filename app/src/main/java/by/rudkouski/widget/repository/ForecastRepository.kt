@@ -3,11 +3,9 @@ package by.rudkouski.widget.repository
 import androidx.room.Transaction
 import by.rudkouski.widget.database.AppDatabase
 import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.*
 
 object ForecastRepository {
 
@@ -15,12 +13,7 @@ object ForecastRepository {
 
     fun getForecastById(forecastId: Int): Forecast? {
         return runBlocking {
-            val forecast = forecastDao.getById(forecastId)
-            if (forecast?.locationId != null) {
-                val location = getLocationById(forecast.locationId!!)
-                setTimeZone(forecast, location.timeZone)
-            }
-            return@runBlocking forecast
+            forecastDao.getById(forecastId)
         }
     }
 
@@ -38,10 +31,7 @@ object ForecastRepository {
 
     fun getForecastsByLocationId(locationId: Int): List<Forecast>? {
         return runBlocking {
-            val location = getLocationById(locationId)
-            val forecasts = forecastDao.getAllByLocationId(locationId)
-            forecasts?.forEach { setTimeZone(it, location.timeZone) }
-            return@runBlocking forecasts
+            forecastDao.getAllByLocationId(locationId)
         }
     }
 
@@ -49,16 +39,5 @@ object ForecastRepository {
         GlobalScope.launch {
             forecastDao.deleteAllForLocationId(locationId)
         }
-    }
-
-    private fun setTimeZone(forecast: Forecast, timeZone: TimeZone) {
-        forecast.date.timeZone = timeZone
-        forecast.sunriseTime.timeZone = timeZone
-        forecast.sunsetTime.timeZone = timeZone
-        forecast.precipitationIntensityMaxTime?.timeZone = timeZone
-        forecast.apparentTemperatureLowTime.timeZone = timeZone
-        forecast.apparentTemperatureHighTime.timeZone = timeZone
-        forecast.temperatureLowTime.timeZone = timeZone
-        forecast.temperatureHighTime.timeZone = timeZone
     }
 }

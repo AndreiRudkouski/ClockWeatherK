@@ -4,7 +4,6 @@ import androidx.room.Transaction
 import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
 import kotlinx.coroutines.GlobalScope
@@ -37,8 +36,7 @@ object WeatherRepository {
                 return@runBlocking null
             }
             val weathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.CURRENT.name)
-            val location = getLocationById(locationId)
-            return@runBlocking if (weathers.isNullOrEmpty()) null else weathers[0].also { it.date.timeZone = location.timeZone }
+            return@runBlocking if (weathers.isNullOrEmpty()) null else weathers[0]
         }
     }
 
@@ -67,10 +65,7 @@ object WeatherRepository {
 
     fun getHourWeathersByLocationId(locationId: Int): List<Weather>? {
         return runBlocking {
-            val locations = weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
-            val location = getLocationById(locationId)
-            locations?.forEach { it.date.timeZone = location.timeZone }
-            return@runBlocking locations
+            weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
         }
     }
 
