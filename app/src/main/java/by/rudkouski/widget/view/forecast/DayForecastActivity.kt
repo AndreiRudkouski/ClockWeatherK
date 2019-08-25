@@ -18,8 +18,8 @@ import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
-import by.rudkouski.widget.view.weather.WeatherUtils
 import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
+import by.rudkouski.widget.view.weather.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.weather.WeatherUtils.getSpannableStringDescription
 import by.rudkouski.widget.view.weather.WeatherUtils.getSpannableStringValue
 import by.rudkouski.widget.view.weather.WeatherUtils.setCloudCoverText
@@ -67,7 +67,7 @@ class DayForecastActivity : BaseActivity() {
             setDegreeText(view, forecast)
             setSunriseTime(view, forecast)
             setSunsetTime(view, forecast)
-            setPrecipitationText(view, forecast.precipitationProbability, R.id.precipitation_day_forecast)
+            setPrecipitationText(view, forecast.precipitationProbability, forecast.precipitationType, R.id.precipitation_day_forecast)
             setFeelText(view, forecast)
             setHumidityText(view, forecast.humidity, R.id.humidity_day_forecast)
             setPressureText(view, forecast.pressure, R.id.pressure_day_forecast)
@@ -96,8 +96,7 @@ class DayForecastActivity : BaseActivity() {
 
     private fun setImage(view: View, forecast: Forecast) {
         val imageView = view.findViewById<ImageView>(R.id.image_day_forecast)
-        imageView.setImageResource(
-            WeatherUtils.getIconWeatherImageResource(this, forecast.iconName, forecast.cloudCover, forecast.precipitationProbability))
+        imageView.setImageResource(getIconWeatherImageResource(this, forecast.iconName, forecast.cloudCover, forecast.precipitationProbability))
     }
 
     private fun setDegreeText(view: View, forecast: Forecast) {

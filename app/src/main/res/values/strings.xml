@@ -47,7 +47,7 @@
     <string name="snow">snow</string>
     <string name="sleet">sleet</string>
     <string name="rain">rain</string>
-    <string name="no_rain">without any precipitations</string>
+    <string name="no_rain">no precipitation</string>
 
     <string name="wind_direction_N">N</string>
     <string name="wind_direction_NNE">N-NE</string>

@@ -63,7 +63,7 @@ class HourWeatherActivity : BaseActivity() {
             updateTitle(weather)
             setImage(view, weather)
             setDegreeText(view, weather)
-            setPrecipitationText(view, weather.precipitationProbability, R.id.precipitation_hour_weather)
+            setPrecipitationText(view, weather.precipitationProbability, weather.precipitationType, R.id.precipitation_hour_weather)
             setFeelText(view, weather)
             setHumidityText(view, weather.humidity, R.id.humidity_hour_weather)
             setPressureText(view, weather.pressure, R.id.pressure_hour_weather)
@@ -91,7 +91,7 @@ class HourWeatherActivity : BaseActivity() {
 
     private fun getFormatDateTime(date: Calendar): String {
         val timeFormat = WidgetProvider.chooseSystemTimeFormat(this, WeatherItemView.FULL_TIME_FORMAT_12, WeatherItemView.TIME_FORMAT_24)
-        val dateFormat = SimpleDateFormat("$timeFormat $DATE_WITH_DAY_SHORT_FORMAT", Locale.getDefault())
+        val dateFormat = SimpleDateFormat("$DATE_WITH_DAY_SHORT_FORMAT, $timeFormat", Locale.getDefault())
         dateFormat.timeZone = date.timeZone
         return dateFormat.format(date.time)
     }

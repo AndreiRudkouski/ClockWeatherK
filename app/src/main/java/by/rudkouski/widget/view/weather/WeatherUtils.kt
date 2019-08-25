@@ -127,10 +127,11 @@ object WeatherUtils {
         }
     }
 
-    fun setPrecipitationText(view: View, precipitationProbability: Double, identifier: Int) {
+    fun setPrecipitationText(view: View, precipitationProbability: Double, precipitationType: String?, identifier: Int) {
         val description = getSpannableStringDescription(view.context, R.string.precipitationProbability)
-        val value = getSpannableStringValue(view.context,
-            if (precipitationProbability > 0) convertDoubleToPercents(precipitationProbability) else view.context.getString(R.string.no_rain))
+        val value = getSpannableStringValue(view.context, if (precipitationProbability > 0) "${view.context.getString(
+            view.context.resources.getIdentifier(precipitationType, "string", view.context.packageName))}, ${convertDoubleToPercents(
+            precipitationProbability)}" else view.context.getString(R.string.no_rain))
         setDataToView(view, identifier, description, value)
     }
 

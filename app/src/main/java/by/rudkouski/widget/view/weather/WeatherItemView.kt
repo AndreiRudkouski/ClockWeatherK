@@ -13,6 +13,7 @@ import by.rudkouski.widget.view.weather.WeatherUtils.convertDoubleToPercents
 import by.rudkouski.widget.view.weather.WeatherUtils.convertToDeterminationPattern
 import by.rudkouski.widget.view.weather.WeatherUtils.convertWindDirection
 import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
+import by.rudkouski.widget.view.weather.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.weather.WeatherUtils.mathRound
 import by.rudkouski.widget.view.weather.WeatherUtils.setDataToView
 import java.text.SimpleDateFormat
@@ -59,8 +60,7 @@ class WeatherItemView : LinearLayout {
 
     private fun setImage(view: View, weather: Weather?) {
         val imageView = view.findViewById<ImageView>(R.id.image_current_weather)
-        imageView.setImageResource(
-            WeatherUtils.getIconWeatherImageResource(context, weather!!.iconName, weather.cloudCover, weather.precipitationProbability))
+        imageView.setImageResource(getIconWeatherImageResource(context, weather!!.iconName, weather.cloudCover, weather.precipitationProbability))
     }
 
     private fun setDegreeText(view: View, weather: Weather?) {
@@ -86,7 +86,9 @@ class WeatherItemView : LinearLayout {
 
     private fun setPrecipitationText(view: View, weather: Weather?) {
         val description = context.getString(R.string.precipitationProbability)
-        val value = convertDoubleToPercents(weather!!.precipitationProbability)
+        val value = if (weather!!.precipitationProbability > 0) "${view.context.getString(
+            view.context.resources.getIdentifier(weather.precipitationType, "string", view.context.packageName))}, ${convertDoubleToPercents(
+            weather.precipitationProbability)}" else view.context.getString(R.string.no_rain)
         setDataToView(view, R.id.precipitation_current_weather, description, value)
     }
 

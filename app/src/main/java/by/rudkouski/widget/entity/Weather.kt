@@ -31,6 +31,9 @@ data class Weather(@PrimaryKey(autoGenerate = true)
                    @SerializedName("precipProbability")
                    @ColumnInfo(name = "weather_precip_probability")
                    val precipitationProbability: Double,
+                   @SerializedName("precipType")
+                   @ColumnInfo(name = "weather_precip_type")
+                   val precipitationType: String?,
                    @SerializedName("dewPoint")
                    @ColumnInfo(name = "weather_dew_point")
                    val dewPoint: Double,
