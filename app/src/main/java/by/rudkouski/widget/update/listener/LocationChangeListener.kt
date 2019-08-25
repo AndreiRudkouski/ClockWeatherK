@@ -16,8 +16,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.app.App.Companion.appContext
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.location.LocationActivity
 import java.io.IOException
@@ -97,25 +101,32 @@ object LocationChangeListener : LocationListener {
                         address.subAdminArea != null -> address.subAdminArea
                         else -> address.adminArea
                     }
-                updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
-                sendIntentToWidgetUpdate()
+                val savedLocation = getLocationById(CURRENT_LOCATION_ID)
+                if (savedLocation.name_code != locationName || savedLocation.latitude != lastLocation.latitude || savedLocation.longitude != lastLocation.longitude) {
+                    updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
+                    sendIntentToWidgetUpdate()
+                }
             }
 
         }
     }
 
     private fun getAddress(location: android.location.Location): Address? {
-        val longitude = location.longitude
-        val latitude = location.latitude
-        val locale = appContext.resources.configuration.locales[0]
-        val geoCoder = Geocoder(appContext, locale)
-        try {
-            val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-            if (addresses != null && addresses.size > 0) {
-                return addresses[0]
+        if (isOnline()) {
+            val longitude = location.longitude
+            val latitude = location.latitude
+            val locale = appContext.resources.configuration.locales[0]
+            val geoCoder = Geocoder(appContext, locale)
+            try {
+                val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+                if (addresses != null && addresses.size > 0) {
+                    return addresses[0]
+                }
+            } catch (e: IOException) {
+                Log.e(LocationChangeListener::class.java.simpleName, e.toString())
             }
-        } catch (e: IOException) {
-            Log.e(LocationChangeListener::class.java.simpleName, e.toString())
+        } else {
+            NetworkChangeChecker.registerReceiver()
         }
         return null
     }

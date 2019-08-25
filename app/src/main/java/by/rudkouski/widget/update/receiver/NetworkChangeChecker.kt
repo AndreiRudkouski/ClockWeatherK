@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import by.rudkouski.widget.app.App
+import by.rudkouski.widget.update.listener.LocationChangeListener.updateLocation
 import java.util.concurrent.atomic.AtomicBoolean
 
 object NetworkChangeChecker {
@@ -14,6 +15,7 @@ object NetworkChangeChecker {
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             WeatherUpdateBroadcastReceiver.updateAllWeathers(App.appContext)
+            updateLocation()
         }
 
         override fun onLost(network: Network) {
