@@ -2,14 +2,13 @@ package by.rudkouski.widget.repository
 
 import androidx.room.Transaction
 import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
-import by.rudkouski.widget.database.AppDatabase.Companion.defaultLocation
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.widget.entity.Location.Companion.DEFAULT_LOCATION
+import by.rudkouski.widget.repository.ForecastRepository.deleteForecastsForLocationId
 import by.rudkouski.widget.repository.WeatherRepository.deleteWeathersForLocationId
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.util.*
+import org.threeten.bp.ZoneId
 
 object LocationRepository {
 
@@ -40,10 +39,8 @@ object LocationRepository {
     }
 
     @Transaction
-    fun updateCurrentLocationData(name: String,
-                                  latitude: Double,
-                                  longitude: Double) {
-        GlobalScope.launch {
+    fun updateCurrentLocationData(name: String, latitude: Double, longitude: Double) {
+        runBlocking {
             val savedLocation = locationDao.getById(CURRENT_LOCATION_ID)
             val updatedLocation = savedLocation.copy(name_code = name, longitude = longitude, latitude = latitude)
             locationDao.update(updatedLocation)
@@ -51,19 +48,20 @@ object LocationRepository {
     }
 
     @Transaction
-    fun updateCurrentLocationTimeZoneName(timeZone: TimeZone) {
-        GlobalScope.launch {
+    fun updateCurrentLocationZoneIdName(zoneId: ZoneId) {
+        runBlocking {
             val savedLocation = locationDao.getById(CURRENT_LOCATION_ID)
-            val updatedLocation = savedLocation.copy(timeZone = timeZone)
+            val updatedLocation = savedLocation.copy(zoneId = zoneId)
             locationDao.update(updatedLocation)
         }
     }
 
     @Transaction
     fun resetCurrentLocation() {
-        GlobalScope.launch {
+        runBlocking {
             deleteWeathersForLocationId(CURRENT_LOCATION_ID)
-            locationDao.update(defaultLocation)
+            deleteForecastsForLocationId(CURRENT_LOCATION_ID)
+            locationDao.update(DEFAULT_LOCATION)
         }
     }
 

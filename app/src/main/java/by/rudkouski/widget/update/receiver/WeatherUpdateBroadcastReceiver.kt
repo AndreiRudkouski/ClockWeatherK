@@ -9,28 +9,31 @@ import android.util.Log
 import by.rudkouski.widget.app.App
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.ForecastRepository.setForecastsByLocationId
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
-import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationTimeZoneName
+import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationZoneIdName
 import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
 import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
+import by.rudkouski.widget.repository.WeatherRepository.setSuitableWeatherAsCurrentByLocationId
 import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
-import by.rudkouski.widget.view.forecast.ForecastActivity
-import by.rudkouski.widget.view.weather.WeatherUtils.getCurrentTimeZoneNameFromResponseBody
-import by.rudkouski.widget.view.weather.WeatherUtils.getCurrentWeatherFromResponseBody
-import by.rudkouski.widget.view.weather.WeatherUtils.getDayForecastFromResponseBody
-import by.rudkouski.widget.view.weather.WeatherUtils.getHourWeathersFromResponseBody
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
+import by.rudkouski.widget.util.JsonUtils.getCurrentWeatherFromResponseBody
+import by.rudkouski.widget.util.JsonUtils.getCurrentZoneIdFromResponseBody
+import by.rudkouski.widget.util.JsonUtils.getDayForecastFromResponseBody
+import by.rudkouski.widget.util.JsonUtils.getHourWeathersFromResponseBody
+import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.updateActivityBroadcast
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.threeten.bp.OffsetDateTime
 import java.util.*
-import java.util.concurrent.Executors
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
-
-    private val executorService = Executors.newFixedThreadPool(1)
 
     companion object {
         private const val WEATHER_UPDATE_REQUEST_CODE = 1002
@@ -63,36 +66,35 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (weatherUpdateAction == intent.action || currentWeatherUpdateAction == intent.action) {
-            if (NetworkChangeChecker.isOnline()) {
-                if (weatherUpdateAction == intent.action) {
-                    updateAllWeathers(context)
+            GlobalScope.launch {
+                if (isOnline()) {
+                    if (weatherUpdateAction == intent.action) {
+                        updateAllWeathers(context)
+                    } else {
+                        updateCurrentWeather(context)
+                    }
                 } else {
-                    updateCurrentWeather(context)
+                    registerReceiver()
+                    updateCurrentWeatherWithoutNetwork(context)
                 }
-            } else {
-                NetworkChangeChecker.registerReceiver()
             }
         }
     }
 
     private fun updateAllWeathers(context: Context) {
-        executorService.execute {
-            val locations = getAllUsedLocations()
-            if (locations != null) {
-                for (location in locations) {
-                    updateWeather(location)
-                }
-                sendIntentsForWidgetUpdate(context)
+        val locations = getAllUsedLocations()
+        if (locations != null) {
+            for (location in locations) {
+                updateWeather(location)
             }
+            sendIntentsForWidgetUpdate(context)
         }
     }
 
     private fun updateCurrentWeather(context: Context) {
-        executorService.execute {
-            val location = getLocationById(CURRENT_LOCATION_ID)
-            updateWeather(location)
-            sendIntentsForWidgetUpdate(context)
-        }
+        val location = getLocationById(CURRENT_LOCATION_ID)
+        updateWeather(location)
+        sendIntentsForWidgetUpdate(context)
     }
 
     private fun updateWeather(location: Location) {
@@ -103,19 +105,20 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         try {
             val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
             if (responseBody != null) {
-                val timeZone =
+                val zoneId =
                     if (location.id == CURRENT_LOCATION_ID) {
-                        val currentTimeZone = getCurrentTimeZoneNameFromResponseBody(responseBody)
-                        updateCurrentLocationTimeZoneName(currentTimeZone)
-                        currentTimeZone
+                        val currentZoneId = getCurrentZoneIdFromResponseBody(responseBody)
+                        updateCurrentLocationZoneIdName(currentZoneId)
+                        currentZoneId
                     } else {
-                        location.timeZone
+                        location.zoneId
                     }
-                val currentWeather = getCurrentWeatherFromResponseBody(responseBody, timeZone)
+                val updateTime = OffsetDateTime.now(zoneId)
+                val currentWeather = getCurrentWeatherFromResponseBody(responseBody, location.id, zoneId, updateTime)
                 setCurrentWeather(currentWeather, location.id)
-                val hourWeathers = getHourWeathersFromResponseBody(responseBody, timeZone)
+                val hourWeathers = getHourWeathersFromResponseBody(responseBody, location.id, zoneId, updateTime)
                 setHourWeathersByLocationId(hourWeathers, location.id)
-                val forecasts = getDayForecastFromResponseBody(responseBody, timeZone)
+                val forecasts = getDayForecastFromResponseBody(responseBody, location.id, zoneId)
                 setForecastsByLocationId(forecasts, location.id)
             }
         } catch (e: Throwable) {
@@ -142,8 +145,18 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         return null
     }
 
+    private fun updateCurrentWeatherWithoutNetwork(context: Context) {
+        val locations = getAllUsedLocations()
+        if (locations != null) {
+            for (location in locations) {
+                setSuitableWeatherAsCurrentByLocationId(location.id)
+            }
+            sendIntentsForWidgetUpdate(context)
+        }
+    }
+
     private fun sendIntentsForWidgetUpdate(context: Context) {
-        WidgetProvider.updateWidget(context)
-        ForecastActivity.updateActivityBroadcast(context)
+        updateWidget(context)
+        updateActivityBroadcast(context)
     }
 }

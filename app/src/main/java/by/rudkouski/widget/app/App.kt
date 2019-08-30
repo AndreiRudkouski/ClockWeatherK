@@ -20,7 +20,7 @@ class App : Application() {
         super.onCreate()
         appContext = this
         apiKey = getProperty("apiKey", this)
-        WidgetUpdateBroadcastReceiver.registerReceiver()
+        WidgetUpdateBroadcastReceiver.registerReceiver(this)
         UpdateWeatherScheduler.startUpdateWeatherScheduler()
         LocationChangeListener.startLocationUpdate()
         WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
@@ -28,7 +28,7 @@ class App : Application() {
 
     override fun onTerminate() {
         super.onTerminate()
-        WidgetUpdateBroadcastReceiver.unregisterReceiver()
+        WidgetUpdateBroadcastReceiver.unregisterReceiver(this)
         UpdateWeatherScheduler.stopUpdateWeatherScheduler()
         LocationChangeListener.stopLocationUpdate()
     }

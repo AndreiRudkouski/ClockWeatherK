@@ -7,8 +7,6 @@ import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.repository.ForecastRepository.deleteForecastsForLocationId
 import by.rudkouski.widget.repository.LocationRepository.isLocationUsed
 import by.rudkouski.widget.repository.WeatherRepository.deleteWeathersForLocationId
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 object WidgetRepository {
@@ -23,7 +21,7 @@ object WidgetRepository {
 
     @Transaction
     fun deleteWidgetById(widgetId: Int) {
-        GlobalScope.launch {
+        runBlocking {
             val savedWidget = widgetDao.getById(widgetId)
             if (savedWidget != null) {
                 widgetDao.delete(savedWidget)
@@ -62,7 +60,7 @@ object WidgetRepository {
 
     @Transaction
     fun changeWidgetTextBold(widgetId: Int) {
-        GlobalScope.launch {
+        runBlocking {
             val savedWidget = widgetDao.getById(widgetId)
             if (savedWidget != null) {
                 val updatedWidget = savedWidget.copy(isBold = !savedWidget.isBold)
@@ -73,7 +71,7 @@ object WidgetRepository {
 
     @Transaction
     fun changeWidgetTheme(widgetId: Int, themeId: Int) {
-        GlobalScope.launch {
+        runBlocking {
             val savedWidget = widgetDao.getById(widgetId)
             if (savedWidget != null) {
                 val updatedWidget = savedWidget.copy(themeId = themeId)

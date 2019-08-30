@@ -4,11 +4,13 @@ import androidx.room.Transaction
 import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
+import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.WEATHER_UPDATE_INTERVAL_IN_MINUTES
 import kotlinx.coroutines.runBlocking
+import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.OffsetDateTime.now
 
 object WeatherRepository {
 
@@ -16,15 +18,12 @@ object WeatherRepository {
 
     @Transaction
     fun setCurrentWeather(currentWeather: Weather, locationId: Int) {
-        GlobalScope.launch {
-            val savedWeathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.CURRENT.name)
-            currentWeather.also { it.locationId = locationId }.also { it.type = Weather.WeatherType.CURRENT }
-            if (savedWeathers.isNullOrEmpty()) {
-                weatherDao.insert(currentWeather)
-            } else {
-                val updatedWeather = currentWeather.copy(id = savedWeathers[0].id)
-                weatherDao.update(updatedWeather)
+        runBlocking {
+            val savedWeathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.CURRENT.name)
+            if (!savedWeathers.isNullOrEmpty()) {
+                weatherDao.delete(savedWeathers[0])
             }
+            weatherDao.insert(currentWeather)
         }
     }
 
@@ -35,43 +34,62 @@ object WeatherRepository {
                 resetCurrentLocation()
                 return@runBlocking null
             }
-            val weathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.CURRENT.name)
+            val weathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.CURRENT.name)
             return@runBlocking if (weathers.isNullOrEmpty()) null else weathers[0]
         }
     }
 
     @Transaction
     fun deleteWeathersForLocationId(locationId: Int) {
-        GlobalScope.launch {
-            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.WeatherType.CURRENT.name)
-            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
+        runBlocking {
+            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.Type.CURRENT.name)
+            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.Type.HOUR.name)
         }
     }
 
     @Transaction
     fun setHourWeathersByLocationId(weathers: List<Weather>, locationId: Int) {
-        GlobalScope.launch {
-            val savedHourWeathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
-            weathers.forEach {
-                it.locationId = locationId
-                it.type = Weather.WeatherType.HOUR
-            }
+        runBlocking {
+            val savedHourWeathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.HOUR.name)
             if (!savedHourWeathers.isNullOrEmpty()) {
-                weatherDao.deleteAllForLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
+                weatherDao.deleteAllForLocationIdAndType(locationId, Weather.Type.HOUR.name)
             }
             weatherDao.insertAll(weathers)
         }
     }
 
-    fun getHourWeathersByLocationId(locationId: Int): List<Weather>? {
+    fun getHourWeathersByLocationIdAndTimeInterval(locationId: Int, timeFrom: OffsetDateTime, timeTo: OffsetDateTime): List<Weather>? {
         return runBlocking {
-            weatherDao.getAllByLocationIdAndType(locationId, Weather.WeatherType.HOUR.name)
+            weatherDao.getAllByParamsAndTimeInterval(locationId, Weather.Type.HOUR.name, timeFrom.toString(), timeTo.toString())
         }
     }
 
     fun getWeatherById(weatherId: Int): Weather? {
         return runBlocking {
             weatherDao.getById(weatherId)
+        }
+    }
+
+    @Transaction
+    fun setSuitableWeatherAsCurrentByLocationId(locationId: Int) {
+        runBlocking {
+            val zoneId = getLocationById(locationId).zoneId
+            val locationTime = now(zoneId)
+            val weathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.CURRENT.name)
+            if (!weathers.isNullOrEmpty()) {
+                if (weathers[0].date.plusMinutes(WEATHER_UPDATE_INTERVAL_IN_MINUTES * 2).isBefore(locationTime)) {
+                    val timeFrom = locationTime.plusHours(-1).toString()
+                    val timeTo = locationTime.toString()
+                    val suitableWeathers = weatherDao.getAllByParamsAndTimeInterval(locationId, Weather.Type.HOUR.name, timeFrom, timeTo)
+                    if (!suitableWeathers.isNullOrEmpty() && weathers[0].id != suitableWeathers[0].id) {
+                        weatherDao.delete(weathers[0])
+                        suitableWeathers[0].type = Weather.Type.CURRENT
+                        weatherDao.update(suitableWeathers[0])
+                    } else if (weathers[0].date.plusHours(4).isBefore(locationTime)) {
+                        weatherDao.delete(weathers[0])
+                    }
+                }
+            }
         }
     }
 }

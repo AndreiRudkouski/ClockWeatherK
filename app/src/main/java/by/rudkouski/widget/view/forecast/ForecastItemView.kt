@@ -7,11 +7,10 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.view.weather.WeatherUtils
-import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
-import java.text.SimpleDateFormat
+import by.rudkouski.widget.util.WeatherUtils
+import by.rudkouski.widget.util.WeatherUtils.getDegreeText
+import org.threeten.bp.format.DateTimeFormatter.ofPattern
 import java.util.*
 
 class ForecastItemView : LinearLayout, View.OnClickListener {
@@ -49,8 +48,7 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
 
     private fun setDateText(view: View, forecast: Forecast) {
         val dateTextView = view.findViewById<TextView>(R.id.date_forecast)
-        val dateFormat = SimpleDateFormat(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault())
-        dateTextView.text = dateFormat.format(forecast.date.time)
+        dateTextView.text = forecast.date.format(ofPattern(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault()))
     }
 
     private fun setDescriptionText(view: View, forecast: Forecast) {
@@ -61,10 +59,10 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
     private fun setDegreeText(view: View, forecast: Forecast) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_forecast)
         degreeTextView.text = String.format(Locale.getDefault(), FORECAST_DEGREE_FORMAT,
-            getDegreeText(forecast.temperatureHigh), getDegreeText(forecast.temperatureLow))
+            getDegreeText(context, forecast.temperatureHigh), getDegreeText(context, forecast.temperatureLow))
     }
 
-    override fun onClick(v: View) {
-        DayForecastActivity.start(appContext, widgetId, forecast.id)
+    override fun onClick(view: View) {
+        DayForecastActivity.start(context, widgetId, forecast.id)
     }
 }

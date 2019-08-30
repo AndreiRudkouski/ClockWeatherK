@@ -13,14 +13,14 @@ interface LocationDao {
     suspend fun getAll(): List<Location>
 
     @Query(
-        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_timeZone FROM locations, widgets WHERE location_id = widget_location_id")
+        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_zone FROM locations, widgets WHERE location_id = widget_location_id")
     suspend fun getAllUsed(): List<Location>?
 
     @Query("SELECT * FROM locations WHERE location_id = :locationId")
     suspend fun getById(locationId: Int): Location
 
     @Query(
-        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_timeZone FROM locations, widgets WHERE location_id = widget_location_id AND widget_id =:widgetId")
+        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_zone FROM locations, widgets WHERE location_id = widget_location_id AND widget_id =:widgetId")
     suspend fun getByWidgetId(widgetId: Int): Location?
 
     @Insert
@@ -30,6 +30,6 @@ interface LocationDao {
     suspend fun update(location: Location)
 
     @Query(
-        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_timeZone FROM locations, widgets WHERE location_id = widget_location_id AND location_id =:locationId")
+        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_zone FROM locations, widgets WHERE location_id = widget_location_id AND location_id =:locationId")
     suspend fun getUsed(locationId: Int): List<Location>?
 }

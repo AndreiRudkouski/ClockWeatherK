@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.WidgetRepository
 import by.rudkouski.widget.repository.WidgetRepository.changeWidgetTextBold
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
@@ -45,7 +45,7 @@ abstract class BaseActivity : AppCompatActivity() {
             }
             R.id.change_text_menu -> {
                 changeWidgetTextBold(widgetId)
-                WidgetProvider.updateWidget(this)
+                updateWidget(this)
                 return true
             }
             R.id.change_theme_menu -> {
@@ -53,7 +53,7 @@ abstract class BaseActivity : AppCompatActivity() {
                 val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
                 val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
                 WidgetRepository.changeWidgetTheme(widgetId, themeId)
-                WidgetProvider.updateWidget(this)
+                updateWidget(this)
                 finish()
                 intent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
                 startActivity(intent)

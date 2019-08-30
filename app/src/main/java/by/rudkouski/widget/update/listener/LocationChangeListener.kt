@@ -17,11 +17,11 @@ import android.util.Log
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
-import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.location.LocationActivity
 import java.io.IOException
@@ -126,13 +126,13 @@ object LocationChangeListener : LocationListener {
                 Log.e(LocationChangeListener::class.java.simpleName, e.toString())
             }
         } else {
-            NetworkChangeChecker.registerReceiver()
+            registerReceiver()
         }
         return null
     }
 
     private fun sendIntentToWidgetUpdate() {
-        WidgetProvider.updateWidget(appContext)
+        updateWidget(appContext)
         LocationActivity.updateActivityBroadcast(appContext)
         WeatherUpdateBroadcastReceiver.updateCurrentWeather(appContext)
     }

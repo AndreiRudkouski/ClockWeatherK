@@ -5,16 +5,19 @@ import android.app.AlarmManager.*
 import android.content.Context.ALARM_SERVICE
 import android.text.format.DateUtils.MINUTE_IN_MILLIS
 import android.text.format.DateUtils.SECOND_IN_MILLIS
-import by.rudkouski.widget.app.App
+import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import java.util.Calendar.*
 
 object UpdateWeatherScheduler {
 
+    private const val WEATHER_UPDATE_INTERVAL_IN_MILLIS = INTERVAL_HALF_HOUR
+    const val WEATHER_UPDATE_INTERVAL_IN_MINUTES = INTERVAL_HALF_HOUR / (60 * 1000)
+
     fun startUpdateWeatherScheduler() {
-        val alarmManager = App.appContext.getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.setRepeating(RTC, System.currentTimeMillis() + getUpdateStart(), INTERVAL_HALF_HOUR,
-            WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(App.appContext))
+        val alarmManager = appContext.getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.setRepeating(RTC, System.currentTimeMillis() + getUpdateStart(), WEATHER_UPDATE_INTERVAL_IN_MILLIS,
+            WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(appContext))
     }
 
     private fun getUpdateStart(): Long {
@@ -29,7 +32,7 @@ object UpdateWeatherScheduler {
     }
 
     fun stopUpdateWeatherScheduler() {
-        val alarmManager = App.appContext.getSystemService(ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(App.appContext))
+        val alarmManager = appContext.getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(WeatherUpdateBroadcastReceiver.getUpdateWeatherPendingIntent(appContext))
     }
 }

@@ -12,12 +12,13 @@ import by.rudkouski.widget.database.dao.WeatherDao
 import by.rudkouski.widget.database.dao.WidgetDao
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.entity.Widget
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.TimeZone.getDefault
-import java.util.TimeZone.getTimeZone
+import org.threeten.bp.ZoneId.of
+import org.threeten.bp.ZoneId.systemDefault
 
 @Database(entities = [Location::class, Widget::class, Weather::class, Forecast::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
@@ -35,19 +36,17 @@ abstract class AppDatabase : RoomDatabase() {
                 val defaultLocations: Array<String> = appContext.resources.getStringArray(R.array.default_locations)
                 for (i in 0 until defaultLocations.size) {
                     val locationData = defaultLocations[i].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                    val code = if (locationData[0].isEmpty()) Location.CURRENT_LOCATION else locationData[0]
+                    val code = if (locationData[0].isEmpty()) CURRENT_LOCATION else locationData[0]
                     val latitude = locationData[1].toDouble()
                     val longitude = locationData[2].toDouble()
-                    val timeZone = if (locationData.size == 4) getTimeZone(locationData[3]) else getDefault()
-                    val location = Location(i + 1, code, latitude, longitude, timeZone)
-                    if (i == 1) defaultLocation = location
+                    val zoneId = if (locationData.size == 4) of(locationData[3]) else systemDefault()
+                    val location = Location(i + 1, code, latitude, longitude, zoneId)
                     INSTANCE.locationDao().insert(location)
                 }
             }
         }
 
         val INSTANCE = databaseBuilder(appContext, AppDatabase::class.java, "clock_weather_database").addCallback(callback).build()
-        lateinit var defaultLocation: Location
     }
 
     abstract fun locationDao(): LocationDao

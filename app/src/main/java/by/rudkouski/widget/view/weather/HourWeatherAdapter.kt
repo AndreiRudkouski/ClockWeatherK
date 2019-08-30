@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.recyclerview.widget.RecyclerView
-import by.rudkouski.widget.app.App
+import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
 
 
-class HourWeatherAdapter(private val widgetId: Int, private val hourWeathers: List<Weather>) : RecyclerView.Adapter<HourWeatherAdapter.HourWeatherViewHolder>() {
+class HourWeatherAdapter(private val context: Context, private val widgetId: Int, private val hourWeathers: List<Weather>) : RecyclerView.Adapter<HourWeatherAdapter.HourWeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HourWeatherViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(by.rudkouski.widget.R.layout.forecast_hour_weather_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.forecast_hour_weather_item, parent, false)
         view.layoutParams.width = getViewWidth()
         return HourWeatherViewHolder(view)
     }
@@ -27,7 +27,7 @@ class HourWeatherAdapter(private val widgetId: Int, private val hourWeathers: Li
     }
 
     private fun getViewWidth(): Int {
-        val service = App.appContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val service = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val size = Point()
         service.defaultDisplay.getSize(size)
         return size.x / 6

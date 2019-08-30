@@ -1,9 +1,6 @@
 package by.rudkouski.widget.database.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import by.rudkouski.widget.entity.Weather
 
 @Dao
@@ -24,6 +21,13 @@ interface WeatherDao {
     @Update
     suspend fun update(weather: Weather)
 
+    @Delete
+    suspend fun delete(weather: Weather)
+
     @Query("DELETE FROM weathers WHERE weather_location_id =:locationId AND weather_type = :type")
     suspend fun deleteAllForLocationIdAndType(locationId: Int, type: String)
+
+    @Query(
+        "SELECT * FROM weathers WHERE weather_location_id =:locationId AND weather_type = :type AND datetime(weather_date) BETWEEN datetime(:timeFrom) AND datetime(:timeTo)")
+    suspend fun getAllByParamsAndTimeInterval(locationId: Int, type: String, timeFrom: String, timeTo: String): List<Weather>?
 }

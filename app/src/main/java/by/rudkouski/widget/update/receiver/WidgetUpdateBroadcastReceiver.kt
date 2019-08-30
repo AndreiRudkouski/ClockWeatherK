@@ -1,18 +1,18 @@
 package by.rudkouski.widget.update.receiver
 
-import android.app.AlarmManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
-import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.update.listener.LocationChangeListener
-import java.util.*
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.WEATHER_UPDATE_INTERVAL_IN_MINUTES
+import org.threeten.bp.OffsetDateTime.now
+import org.threeten.bp.ZoneId
 
 object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
@@ -22,12 +22,12 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
             .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
             .also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
 
-    fun registerReceiver() {
-        appContext.registerReceiver(this, intentFilter)
+    fun registerReceiver(context: Context) {
+        context.registerReceiver(this, intentFilter)
     }
 
-    fun unregisterReceiver() {
-        appContext.applicationContext.unregisterReceiver(this)
+    fun unregisterReceiver(context: Context) {
+        context.applicationContext.unregisterReceiver(this)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -40,16 +40,16 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
             if (locations != null) {
                 for (location in locations) {
                     val weather = getCurrentWeatherByLocationId(location.id)
-                    if (isWeatherNeedUpdate(weather, location.timeZone)) {
+                    if (isWeatherNeedUpdate(weather, location.zoneId)) {
                         WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
                         return
                     }
                 }
             }
         }
-        WidgetProvider.updateWidget(context)
+        updateWidget(context)
     }
 
-    private fun isWeatherNeedUpdate(weather: Weather?, timeZone: TimeZone) =
-        weather == null || Calendar.getInstance(timeZone).time.time.minus(weather.date.time.time) >= AlarmManager.INTERVAL_HALF_HOUR
+    private fun isWeatherNeedUpdate(weather: Weather?, zoneId: ZoneId) =
+        weather == null || weather.update.plusMinutes(WEATHER_UPDATE_INTERVAL_IN_MINUTES).isBefore(now(zoneId))
 }

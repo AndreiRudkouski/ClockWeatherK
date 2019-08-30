@@ -3,8 +3,6 @@ package by.rudkouski.widget.repository
 import androidx.room.Transaction
 import by.rudkouski.widget.database.AppDatabase
 import by.rudkouski.widget.entity.Forecast
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 object ForecastRepository {
@@ -19,9 +17,8 @@ object ForecastRepository {
 
     @Transaction
     fun setForecastsByLocationId(forecasts: List<Forecast>, locationId: Int) {
-        GlobalScope.launch {
+        runBlocking {
             val savedForecasts = forecastDao.getAllByLocationId(locationId)
-            forecasts.forEach { it.locationId = locationId }
             if (!savedForecasts.isNullOrEmpty()) {
                 forecastDao.deleteAllForLocationId(locationId)
             }
@@ -36,7 +33,7 @@ object ForecastRepository {
     }
 
     fun deleteForecastsForLocationId(locationId: Int) {
-        GlobalScope.launch {
+        runBlocking {
             forecastDao.deleteAllForLocationId(locationId)
         }
     }

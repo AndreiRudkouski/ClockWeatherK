@@ -1,10 +1,10 @@
 package by.rudkouski.widget.entity
 
 import androidx.room.*
-import by.rudkouski.widget.database.converter.CalendarConverter
+import by.rudkouski.widget.database.converter.OffsetDateTimeConverter
 import by.rudkouski.widget.database.converter.WeatherTypeConverter
 import com.google.gson.annotations.SerializedName
-import java.util.*
+import org.threeten.bp.OffsetDateTime
 
 /**
  * Contains the weather conditions at the requested location.
@@ -12,13 +12,13 @@ import java.util.*
 @Entity(tableName = "weathers",
     foreignKeys = [(ForeignKey(entity = Location::class, parentColumns = ["location_id"], childColumns = ["weather_location_id"]))],
     indices = [Index(value = ["weather_location_id"])])
-@TypeConverters(CalendarConverter::class, WeatherTypeConverter::class)
+@TypeConverters(OffsetDateTimeConverter::class, WeatherTypeConverter::class)
 data class Weather(@PrimaryKey(autoGenerate = true)
                    @ColumnInfo(name = "weather_id")
                    val id: Int,
                    @SerializedName("time")
                    @ColumnInfo(name = "weather_date")
-                   val date: Calendar,
+                   val date: OffsetDateTime,
                    @SerializedName("summary")
                    @ColumnInfo(name = "weather_description")
                    val description: String,
@@ -71,11 +71,13 @@ data class Weather(@PrimaryKey(autoGenerate = true)
                    @ColumnInfo(name = "weather_apparent_temp")
                    val apparentTemperature: Double,
                    @ColumnInfo(name = "weather_location_id")
-                   var locationId: Int? = null,
+                   var locationId: Int = 0,
                    @ColumnInfo(name = "weather_type")
-                   var type: WeatherType = WeatherType.HOUR) {
+                   var type: Type = Type.HOUR,
+                   @ColumnInfo(name = "weather_update")
+                   var update: OffsetDateTime = OffsetDateTime.now()) {
 
-    enum class WeatherType {
+    enum class Type {
         HOUR,
         CURRENT
     }

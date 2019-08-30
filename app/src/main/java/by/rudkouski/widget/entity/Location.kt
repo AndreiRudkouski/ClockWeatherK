@@ -1,16 +1,17 @@
 package by.rudkouski.widget.entity
 
+import android.content.Context
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import by.rudkouski.widget.app.App
-import by.rudkouski.widget.database.converter.TimeZoneConverter
+import by.rudkouski.widget.database.converter.ZoneIdConverter
 import by.rudkouski.widget.update.listener.LocationChangeListener
-import java.util.*
+import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneId.systemDefault
 
 @Entity(tableName = "locations")
-@TypeConverters(TimeZoneConverter::class)
+@TypeConverters(ZoneIdConverter::class)
 data class Location(@PrimaryKey
                     @ColumnInfo(name = "location_id")
                     val id: Int,
@@ -20,24 +21,26 @@ data class Location(@PrimaryKey
                     val latitude: Double,
                     @ColumnInfo(name = "location_longitude")
                     val longitude: Double,
-                    @ColumnInfo(name = "location_timeZone")
-                    val timeZone: TimeZone) {
+                    @ColumnInfo(name = "location_zone")
+                    val zoneId: ZoneId) {
 
     companion object {
         const val CURRENT_LOCATION_ID = 1
         const val CURRENT_LOCATION = "current_location"
-        private const val DEFAULT_LOCATION = "default_location"
+        val DEFAULT_LOCATION = Location(CURRENT_LOCATION_ID, CURRENT_LOCATION, 360.0, 360.0, systemDefault())
+        private const val DEFAULT_LOCATION_NAME_CODE = "default_location"
     }
 
-    fun getName(): String {
+    fun getName(context: Context): String {
         return when {
-            name_code == CURRENT_LOCATION || (id == CURRENT_LOCATION_ID && LocationChangeListener.isPermissionsDenied()) -> getNameByCode(DEFAULT_LOCATION)
-            id != CURRENT_LOCATION_ID -> getNameByCode(name_code)
+            name_code == CURRENT_LOCATION || (id == CURRENT_LOCATION_ID && LocationChangeListener.isPermissionsDenied()) ->
+                getNameByCode(context, DEFAULT_LOCATION_NAME_CODE)
+            id != CURRENT_LOCATION_ID -> getNameByCode(context, name_code)
             else -> name_code
         }
     }
 
-    private fun getNameByCode(nameCode: String): String {
-        return App.appContext.getString(App.appContext.resources.getIdentifier(nameCode, "string", App.appContext.packageName))
+    private fun getNameByCode(context: Context, nameCode: String): String {
+        return context.getString(context.resources.getIdentifier(nameCode, "string", context.packageName))
     }
 }

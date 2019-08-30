@@ -12,26 +12,27 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.chooseSystemTimeFormat
 import by.rudkouski.widget.repository.ForecastRepository.getForecastById
+import by.rudkouski.widget.util.WeatherUtils.getDegreeText
+import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
+import by.rudkouski.widget.util.WeatherUtils.getSpannableStringDescription
+import by.rudkouski.widget.util.WeatherUtils.getSpannableStringValue
+import by.rudkouski.widget.util.WeatherUtils.setCloudCoverText
+import by.rudkouski.widget.util.WeatherUtils.setDataToView
+import by.rudkouski.widget.util.WeatherUtils.setDewPointText
+import by.rudkouski.widget.util.WeatherUtils.setHumidityText
+import by.rudkouski.widget.util.WeatherUtils.setPrecipitationText
+import by.rudkouski.widget.util.WeatherUtils.setPressureText
+import by.rudkouski.widget.util.WeatherUtils.setUvIndexText
+import by.rudkouski.widget.util.WeatherUtils.setVisibilityText
+import by.rudkouski.widget.util.WeatherUtils.setWindText
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
-import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
-import by.rudkouski.widget.view.weather.WeatherUtils.getIconWeatherImageResource
-import by.rudkouski.widget.view.weather.WeatherUtils.getSpannableStringDescription
-import by.rudkouski.widget.view.weather.WeatherUtils.getSpannableStringValue
-import by.rudkouski.widget.view.weather.WeatherUtils.setCloudCoverText
-import by.rudkouski.widget.view.weather.WeatherUtils.setDataToView
-import by.rudkouski.widget.view.weather.WeatherUtils.setDewPointText
-import by.rudkouski.widget.view.weather.WeatherUtils.setHumidityText
-import by.rudkouski.widget.view.weather.WeatherUtils.setPrecipitationText
-import by.rudkouski.widget.view.weather.WeatherUtils.setPressureText
-import by.rudkouski.widget.view.weather.WeatherUtils.setUvIndexText
-import by.rudkouski.widget.view.weather.WeatherUtils.setVisibilityText
-import by.rudkouski.widget.view.weather.WeatherUtils.setWindText
-import java.text.SimpleDateFormat
+import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 
 
@@ -89,8 +90,8 @@ class DayForecastActivity : BaseActivity() {
 
     private fun updateTitle(forecast: Forecast) {
         val toolbar = findViewById<Toolbar>(R.id.toolbar_day_forecast)
-        val dateFormat = SimpleDateFormat(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault())
-        toolbar.title = dateFormat.format(forecast.date.time)
+        DATE_WITH_DAY_SHORT_FORMAT
+        toolbar.title = forecast.date.format(DateTimeFormatter.ofPattern(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault()))
         setSupportActionBar(toolbar)
     }
 
@@ -102,7 +103,7 @@ class DayForecastActivity : BaseActivity() {
     private fun setDegreeText(view: View, forecast: Forecast) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_day_forecast)
         degreeTextView.text = String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
-            getDegreeText(forecast.temperatureHigh), getDegreeText(forecast.temperatureLow))
+            getDegreeText(this, forecast.temperatureHigh), getDegreeText(this, forecast.temperatureLow))
     }
 
     private fun setSunriseTime(view: View, forecast: Forecast) {
@@ -117,17 +118,15 @@ class DayForecastActivity : BaseActivity() {
         setDataToView(view, R.id.sunset_day_forecast, description, value)
     }
 
-    private fun getFormatTime(date: Calendar): String {
-        val timeFormat = WidgetProvider.chooseSystemTimeFormat(this, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
-        val dateFormat = SimpleDateFormat(timeFormat, Locale.getDefault())
-        dateFormat.timeZone = date.timeZone
-        return dateFormat.format(date.time)
+    private fun getFormatTime(date: OffsetDateTime): String {
+        val timeFormat = chooseSystemTimeFormat(this, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
+        return date.format(DateTimeFormatter.ofPattern(timeFormat, Locale.getDefault()))
     }
 
     private fun setFeelText(view: View, forecast: Forecast) {
         val description = getSpannableStringDescription(this, R.string.feel)
         val value = getSpannableStringValue(this, String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
-            getDegreeText(forecast.apparentTemperatureHigh), getDegreeText(forecast.apparentTemperatureLow)))
+            getDegreeText(this, forecast.apparentTemperatureHigh), getDegreeText(this, forecast.apparentTemperatureLow)))
         setDataToView(view, R.id.feel_day_forecast, description, value)
     }
 

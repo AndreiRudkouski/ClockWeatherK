@@ -9,7 +9,6 @@ import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App
 import by.rudkouski.widget.message.Message
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
@@ -76,8 +75,8 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
             WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
-            val message = SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update)
-            else App.appContext.getString(R.string.no_connection))
+            val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
+            else context.getString(R.string.no_connection))
             Message.showShortMessage(message, target, context)
         }
 

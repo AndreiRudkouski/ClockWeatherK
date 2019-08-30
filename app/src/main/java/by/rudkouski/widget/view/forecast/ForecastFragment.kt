@@ -13,9 +13,9 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.repository.ForecastRepository.getForecastsByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
+import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.OffsetDateTime.now
 import java.util.*
-import java.util.Calendar.DAY_OF_YEAR
-import java.util.Calendar.YEAR
 
 class ForecastFragment @SuppressLint("ValidFragment")
 private constructor() : Fragment() {
@@ -67,9 +67,8 @@ private constructor() : Fragment() {
         return correctForecasts
     }
 
-    private fun isWeatherDateCorrect(forecastDate: Calendar): Boolean {
-        val currentDate = Calendar.getInstance(forecastDate.timeZone)
-        return (forecastDate.get(YEAR) == currentDate.get(YEAR) && forecastDate.get(DAY_OF_YEAR) >= currentDate.get(DAY_OF_YEAR))
-            || forecastDate.get(YEAR) > currentDate.get(YEAR)
+    private fun isWeatherDateCorrect(date: OffsetDateTime): Boolean {
+        val currentDate = now(date.offset)
+        return (date.year == currentDate.year && date.dayOfYear >= currentDate.dayOfYear) || date.year > currentDate.year
     }
 }

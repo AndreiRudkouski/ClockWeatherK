@@ -16,7 +16,7 @@ import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
-import by.rudkouski.widget.provider.WidgetProvider
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationByWidgetId
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
@@ -53,7 +53,6 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         activityUpdateBroadcastReceiver = LocationActivityUpdateBroadcastReceiver()
         registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(locationActivityUpdateAction))
         if (isPermissionsDenied()) {
-            resetCurrentLocation()
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_PERMISSION_CODE)
         } else {
@@ -105,14 +104,16 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
             REQUEST_PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
                     startLocationUpdate()
-                    initActivity()
+                } else {
+                    resetCurrentLocation()
                 }
+                initActivity()
             }
         }
     }
 
     private fun updateWidgetAndWeather() {
-        WidgetProvider.updateWidget(this)
+        updateWidget(this)
         WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
     }
 
