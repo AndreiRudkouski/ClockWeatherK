@@ -41,11 +41,11 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
 
-        private val weatherUpdateAction = "${WeatherUpdateBroadcastReceiver::class.java.`package`}.WEATHER_UPDATE"
-        private val currentWeatherUpdateAction = "${WeatherUpdateBroadcastReceiver::class.java.`package`}.CURRENT_WEATHER_UPDATE"
+        private const val WEATHER_UPDATE_ACTION = "by.rudkouski.widget.WEATHER_UPDATE"
+        private const val CURRENT_WEATHER_UPDATE_ACTION = "by.rudkouski.widget.CURRENT_WEATHER_UPDATE"
 
         fun getUpdateWeatherPendingIntent(context: Context): PendingIntent {
-            return getPendingIntent(context, weatherUpdateAction, WEATHER_UPDATE_REQUEST_CODE)
+            return getPendingIntent(context, WEATHER_UPDATE_ACTION, WEATHER_UPDATE_REQUEST_CODE)
         }
 
         fun updateAllWeathers(context: Context) {
@@ -53,7 +53,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun updateCurrentWeather(context: Context) {
-            getPendingIntent(context, currentWeatherUpdateAction,
+            getPendingIntent(context, CURRENT_WEATHER_UPDATE_ACTION,
                 CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
         }
 
@@ -65,10 +65,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (weatherUpdateAction == intent.action || currentWeatherUpdateAction == intent.action) {
+        if (WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
             GlobalScope.launch {
                 if (isOnline()) {
-                    if (weatherUpdateAction == intent.action) {
+                    if (WEATHER_UPDATE_ACTION == intent.action) {
                         updateAllWeathers(context)
                     } else {
                         updateCurrentWeather(context)

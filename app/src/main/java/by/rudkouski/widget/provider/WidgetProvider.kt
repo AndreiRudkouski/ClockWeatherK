@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
+import android.appwidget.AppWidgetManager.getInstance
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
@@ -16,7 +17,8 @@ import android.provider.Settings
 import android.provider.Settings.System.TIME_12_24
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.view.View
+import android.view.View.INVISIBLE
+import android.view.View.VISIBLE
 import android.widget.RemoteViews
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location
@@ -27,7 +29,7 @@ import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.listener.LocationChangeListener
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
-import by.rudkouski.widget.util.WeatherUtils
+import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
 import org.threeten.bp.OffsetDateTime.now
@@ -44,12 +46,11 @@ class WidgetProvider : AppWidgetProvider() {
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
         private const val WIDGET_CLOCK_UPDATE_REQUEST_CODE = 1001
         private const val SYSTEM_TIME_FORMAT_24 = 24
-
-        private val widgetUpdateAction = "${WidgetProvider::class.java.`package`}.WIDGET_UPDATE"
+        private const val WIDGET_UPDATE_ACTION = "by.rudkouski.widget.WIDGET_UPDATE"
 
         fun updateWidget(context: Context) {
             val intent = Intent(context, WidgetProvider::class.java)
-            intent.action = widgetUpdateAction
+            intent.action = WIDGET_UPDATE_ACTION
             PendingIntent.getBroadcast(context, WIDGET_CLOCK_UPDATE_REQUEST_CODE, intent, FLAG_UPDATE_CURRENT).send()
         }
 
@@ -60,9 +61,9 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (widgetUpdateAction == intent.action) {
+        if (WIDGET_UPDATE_ACTION == intent.action) {
             val componentName = ComponentName(context, javaClass.name)
-            val widgetManager = AppWidgetManager.getInstance(context)
+            val widgetManager = getInstance(context)
             val widgetIds = widgetManager.getAppWidgetIds(componentName)
             for (widgetId in widgetIds) {
                 val remoteViews = updateWidget(context, widgetId)
@@ -108,13 +109,16 @@ class WidgetProvider : AppWidgetProvider() {
     private fun updateWeather(remoteViews: RemoteViews, context: Context, locationId: Int, isBold: Boolean) {
         val weather = getCurrentWeatherByLocationId(locationId)
         if (weather != null) {
-            remoteViews.setViewVisibility(R.id.weather_widget, View.VISIBLE)
+            remoteViews.setViewVisibility(R.id.weather_widget, VISIBLE)
+            remoteViews.setViewVisibility(R.id.no_data, INVISIBLE)
             remoteViews.setImageViewResource(R.id.weather_image_widget,
-                WeatherUtils.getIconWeatherImageResource(context, weather.iconName, weather.cloudCover, weather.precipitationProbability))
+                getIconWeatherImageResource(context, weather.iconName, weather.cloudCover, weather.precipitationProbability))
             remoteViews.setTextViewText(R.id.degrees_widget, createSpannableString(weather.temperature.roundToInt().toString(), isBold))
             remoteViews.setTextViewText(R.id.degrees_text_widget, createSpannableString(context.getString(R.string.temperature_unit), isBold))
         } else {
-            remoteViews.setViewVisibility(R.id.weather_widget, View.INVISIBLE)
+            remoteViews.setViewVisibility(R.id.weather_widget, INVISIBLE)
+            remoteViews.setViewVisibility(R.id.no_data, VISIBLE)
+            remoteViews.setTextViewText(R.id.no_data, createSpannableString(context.getString(R.string.default_weather), isBold))
         }
     }
 

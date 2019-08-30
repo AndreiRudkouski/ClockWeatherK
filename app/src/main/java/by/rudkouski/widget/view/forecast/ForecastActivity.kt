@@ -29,7 +29,7 @@ class ForecastActivity : BaseActivity() {
     private val hourWeathers = ArrayList<Weather>()
 
     companion object {
-        private val forecastActivityUpdateAction = "${ForecastActivity::class.java.`package`}.FORECAST_ACTIVITY_UPDATE"
+        private const val FORECAST_ACTIVITY_UPDATE_ACTION = "by.rudkouski.widget.FORECAST_ACTIVITY_UPDATE"
 
         fun startIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, ForecastActivity::class.java)
@@ -38,7 +38,7 @@ class ForecastActivity : BaseActivity() {
         }
 
         fun updateActivityBroadcast(context: Context) {
-            val intent = Intent(forecastActivityUpdateAction)
+            val intent = Intent(FORECAST_ACTIVITY_UPDATE_ACTION)
             context.sendBroadcast(intent)
         }
     }
@@ -49,7 +49,7 @@ class ForecastActivity : BaseActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar_forecast)
         setSupportActionBar(toolbar)
         activityUpdateBroadcastReceiver = ForecastActivityUpdateBroadcastReceiver()
-        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(forecastActivityUpdateAction))
+        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(FORECAST_ACTIVITY_UPDATE_ACTION))
         updateActivity()
     }
 

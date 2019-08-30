@@ -33,7 +33,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
     companion object {
         private const val REQUEST_PERMISSION_CODE = 12345
 
-        private val locationActivityUpdateAction = "${LocationActivity::class.java.`package`}.LOCATION_ACTIVITY_UPDATE"
+        private const val LOCATION_ACTIVITY_UPDATE_WEATHER = "by.rudkouski.widget.LOCATION_ACTIVITY_UPDATE"
 
         fun startIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, LocationActivity::class.java)
@@ -42,7 +42,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         }
 
         fun updateActivityBroadcast(context: Context) {
-            val intent = Intent(locationActivityUpdateAction)
+            val intent = Intent(LOCATION_ACTIVITY_UPDATE_WEATHER)
             context.sendBroadcast(intent)
         }
     }
@@ -51,7 +51,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         super.onCreate(savedInstanceState)
         setContentView(R.layout.location_activity)
         activityUpdateBroadcastReceiver = LocationActivityUpdateBroadcastReceiver()
-        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(locationActivityUpdateAction))
+        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(LOCATION_ACTIVITY_UPDATE_WEATHER))
         if (isPermissionsDenied()) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_PERMISSION_CODE)

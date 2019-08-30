@@ -84,7 +84,7 @@ object LocationChangeListener : LocationListener {
         locationManager.removeUpdates(this)
     }
 
-    private fun isPermissionsGranted() = !isPermissionsDenied()
+    fun isPermissionsGranted() = !isPermissionsDenied()
 
     fun isPermissionsDenied(): Boolean {
         return ActivityCompat.checkSelfPermission(appContext, ACCESS_FINE_LOCATION) == PERMISSION_DENIED
