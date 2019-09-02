@@ -67,7 +67,7 @@ object LocationRepository {
 
     fun isLocationUsed(locationId: Int): Boolean {
         return runBlocking {
-            locationDao.getUsed(locationId).isNullOrEmpty()
+            !locationDao.getUsed(locationId).isNullOrEmpty()
         }
     }
 }

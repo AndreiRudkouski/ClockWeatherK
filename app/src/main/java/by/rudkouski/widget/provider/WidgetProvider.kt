@@ -22,13 +22,13 @@ import android.view.View.VISIBLE
 import android.widget.RemoteViews
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
-import by.rudkouski.widget.update.listener.LocationChangeListener
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
-import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
+import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsGranted
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
 import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
@@ -80,7 +80,7 @@ class WidgetProvider : AppWidgetProvider() {
             updateClockAndDate(remoteViews, context, location.zoneId, widget.isBold)
             updateLocation(remoteViews, context, location, widget.isBold)
             updateWeather(remoteViews, context, location.id, widget.isBold)
-            setPendingIntents(remoteViews, context, widgetId)
+            setPendingIntents(remoteViews, context, widgetId, location.id)
         }
         return remoteViews
     }
@@ -122,11 +122,16 @@ class WidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private fun setPendingIntents(remoteViews: RemoteViews, context: Context, widgetId: Int) {
+    private fun setPendingIntents(remoteViews: RemoteViews, context: Context, widgetId: Int, locationId: Int) {
         remoteViews.setOnClickPendingIntent(R.id.clock_widget, createClockPendingIntent(context, widgetId))
         remoteViews.setOnClickPendingIntent(R.id.date_widget, createDatePendingIntent(context, widgetId))
         remoteViews.setOnClickPendingIntent(R.id.location_widget, createLocationPendingIntent(context, widgetId))
-        remoteViews.setOnClickPendingIntent(R.id.widget, createForecastPendingIntent(context, widgetId))
+        remoteViews.setOnClickPendingIntent(R.id.weather_widget, createForecastPendingIntent(context, widgetId))
+        if (CURRENT_LOCATION_ID != locationId || (CURRENT_LOCATION_ID == locationId && isPermissionsGranted())) {
+            remoteViews.setOnClickPendingIntent(R.id.no_data_widget, createForecastPendingIntent(context, widgetId))
+        } else {
+            remoteViews.setOnClickPendingIntent(R.id.no_data_widget, null)
+        }
     }
 
     private fun createClockPendingIntent(context: Context, widgetId: Int): PendingIntent {
@@ -153,10 +158,8 @@ class WidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        UpdateWeatherScheduler.startUpdateWeatherScheduler()
-        LocationChangeListener.startLocationUpdate()
         updateWidget(context)
-        WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
+        updateAllWeathers(context)
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

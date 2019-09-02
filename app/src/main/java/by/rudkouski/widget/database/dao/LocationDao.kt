@@ -30,6 +30,6 @@ interface LocationDao {
     suspend fun update(location: Location)
 
     @Query(
-        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_zone FROM locations, widgets WHERE location_id = widget_location_id AND location_id =:locationId")
+        "SELECT location_id, location_name_code, location_longitude, location_latitude, location_zone FROM locations, widgets WHERE location_id = widget_location_id AND widget_location_id =:locationId")
     suspend fun getUsed(locationId: Int): List<Location>?
 }

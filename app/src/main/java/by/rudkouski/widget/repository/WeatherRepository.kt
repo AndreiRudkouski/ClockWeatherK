@@ -39,11 +39,9 @@ object WeatherRepository {
         }
     }
 
-    @Transaction
     fun deleteWeathersForLocationId(locationId: Int) {
         runBlocking {
-            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.Type.CURRENT.name)
-            weatherDao.deleteAllForLocationIdAndType(locationId, Weather.Type.HOUR.name)
+            weatherDao.deleteAllForLocationId(locationId)
         }
     }
 

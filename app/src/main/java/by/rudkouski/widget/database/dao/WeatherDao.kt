@@ -27,6 +27,9 @@ interface WeatherDao {
     @Query("DELETE FROM weathers WHERE weather_location_id =:locationId AND weather_type = :type")
     suspend fun deleteAllForLocationIdAndType(locationId: Int, type: String)
 
+    @Query("DELETE FROM weathers WHERE weather_location_id =:locationId")
+    suspend fun deleteAllForLocationId(locationId: Int)
+
     @Query(
         "SELECT * FROM weathers WHERE weather_location_id =:locationId AND weather_type = :type AND datetime(weather_date) BETWEEN datetime(:timeFrom) AND datetime(:timeTo)")
     suspend fun getAllByParamsAndTimeInterval(locationId: Int, type: String, timeFrom: String, timeTo: String): List<Weather>?
