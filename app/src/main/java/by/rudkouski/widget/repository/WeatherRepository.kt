@@ -6,7 +6,7 @@ import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
-import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.WEATHER_UPDATE_INTERVAL_IN_MINUTES
 import kotlinx.coroutines.runBlocking
 import org.threeten.bp.OffsetDateTime

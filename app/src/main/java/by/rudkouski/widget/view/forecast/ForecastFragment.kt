@@ -23,7 +23,7 @@ private constructor() : Fragment() {
     private val forecasts = ArrayList<Forecast>()
 
     companion object {
-        fun newInstance(widgetId: Int): ForecastFragment {
+        fun newForecastFragmentInstance(widgetId: Int): ForecastFragment {
             val fragment = ForecastFragment()
             val bundle = Bundle()
             bundle.putInt(EXTRA_APPWIDGET_ID, widgetId)

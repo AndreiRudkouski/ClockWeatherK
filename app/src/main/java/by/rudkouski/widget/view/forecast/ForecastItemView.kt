@@ -10,6 +10,7 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
 import by.rudkouski.widget.util.WeatherUtils
 import by.rudkouski.widget.util.WeatherUtils.getDegreeText
+import by.rudkouski.widget.view.forecast.DayForecastActivity.Companion.startDayForecastActivity
 import org.threeten.bp.format.DateTimeFormatter.ofPattern
 import java.util.*
 
@@ -63,6 +64,6 @@ class ForecastItemView : LinearLayout, View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        DayForecastActivity.start(context, widgetId, forecast.id)
+        startDayForecastActivity(context, widgetId, forecast.id)
     }
 }

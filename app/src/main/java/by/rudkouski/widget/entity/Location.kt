@@ -6,7 +6,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import by.rudkouski.widget.database.converter.ZoneIdConverter
-import by.rudkouski.widget.update.listener.LocationChangeListener
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import org.threeten.bp.ZoneId
 import org.threeten.bp.ZoneId.systemDefault
 
@@ -33,7 +33,7 @@ data class Location(@PrimaryKey
 
     fun getName(context: Context): String {
         return when {
-            name_code == CURRENT_LOCATION || (id == CURRENT_LOCATION_ID && LocationChangeListener.isPermissionsDenied()) ->
+            name_code == CURRENT_LOCATION || (id == CURRENT_LOCATION_ID && isPermissionsDenied()) ->
                 getNameByCode(context, DEFAULT_LOCATION_NAME_CODE)
             id != CURRENT_LOCATION_ID -> getNameByCode(context, name_code)
             else -> name_code

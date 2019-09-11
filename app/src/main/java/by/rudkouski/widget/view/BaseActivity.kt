@@ -11,7 +11,7 @@ import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.WidgetRepository
 import by.rudkouski.widget.repository.WidgetRepository.changeWidgetTextBold
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
-import by.rudkouski.widget.view.location.LocationActivity
+import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
 
 abstract class BaseActivity : AppCompatActivity() {
 
@@ -39,7 +39,7 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.change_location_menu -> {
-                val intent = LocationActivity.startIntent(this, widgetId)
+                val intent = startLocationActivityIntent(this, widgetId)
                 startActivity(intent)
                 return true
             }

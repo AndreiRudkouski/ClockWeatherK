@@ -10,7 +10,7 @@ import android.util.TypedValue
 import android.view.View
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.update.listener.LocationChangeListener.isLocationEnabled
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isLocationEnabled
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import com.google.android.material.snackbar.Snackbar
 

@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.*
 import android.content.IntentFilter
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
-import by.rudkouski.widget.update.listener.LocationChangeListener
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.WEATHER_UPDATE_INTERVAL_IN_MINUTES
 import org.threeten.bp.OffsetDateTime.now
 import org.threeten.bp.ZoneId
@@ -32,17 +35,24 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (ACTION_LOCALE_CHANGED == intent.action) {
-            WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
-            LocationChangeListener.updateLocation()
+            updateAllWeathers(context)
+            updateCurrentLocation(context)
         }
         if (ACTION_SCREEN_ON == intent.action) {
             val locations = getAllUsedLocations()
             if (locations != null) {
                 for (location in locations) {
                     val weather = getCurrentWeatherByLocationId(location.id)
-                    if (isWeatherNeedUpdate(weather, location.zoneId)) {
-                        WeatherUpdateBroadcastReceiver.updateAllWeathers(context)
-                        return
+                    if (CURRENT_LOCATION_ID == location.id) {
+                        if (isWeatherNeedUpdate(weather, location.zoneId, LOCATION_UPDATE_INTERVAL_IN_MINUTES)) {
+                            updateCurrentLocation(context)
+                            return
+                        }
+                    } else {
+                        if (isWeatherNeedUpdate(weather, location.zoneId, WEATHER_UPDATE_INTERVAL_IN_MINUTES)) {
+                            updateAllWeathers(context)
+                            return
+                        }
                     }
                 }
             }
@@ -50,6 +60,6 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         updateWidget(context)
     }
 
-    private fun isWeatherNeedUpdate(weather: Weather?, zoneId: ZoneId) =
-        weather == null || weather.update.plusMinutes(WEATHER_UPDATE_INTERVAL_IN_MINUTES).isBefore(now(zoneId))
+    private fun isWeatherNeedUpdate(weather: Weather?, zoneId: ZoneId, interval: Long) =
+        weather == null || weather.update.plusMinutes(interval).isBefore(now(zoneId))
 }

@@ -2,6 +2,7 @@ package by.rudkouski.widget.provider
 
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.app.PendingIntent.getActivity
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.appwidget.AppWidgetManager.getInstance
@@ -27,11 +28,11 @@ import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
-import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsGranted
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsGranted
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
 import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
-import by.rudkouski.widget.view.forecast.ForecastActivity
-import by.rudkouski.widget.view.location.LocationActivity
+import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
+import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
 import org.threeten.bp.OffsetDateTime.now
 import org.threeten.bp.ZoneId
 import org.threeten.bp.format.DateTimeFormatter
@@ -137,23 +138,23 @@ class WidgetProvider : AppWidgetProvider() {
     private fun createClockPendingIntent(context: Context, widgetId: Int): PendingIntent {
         val clockIntent = Intent(ACTION_SHOW_ALARMS)
         clockIntent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
-        return PendingIntent.getActivity(context, widgetId, clockIntent, FLAG_UPDATE_CURRENT)
+        return getActivity(context, widgetId, clockIntent, FLAG_UPDATE_CURRENT)
     }
 
     private fun createDatePendingIntent(context: Context, widgetId: Int): PendingIntent {
         val dateIntent = Intent(ACTION_QUICK_CLOCK)
         dateIntent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
-        return PendingIntent.getActivity(context, widgetId, dateIntent, FLAG_UPDATE_CURRENT)
+        return getActivity(context, widgetId, dateIntent, FLAG_UPDATE_CURRENT)
     }
 
     private fun createLocationPendingIntent(context: Context, widgetId: Int): PendingIntent {
-        val locationIntent = LocationActivity.startIntent(context, widgetId)
-        return PendingIntent.getActivity(context, widgetId, locationIntent, FLAG_UPDATE_CURRENT)
+        val locationIntent = startLocationActivityIntent(context, widgetId)
+        return getActivity(context, widgetId, locationIntent, FLAG_UPDATE_CURRENT)
     }
 
     private fun createForecastPendingIntent(context: Context, widgetId: Int): PendingIntent {
-        val forecastIntent = ForecastActivity.startIntent(context, widgetId)
-        return PendingIntent.getActivity(context, widgetId, forecastIntent, FLAG_UPDATE_CURRENT)
+        val forecastIntent = startForecastActivityIntent(context, widgetId)
+        return getActivity(context, widgetId, forecastIntent, FLAG_UPDATE_CURRENT)
     }
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {

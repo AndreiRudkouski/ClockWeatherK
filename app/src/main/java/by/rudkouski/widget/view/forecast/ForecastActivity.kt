@@ -19,6 +19,7 @@ import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocat
 import by.rudkouski.widget.repository.WeatherRepository.getHourWeathersByLocationIdAndTimeInterval
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.view.BaseActivity
+import by.rudkouski.widget.view.forecast.ForecastFragment.Companion.newForecastFragmentInstance
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
 import com.google.android.material.appbar.CollapsingToolbarLayout
@@ -31,13 +32,13 @@ class ForecastActivity : BaseActivity() {
     companion object {
         private const val FORECAST_ACTIVITY_UPDATE_ACTION = "by.rudkouski.widget.FORECAST_ACTIVITY_UPDATE"
 
-        fun startIntent(context: Context, widgetId: Int): Intent {
+        fun startForecastActivityIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, ForecastActivity::class.java)
             intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
             return intent
         }
 
-        fun updateActivityBroadcast(context: Context) {
+        fun updateForecastActivityBroadcast(context: Context) {
             val intent = Intent(FORECAST_ACTIVITY_UPDATE_ACTION)
             context.sendBroadcast(intent)
         }
@@ -62,7 +63,7 @@ class ForecastActivity : BaseActivity() {
         initToolbar(widgetId)
         val manager = supportFragmentManager
         manager.beginTransaction()
-            .replace(R.id.forecast_container, ForecastFragment.newInstance(widgetId), ForecastFragment::class.java.name)
+            .replace(R.id.forecast_container, newForecastFragmentInstance(widgetId), ForecastFragment::class.java.name)
             .commit()
     }
 

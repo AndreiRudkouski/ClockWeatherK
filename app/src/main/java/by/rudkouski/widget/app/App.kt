@@ -2,8 +2,7 @@ package by.rudkouski.widget.app
 
 import android.app.Application
 import android.content.Context
-import by.rudkouski.widget.update.listener.LocationChangeListener
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver
 import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
 import java.util.*
@@ -21,16 +20,16 @@ class App : Application() {
         appContext = this
         apiKey = getProperty("apiKey", this)
         WidgetUpdateBroadcastReceiver.registerReceiver(this)
-        UpdateWeatherScheduler.startUpdateWeatherScheduler()
-        LocationChangeListener.startLocationUpdate()
-        WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
+        UpdateWeatherScheduler.startWeatherUpdateScheduler()
+        UpdateWeatherScheduler.startLocationUpdateScheduler()
+        LocationUpdateBroadcastReceiver.setCurrentLocation()
     }
 
     override fun onTerminate() {
         super.onTerminate()
         WidgetUpdateBroadcastReceiver.unregisterReceiver(this)
-        UpdateWeatherScheduler.stopUpdateWeatherScheduler()
-        LocationChangeListener.stopLocationUpdate()
+        UpdateWeatherScheduler.stopWeatherUpdateScheduler()
+        UpdateWeatherScheduler.stopLocationUpdateScheduler()
     }
 
     private fun getProperty(key: String, context: Context): String {

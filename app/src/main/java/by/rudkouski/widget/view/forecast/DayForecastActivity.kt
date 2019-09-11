@@ -28,6 +28,7 @@ import by.rudkouski.widget.util.WeatherUtils.setUvIndexText
 import by.rudkouski.widget.util.WeatherUtils.setVisibilityText
 import by.rudkouski.widget.util.WeatherUtils.setWindText
 import by.rudkouski.widget.view.BaseActivity
+import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
 import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
@@ -41,7 +42,7 @@ class DayForecastActivity : BaseActivity() {
     companion object {
         private const val EXTRA_FORECAST_ID = "forecastId"
 
-        fun start(context: Context, widgetId: Int, forecastId: Int) {
+        fun startDayForecastActivity(context: Context, widgetId: Int, forecastId: Int) {
             val intent = Intent(context, DayForecastActivity::class.java)
             intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
             intent.putExtra(EXTRA_FORECAST_ID, forecastId)
@@ -138,7 +139,7 @@ class DayForecastActivity : BaseActivity() {
     }
 
     private fun callPreviousActivity() {
-        val intent = ForecastActivity.startIntent(this, widgetId)
+        val intent = startForecastActivityIntent(this, widgetId)
         startActivity(intent)
     }
 

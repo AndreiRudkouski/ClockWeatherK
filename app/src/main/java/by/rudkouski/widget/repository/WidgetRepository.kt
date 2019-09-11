@@ -5,13 +5,14 @@ import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
 import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.repository.ForecastRepository.deleteForecastsForLocationId
-import by.rudkouski.widget.repository.LocationRepository.isLocationUsed
+import by.rudkouski.widget.repository.LocationRepository.isLocationNotUsed
 import by.rudkouski.widget.repository.WeatherRepository.deleteWeathersForLocationId
 import kotlinx.coroutines.runBlocking
 
 object WidgetRepository {
 
     private val widgetDao = INSTANCE.widgetDao()
+    private val locationDao = INSTANCE.locationDao()
 
     fun getWidgetById(widgetId: Int): Widget? {
         return runBlocking {
@@ -39,10 +40,10 @@ object WidgetRepository {
                     return@runBlocking false
                 }
                 val updatedWidget = savedWidget.copy(locationId = locationId)
+                widgetDao.update(updatedWidget)
                 if (savedWidget.locationId != locationId) {
                     deleteWeathersAndForecastsForUnusedLocationId(savedWidget.locationId)
                 }
-                widgetDao.update(updatedWidget)
             } else {
                 val newWidget = Widget(widgetId, false, appContext.applicationInfo.theme, locationId)
                 widgetDao.insert(newWidget)
@@ -52,7 +53,7 @@ object WidgetRepository {
     }
 
     private fun deleteWeathersAndForecastsForUnusedLocationId(locationId: Int) {
-        if (!isLocationUsed(locationId)) {
+        if (isLocationNotUsed(locationId)) {
             deleteWeathersForLocationId(locationId)
             deleteForecastsForLocationId(locationId)
         }

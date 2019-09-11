@@ -27,7 +27,7 @@ import by.rudkouski.widget.util.WeatherUtils.setUvIndexText
 import by.rudkouski.widget.util.WeatherUtils.setVisibilityText
 import by.rudkouski.widget.util.WeatherUtils.setWindText
 import by.rudkouski.widget.view.BaseActivity
-import by.rudkouski.widget.view.forecast.ForecastActivity
+import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -38,7 +38,7 @@ class HourWeatherActivity : BaseActivity() {
     companion object {
         private const val EXTRA_WEATHER_ID = "weatherId"
 
-        fun start(context: Context, widgetId: Int, weatherId: Int) {
+        fun startHourWeatherActivity(context: Context, widgetId: Int, weatherId: Int) {
             val intent = Intent(context, HourWeatherActivity::class.java)
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
             intent.putExtra(EXTRA_WEATHER_ID, weatherId)
@@ -117,7 +117,7 @@ class HourWeatherActivity : BaseActivity() {
     }
 
     private fun callPreviousActivity() {
-        val intent = ForecastActivity.startIntent(this, widgetId)
+        val intent = startForecastActivityIntent(this, widgetId)
         startActivity(intent)
     }
 

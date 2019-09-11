@@ -21,8 +21,8 @@ import by.rudkouski.widget.repository.LocationRepository.getAllLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationByWidgetId
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.WidgetRepository.setWidgetByIdAndLocationId
-import by.rudkouski.widget.update.listener.LocationChangeListener.isPermissionsDenied
-import by.rudkouski.widget.update.listener.LocationChangeListener.startLocationUpdate
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.setCurrentLocation
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
 import by.rudkouski.widget.view.BaseActivity
 
@@ -32,16 +32,15 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     companion object {
         private const val REQUEST_PERMISSION_CODE = 12345
-
         private const val LOCATION_ACTIVITY_UPDATE_WEATHER = "by.rudkouski.widget.LOCATION_ACTIVITY_UPDATE"
 
-        fun startIntent(context: Context, widgetId: Int): Intent {
+        fun startLocationActivityIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, LocationActivity::class.java)
             intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
             return intent
         }
 
-        fun updateActivityBroadcast(context: Context) {
+        fun updateLocationActivityBroadcast(context: Context) {
             val intent = Intent(LOCATION_ACTIVITY_UPDATE_WEATHER)
             context.sendBroadcast(intent)
         }
@@ -92,6 +91,9 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     private fun locationItemClickEvent(locationId: Int) {
         if (setWidgetByIdAndLocationId(widgetId, locationId)) {
+            if (CURRENT_LOCATION_ID == locationId) {
+                setCurrentLocation()
+            }
             updateWidgetAndWeather()
             setResultIntent()
         } else {
@@ -103,7 +105,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         when (requestCode) {
             REQUEST_PERMISSION_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PERMISSION_GRANTED) {
-                    startLocationUpdate()
+                    setCurrentLocation()
                 } else {
                     resetCurrentLocation()
                 }

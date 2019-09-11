@@ -35,6 +35,13 @@
                 <action android:name="by.rudkouski.widget.CURRENT_WEATHER_UPDATE"/>
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".update.receiver.LocationUpdateBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="by.rudkouski.widget.LOCATION_UPDATE"/>
+            </intent-filter>
+        </receiver>
 
         <activity android:name=".view.location.LocationActivity"
                   android:configChanges="orientation|screenSize"
