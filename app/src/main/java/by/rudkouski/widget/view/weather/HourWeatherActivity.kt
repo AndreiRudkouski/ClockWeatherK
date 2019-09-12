@@ -1,6 +1,6 @@
 package by.rudkouski.widget.view.weather
 
-import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -40,7 +40,7 @@ class HourWeatherActivity : BaseActivity() {
 
         fun startHourWeatherActivity(context: Context, widgetId: Int, weatherId: Int) {
             val intent = Intent(context, HourWeatherActivity::class.java)
-            intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, widgetId)
+            intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
             intent.putExtra(EXTRA_WEATHER_ID, weatherId)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(intent)
@@ -63,7 +63,7 @@ class HourWeatherActivity : BaseActivity() {
             setImage(view, weather)
             setDegreeText(view, weather)
             setPrecipitationText(view, weather.precipitationProbability, weather.precipitationType, R.id.precipitation_hour_weather)
-            setFeelText(view, weather)
+            setPerceivedText(view, weather)
             setHumidityText(view, weather.humidity, R.id.humidity_hour_weather)
             setPressureText(view, weather.pressure, R.id.pressure_hour_weather)
             setWindText(view, weather.windSpeed, weather.windDirection, weather.windGust, R.id.wind_hour_weather)
@@ -102,10 +102,10 @@ class HourWeatherActivity : BaseActivity() {
         degreeTextView.text = getDegreeText(this, weather.temperature)
     }
 
-    private fun setFeelText(view: View, weather: Weather) {
-        val description = getSpannableStringDescription(this, R.string.feel)
+    private fun setPerceivedText(view: View, weather: Weather) {
+        val description = getSpannableStringDescription(this, R.string.perceived)
         val value = getSpannableStringValue(this, getDegreeText(this, weather.apparentTemperature))
-        setDataToView(view, R.id.feel_hour_weather, description, value)
+        setDataToView(view, R.id.perceived_hour_weather, description, value)
     }
 
 

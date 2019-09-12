@@ -21,7 +21,7 @@ import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
-import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateCurrentWeather
 import by.rudkouski.widget.view.location.LocationActivity.Companion.updateLocationActivityBroadcast
 import java.io.IOException
@@ -126,7 +126,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                     Log.e(LocationUpdateBroadcastReceiver::class.java.simpleName, e.toString())
                 }
             } else {
-                registerReceiver()
+                registerNetworkChangeReceiver()
             }
             return null
         }

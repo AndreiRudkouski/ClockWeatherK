@@ -89,13 +89,13 @@
             tools:text="Precipitation: 25%"/>
 
         <TextView
-            android:id="@+id/feel_current_weather"
+            android:id="@+id/perceived_current_weather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:textColor="?colorTextMain"
             android:textSize="@dimen/small_text_size"
-            tools:text="Feels like: 18\u00B0C"/>
+            tools:text="Perceived: 18\u00B0C"/>
 
         <TextView
             android:id="@+id/dew_point_current_weather"

@@ -44,7 +44,7 @@ class WeatherItemView : LinearLayout {
             setImage(view, weather)
             setDegreeText(view, weather)
             setPrecipitationText(view, weather)
-            setFeelText(view, weather)
+            setPerceivedText(view, weather)
             setDewPointText(view, weather)
             setHumidityText(view, weather)
             setPressureText(view, weather)
@@ -87,10 +87,10 @@ class WeatherItemView : LinearLayout {
         setDataToView(view, R.id.precipitation_current_weather, description, value)
     }
 
-    private fun setFeelText(view: View, weather: Weather) {
-        val description = context.getString(R.string.feel)
+    private fun setPerceivedText(view: View, weather: Weather) {
+        val description = context.getString(R.string.perceived)
         val value = getDegreeText(context, weather.apparentTemperature)
-        setDataToView(view, R.id.feel_current_weather, description, value)
+        setDataToView(view, R.id.perceived_current_weather, description, value)
     }
 
     private fun setDewPointText(view: View, weather: Weather) {

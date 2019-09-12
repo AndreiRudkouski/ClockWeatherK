@@ -8,6 +8,7 @@
     <string name="default_location">Неизвестно</string>
     <string name="default_weather">Нет данных</string>
     <string name="choose_location">Выберите местоположение</string>
+    <string name="setting">Настройки</string>
 
     <string name="update_weather">ОТПУСТИТЬ ДЛЯ ОБНОВЛЕНИЯ</string>
     <string name="update">обновление…</string>
@@ -20,12 +21,11 @@
     <string name="minsk">Минск</string>
 
     <string name="menu_location">Изменить местоположение</string>
-    <string name="menu_text">Изменить жирность текст</string>
-    <string name="menu_theme">Изменить тему</string>
+    <string name="menu_setting">Настройки</string>
 
     <string name="update_date">Обновлено</string>
     <string name="wind">Ветер</string>
-    <string name="feel">Ощущается</string>
+    <string name="perceived">Ощущается</string>
     <string name="humidity">Влажность</string>
     <string name="pressure">Давление</string>
     <string name="visibility">Видимость</string>
@@ -65,4 +65,9 @@
     <string name="wind_direction_WNW">З-СЗ</string>
     <string name="wind_direction_NW">СЗ</string>
     <string name="wind_direction_NNW">С-СЗ</string>
+
+    <string name="setting_bold">Жирный текст</string>
+    <string name="setting_bold_description">Жирный текст виджета на основном виде</string>
+    <string name="setting_theme">Темная тема</string>
+    <string name="setting_theme_description">Темная тема для все страниц виджета</string>
 </resources>

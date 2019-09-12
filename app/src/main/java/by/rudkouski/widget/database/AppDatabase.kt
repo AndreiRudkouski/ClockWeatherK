@@ -6,21 +6,15 @@ import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.database.dao.ForecastDao
-import by.rudkouski.widget.database.dao.LocationDao
-import by.rudkouski.widget.database.dao.WeatherDao
-import by.rudkouski.widget.database.dao.WidgetDao
-import by.rudkouski.widget.entity.Forecast
-import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.database.dao.*
+import by.rudkouski.widget.entity.*
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
-import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.entity.Widget
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.threeten.bp.ZoneId.of
 import org.threeten.bp.ZoneId.systemDefault
 
-@Database(entities = [Location::class, Widget::class, Weather::class, Forecast::class], version = 1, exportSchema = false)
+@Database(entities = [Location::class, Widget::class, Weather::class, Forecast::class, Setting::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     companion object {
@@ -34,7 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
         private fun initDefaultData() {
             GlobalScope.launch {
                 val defaultLocations: Array<String> = appContext.resources.getStringArray(R.array.default_locations)
-                for (i in 0 until defaultLocations.size) {
+                for (i in defaultLocations.indices) {
                     val locationData = defaultLocations[i].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                     val code = if (locationData[0].isEmpty()) CURRENT_LOCATION else locationData[0]
                     val latitude = locationData[1].toDouble()
@@ -56,4 +50,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun weatherDao(): WeatherDao
 
     abstract fun forecastDao(): ForecastDao
+
+    abstract fun settingDao(): SettingDao
 }

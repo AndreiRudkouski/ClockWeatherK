@@ -77,14 +77,14 @@
                         tools:text="Precipitation: \nrain, 25%"/>
 
                     <TextView
-                        android:id="@+id/feel_hour_weather"
+                        android:id="@+id/perceived_hour_weather"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:textColor="?colorTextAdd"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:gravity="center"
-                        tools:text="Feels like: \n18\u00B0C"/>
+                        tools:text="Perceived: \n18\u00B0C"/>
 
                 </LinearLayout>
 

@@ -24,7 +24,9 @@ import android.widget.RemoteViews
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.widget.entity.Setting
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.repository.SettingRepository
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
@@ -78,9 +80,11 @@ class WidgetProvider : AppWidgetProvider() {
         val widget = getWidgetById(widgetId)
         if (widget != null) {
             val location = getLocationById(widget.locationId)
-            updateClockAndDate(remoteViews, context, location.zoneId, widget.isBold)
-            updateLocation(remoteViews, context, location, widget.isBold)
-            updateWeather(remoteViews, context, location.id, widget.isBold)
+            val settings = SettingRepository.getSettingsByWidgetId(widgetId)
+            val isBold = settings!!.find { Setting.Code.SETTING_BOLD == it.code }!!.getBooleanValue()
+            updateClockAndDate(remoteViews, context, location.zoneId, isBold)
+            updateLocation(remoteViews, context, location, isBold)
+            updateWeather(remoteViews, context, location.id, isBold)
             setPendingIntents(remoteViews, context, widgetId, location.id)
         }
         return remoteViews

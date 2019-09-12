@@ -8,9 +8,5 @@ import androidx.room.*
 data class Widget(@PrimaryKey
                   @ColumnInfo(name = "widget_id")
                   val id: Int,
-                  @ColumnInfo(name = "widget_bold")
-                  val isBold: Boolean,
-                  @ColumnInfo(name = "widget_theme")
-                  val themeId: Int,
                   @ColumnInfo(name = "widget_location_id")
                   var locationId: Int)

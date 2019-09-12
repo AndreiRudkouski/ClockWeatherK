@@ -1,33 +1,36 @@
 package by.rudkouski.widget.view
 
-import android.appwidget.AppWidgetManager
-import android.content.Intent
+import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
-import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
-import by.rudkouski.widget.repository.WidgetRepository
-import by.rudkouski.widget.repository.WidgetRepository.changeWidgetTextBold
-import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
+import by.rudkouski.widget.entity.Setting
+import by.rudkouski.widget.repository.SettingRepository.getSettingsByWidgetId
+import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
+import by.rudkouski.widget.view.setting.SettingActivity
+import by.rudkouski.widget.view.setting.SettingActivity.Companion.startSettingActivityIntent
 
 abstract class BaseActivity : AppCompatActivity() {
 
     protected var widgetId = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID) ?: 0
+        widgetId = intent?.extras?.getInt(EXTRA_APPWIDGET_ID) ?: 0
         changeWidgetTheme()
         super.onCreate(savedInstanceState)
     }
 
     private fun changeWidgetTheme() {
-        val widget = getWidgetById(widgetId)
-        if (widget != null) {
-            applicationInfo.theme = widget.themeId
-            setTheme(widget.themeId)
+        val settings = getSettingsByWidgetId(widgetId)
+        if (!settings.isNullOrEmpty()) {
+            val isBlackTheme = settings.find { Setting.Code.SETTING_THEME == it.code }!!.getBooleanValue()
+            val themeId = if (isBlackTheme) resources.getIdentifier("DarkTheme", "style", packageName) else
+                resources.getIdentifier("LightTheme", "style", packageName)
+            applicationInfo.theme = themeId
+            setTheme(themeId)
         }
     }
 
@@ -39,24 +42,19 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.change_location_menu -> {
-                val intent = startLocationActivityIntent(this, widgetId)
-                startActivity(intent)
+                if (this.componentName.className != LocationActivity::class.java.name) {
+                    val intent = startLocationActivityIntent(this, widgetId)
+                    startActivity(intent)
+                }
                 return true
             }
-            R.id.change_text_menu -> {
-                changeWidgetTextBold(widgetId)
-                updateWidget(this)
-                return true
-            }
-            R.id.change_theme_menu -> {
-                val darkThemeId = resources.getIdentifier("DarkTheme", "style", packageName)
-                val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
-                val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
-                WidgetRepository.changeWidgetTheme(widgetId, themeId)
-                updateWidget(this)
-                finish()
-                intent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-                startActivity(intent)
+            R.id.setting_menu -> {
+                if (this.componentName.className != SettingActivity::class.java.name) {
+                    if (!getSettingsByWidgetId(widgetId).isNullOrEmpty()) {
+                        val intent = startSettingActivityIntent(this, widgetId)
+                        startActivity(intent)
+                    }
+                }
                 return true
             }
         }

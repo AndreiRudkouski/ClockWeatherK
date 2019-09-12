@@ -1,18 +1,17 @@
 package by.rudkouski.widget.repository
 
 import androidx.room.Transaction
-import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.database.AppDatabase.Companion.INSTANCE
 import by.rudkouski.widget.entity.Widget
 import by.rudkouski.widget.repository.ForecastRepository.deleteForecastsForLocationId
 import by.rudkouski.widget.repository.LocationRepository.isLocationNotUsed
+import by.rudkouski.widget.repository.SettingRepository.setDefaultSettingsByWidgetId
 import by.rudkouski.widget.repository.WeatherRepository.deleteWeathersForLocationId
 import kotlinx.coroutines.runBlocking
 
 object WidgetRepository {
 
     private val widgetDao = INSTANCE.widgetDao()
-    private val locationDao = INSTANCE.locationDao()
 
     fun getWidgetById(widgetId: Int): Widget? {
         return runBlocking {
@@ -45,8 +44,9 @@ object WidgetRepository {
                     deleteWeathersAndForecastsForUnusedLocationId(savedWidget.locationId)
                 }
             } else {
-                val newWidget = Widget(widgetId, false, appContext.applicationInfo.theme, locationId)
+                val newWidget = Widget(widgetId, locationId)
                 widgetDao.insert(newWidget)
+                setDefaultSettingsByWidgetId(widgetId)
             }
             return@runBlocking true
         }
@@ -56,28 +56,6 @@ object WidgetRepository {
         if (isLocationNotUsed(locationId)) {
             deleteWeathersForLocationId(locationId)
             deleteForecastsForLocationId(locationId)
-        }
-    }
-
-    @Transaction
-    fun changeWidgetTextBold(widgetId: Int) {
-        runBlocking {
-            val savedWidget = widgetDao.getById(widgetId)
-            if (savedWidget != null) {
-                val updatedWidget = savedWidget.copy(isBold = !savedWidget.isBold)
-                widgetDao.update(updatedWidget)
-            }
-        }
-    }
-
-    @Transaction
-    fun changeWidgetTheme(widgetId: Int, themeId: Int) {
-        runBlocking {
-            val savedWidget = widgetDao.getById(widgetId)
-            if (savedWidget != null) {
-                val updatedWidget = savedWidget.copy(themeId = themeId)
-                widgetDao.update(updatedWidget)
-            }
         }
     }
 }

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<by.rudkouski.widget.view.setting.SettingItemView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tool="http://schemas.android.com/tools"
+    android:id="@+id/setting_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/setting_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:clickable="false"
+            android:paddingStart="@dimen/location_name_padding"
+            android:paddingTop="@dimen/location_name_padding"
+            android:paddingEnd="@dimen/location_name_padding"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="?colorTextAdd"
+            tool:text="@string/setting_bold" />
+
+        <TextView
+            android:id="@+id/setting_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/location_name_padding"
+            android:paddingEnd="@dimen/location_name_padding"
+            android:paddingBottom="@dimen/location_name_padding"
+            android:text="@string/setting_bold_description"
+            android:textSize="@dimen/small_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:padding="@dimen/location_name_padding">
+
+        <CheckBox
+            android:id="@+id/setting_value"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:buttonTint="?colorSelector"/>
+    </LinearLayout>
+
+</by.rudkouski.widget.view.setting.SettingItemView>

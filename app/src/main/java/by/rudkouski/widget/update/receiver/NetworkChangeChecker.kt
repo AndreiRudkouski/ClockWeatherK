@@ -20,11 +20,11 @@ object NetworkChangeChecker {
         }
 
         override fun onLost(network: Network) {
-            unregisterReceiver()
+            unregisterNetworkChangeReceiver()
         }
     }
 
-    fun registerReceiver() {
+    fun registerNetworkChangeReceiver() {
         if (!isRegistered.get()) {
             val builder = NetworkRequest.Builder()
             connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
@@ -32,7 +32,7 @@ object NetworkChangeChecker {
         }
     }
 
-    fun unregisterReceiver() {
+    fun unregisterNetworkChangeReceiver() {
         if (isRegistered.get()) {
             val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(networkCallbacks)

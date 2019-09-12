@@ -2,9 +2,13 @@ package by.rudkouski.widget.app
 
 import android.app.Application
 import android.content.Context
-import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver
-import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver
-import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.setCurrentLocation
+import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.registerWidgetUpdateReceiver
+import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.unregisterWidgetUpdateReceiver
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.startLocationUpdateScheduler
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.startWeatherUpdateScheduler
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.stopLocationUpdateScheduler
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.stopWeatherUpdateScheduler
 import java.util.*
 
 
@@ -19,17 +23,17 @@ class App : Application() {
         super.onCreate()
         appContext = this
         apiKey = getProperty("apiKey", this)
-        WidgetUpdateBroadcastReceiver.registerReceiver(this)
-        UpdateWeatherScheduler.startWeatherUpdateScheduler()
-        UpdateWeatherScheduler.startLocationUpdateScheduler()
-        LocationUpdateBroadcastReceiver.setCurrentLocation()
+        registerWidgetUpdateReceiver(this)
+        startWeatherUpdateScheduler()
+        startLocationUpdateScheduler()
+        setCurrentLocation()
     }
 
     override fun onTerminate() {
         super.onTerminate()
-        WidgetUpdateBroadcastReceiver.unregisterReceiver(this)
-        UpdateWeatherScheduler.stopWeatherUpdateScheduler()
-        UpdateWeatherScheduler.stopLocationUpdateScheduler()
+        unregisterWidgetUpdateReceiver(this)
+        stopWeatherUpdateScheduler()
+        stopLocationUpdateScheduler()
     }
 
     private fun getProperty(key: String, context: Context): String {

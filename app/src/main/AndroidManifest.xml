@@ -69,6 +69,9 @@
         <activity android:name=".view.forecast.DayForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>
+        <activity android:name=".view.setting.SettingActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"/>
     </application>
 
 </manifest>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="default_settings">
+        <item>setting_bold,0,boolean</item>
+        <item>setting_theme,0,boolean</item>
+    </string-array>
+</resources>

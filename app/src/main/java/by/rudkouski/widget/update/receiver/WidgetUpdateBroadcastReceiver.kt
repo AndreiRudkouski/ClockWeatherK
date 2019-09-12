@@ -25,11 +25,11 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
             .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
             .also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
 
-    fun registerReceiver(context: Context) {
+    fun registerWidgetUpdateReceiver(context: Context) {
         context.registerReceiver(this, intentFilter)
     }
 
-    fun unregisterReceiver(context: Context) {
+    fun unregisterWidgetUpdateReceiver(context: Context) {
         context.applicationContext.unregisterReceiver(this)
     }
 

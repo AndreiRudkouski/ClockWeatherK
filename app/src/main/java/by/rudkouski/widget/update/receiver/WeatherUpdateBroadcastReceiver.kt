@@ -20,7 +20,7 @@ import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
 import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
-import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
 import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.isWeatherNeedUpdate
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.util.JsonUtils.getCurrentWeatherFromResponseBody
@@ -77,7 +77,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                         updateCurrentWeather(context)
                     }
                 } else {
-                    registerReceiver()
+                    registerNetworkChangeReceiver()
                 }
             }
         }

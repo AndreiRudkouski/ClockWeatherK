@@ -12,6 +12,7 @@
         <item name="colorTextAdd">@color/colorTextAdd_Dark</item>
         <item name="android:windowBackground">@color/colorPrimary_Dark</item>
         <item name="android:colorControlHighlight">@color/colorSelected</item>
+        <item name="colorSelector">@color/colorTextAdd_Dark</item>
     </style>
 
     <style name="LightTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
@@ -25,5 +26,6 @@
         <item name="colorTextAdd">@color/colorTextAdd_Light</item>
         <item name="android:windowBackground">@color/colorPrimary_Light</item>
         <item name="android:colorControlHighlight">@color/colorSelected</item>
+        <item name="colorSelector">@color/colorTextAdd_Light</item>
     </style>
 </resources>

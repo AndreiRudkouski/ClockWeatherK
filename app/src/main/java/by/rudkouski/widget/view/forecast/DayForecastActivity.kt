@@ -70,7 +70,7 @@ class DayForecastActivity : BaseActivity() {
             setSunriseTime(view, forecast)
             setSunsetTime(view, forecast)
             setPrecipitationText(view, forecast.precipitationProbability, forecast.precipitationType, R.id.precipitation_day_forecast)
-            setFeelText(view, forecast)
+            setPerceivedText(view, forecast)
             setHumidityText(view, forecast.humidity, R.id.humidity_day_forecast)
             setPressureText(view, forecast.pressure, R.id.pressure_day_forecast)
             setWindText(view, forecast.windSpeed, forecast.windDirection, forecast.windGust, R.id.wind_day_forecast)
@@ -124,11 +124,11 @@ class DayForecastActivity : BaseActivity() {
         return date.format(DateTimeFormatter.ofPattern(timeFormat, Locale.getDefault()))
     }
 
-    private fun setFeelText(view: View, forecast: Forecast) {
-        val description = getSpannableStringDescription(this, R.string.feel)
+    private fun setPerceivedText(view: View, forecast: Forecast) {
+        val description = getSpannableStringDescription(this, R.string.perceived)
         val value = getSpannableStringValue(this, String.format(Locale.getDefault(), ForecastItemView.FORECAST_DEGREE_FORMAT,
             getDegreeText(this, forecast.apparentTemperatureHigh), getDegreeText(this, forecast.apparentTemperatureLow)))
-        setDataToView(view, R.id.feel_day_forecast, description, value)
+        setDataToView(view, R.id.perceived_day_forecast, description, value)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

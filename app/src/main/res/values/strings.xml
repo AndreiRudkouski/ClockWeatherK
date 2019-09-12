@@ -8,6 +8,7 @@
     <string name="default_location">Unknown</string>
     <string name="default_weather">No data</string>
     <string name="choose_location">Choose location</string>
+    <string name="setting">Settings</string>
 
     <string name="update_weather">RELEASE FOR UPDATE</string>
     <string name="update">updating…</string>
@@ -20,12 +21,11 @@
     <string name="minsk">Minsk</string>
 
     <string name="menu_location">Change location</string>
-    <string name="menu_text">Change bold text</string>
-    <string name="menu_theme">Change theme</string>
+    <string name="menu_setting">Settings</string>
 
     <string name="update_date">Updated</string>
     <string name="wind">Wind</string>
-    <string name="feel">Feels like</string>
+    <string name="perceived">Perceived</string>
     <string name="humidity">Humidity</string>
     <string name="pressure">Pressure</string>
     <string name="visibility">Visibility</string>
@@ -39,7 +39,7 @@
     <string name="sunset">Sunset</string>
 
     <string name="speed_unit">m/s</string>
-    <string name="pressure_unit">hpa</string>
+    <string name="pressure_unit">hPa</string>
     <string name="distance_unit">km</string>
     <string name="temperature_unit">\u00B0C</string>
     <string name="percent_unit">%</string>
@@ -65,4 +65,9 @@
     <string name="wind_direction_WNW">W-NW</string>
     <string name="wind_direction_NW">NW</string>
     <string name="wind_direction_NNW">N-NW</string>
+
+    <string name="setting_bold">Bold text</string>
+    <string name="setting_bold_description">Bold text of the widget on the main view</string>
+    <string name="setting_theme">Dark theme</string>
+    <string name="setting_theme_description">Dark theme for all widget pages</string>
 </resources>

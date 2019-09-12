@@ -23,7 +23,7 @@ import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.WidgetRepository.setWidgetByIdAndLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.setCurrentLocation
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
 import by.rudkouski.widget.view.BaseActivity
 
 class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClickListener {
@@ -116,7 +116,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     private fun updateWidgetAndWeather() {
         updateWidget(this)
-        WeatherUpdateBroadcastReceiver.updateAllWeathers(this)
+        updateAllWeathers(this)
     }
 
     private fun setResultIntent() {
