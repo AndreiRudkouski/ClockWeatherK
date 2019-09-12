@@ -25,6 +25,8 @@ import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateCurrentWeather
 import by.rudkouski.widget.view.location.LocationActivity.Companion.updateLocationActivityBroadcast
 import java.io.IOException
+import java.util.*
+import java.util.Locale.getDefault
 
 @SuppressLint("MissingPermission")
 class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
@@ -114,8 +116,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
             if (isOnline()) {
                 val longitude = location.longitude
                 val latitude = location.latitude
-                val locale = appContext.resources.configuration.locales[0]
-                val geoCoder = Geocoder(appContext, locale)
+                val geoCoder = Geocoder(appContext, getCurrentLocale())
                 try {
                     val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
                     if (addresses != null && addresses.size > 0) {
@@ -128,6 +129,12 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                 registerReceiver()
             }
             return null
+        }
+
+        private fun getCurrentLocale(): Locale {
+            val locale = getDefault()
+            if ("ru" == locale.language) return Locale("ru", "RU")
+            return locale
         }
 
         private fun sendIntentToWidgetUpdate() {

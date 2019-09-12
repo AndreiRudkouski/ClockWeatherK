@@ -60,6 +60,6 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         updateWidget(context)
     }
 
-    private fun isWeatherNeedUpdate(weather: Weather?, zoneId: ZoneId, interval: Long) =
+    fun isWeatherNeedUpdate(weather: Weather?, zoneId: ZoneId, interval: Long) =
         weather == null || weather.update.plusMinutes(interval).isBefore(now(zoneId))
 }

@@ -18,10 +18,10 @@ import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationZo
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
 import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
-import by.rudkouski.widget.repository.WeatherRepository.setSuitableWeatherAsCurrentByLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerReceiver
+import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.isWeatherNeedUpdate
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.util.JsonUtils.getCurrentWeatherFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getCurrentZoneIdFromResponseBody
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.OffsetDateTime.now
+import org.threeten.bp.ZoneId
 import java.util.*
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
@@ -78,7 +78,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                     }
                 } else {
                     registerReceiver()
-                    updateCurrentWeatherWithoutNetwork(context)
                 }
             }
         }
@@ -88,7 +87,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         val locations = getAllUsedLocations()
         if (locations != null) {
             for (location in locations) {
-                if (CURRENT_LOCATION_ID == location.id && !isCurrentWeatherNeedUpdate()) {
+                if (CURRENT_LOCATION_ID == location.id && !isCurrentWeatherNeedUpdate(location.zoneId)) {
                     continue
                 }
                 updateWeather(location)
@@ -97,12 +96,9 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun isCurrentWeatherNeedUpdate(): Boolean {
+    private fun isCurrentWeatherNeedUpdate(zoneId: ZoneId): Boolean {
         val currentWeather = getCurrentWeatherByLocationId(CURRENT_LOCATION_ID)
-        if (currentWeather != null) {
-            return currentWeather.date.plusMinutes(LOCATION_UPDATE_INTERVAL_IN_MINUTES).isBefore(now())
-        }
-        return true
+        return isWeatherNeedUpdate(currentWeather, zoneId, LOCATION_UPDATE_INTERVAL_IN_MINUTES)
     }
 
     private fun updateCurrentWeather(context: Context) {
@@ -157,16 +153,6 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
             }
         }
         return null
-    }
-
-    private fun updateCurrentWeatherWithoutNetwork(context: Context) {
-        val locations = getAllUsedLocations()
-        if (locations != null) {
-            for (location in locations) {
-                setSuitableWeatherAsCurrentByLocationId(location.id)
-            }
-            sendIntentsForWidgetUpdate(context)
-        }
     }
 
     private fun sendIntentsForWidgetUpdate(context: Context) {
