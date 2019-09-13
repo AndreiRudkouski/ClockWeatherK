@@ -3,9 +3,11 @@ package by.rudkouski.widget.view.forecast
 import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.os.Bundle
+import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -36,6 +38,8 @@ private constructor() : Fragment() {
         super.onCreateView(inflater, container, savedInstanceState)
         val view = inflater.inflate(R.layout.forecast_fragment, container, false)
         setDataToForecastRecyclerView(view)
+        val linkTextView = view.findViewById<TextView>(R.id.powered_by_link)
+        linkTextView.movementMethod = LinkMovementMethod.getInstance()
         return view
     }
 

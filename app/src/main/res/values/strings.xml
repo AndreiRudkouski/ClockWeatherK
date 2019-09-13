@@ -70,4 +70,6 @@
     <string name="setting_bold_description">Bold text of the widget on the main view</string>
     <string name="setting_theme">Dark theme</string>
     <string name="setting_theme_description">Dark theme for all widget pages</string>
+
+    <string name="link"><a href="https://darksky.net/poweredby/">Powered by Dark Sky</a></string>
 </resources>
