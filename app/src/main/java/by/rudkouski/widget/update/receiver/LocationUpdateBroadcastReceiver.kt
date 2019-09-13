@@ -11,13 +11,13 @@ import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.location.*
 import android.location.LocationManager.GPS_PROVIDER
+import android.location.LocationManager.PASSIVE_PROVIDER
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat.checkSelfPermission
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
-import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
@@ -46,7 +46,6 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
             override fun onLocationChanged(location: Location?) {
                 if (location != null) {
                     setLocation(location)
-                    locationManager.removeUpdates(this)
                 }
             }
         }
@@ -68,12 +67,12 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                 || checkSelfPermission(appContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PERMISSION_DENIED
         }
 
-        fun isLocationEnabled(): Boolean {
-            return locationManager.isProviderEnabled(GPS_PROVIDER)
-        }
+        fun isLocationEnabled() = isProviderEnable(GPS_PROVIDER)
 
-        private fun requestLocationUpdates(provider: String) {
-            locationManager.requestLocationUpdates(provider, 0, 0f, locationChangeListener)
+        private fun isProviderEnable(name: String) = locationManager.isProviderEnabled(name)
+
+        private fun requestLocationUpdate(provider: String) {
+            locationManager.requestSingleUpdate(provider, locationChangeListener, Looper.getMainLooper())
         }
 
         fun setCurrentLocation() {
@@ -82,7 +81,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                 if (location != null) {
                     setLocation(location)
                 } else {
-                    requestLocationUpdates(GPS_PROVIDER)
+                    requestLocationUpdate(GPS_PROVIDER)
                 }
             }
         }
@@ -95,6 +94,8 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
             return locationManager.getBestProvider(criteria, true) ?: GPS_PROVIDER
         }
 
+        private fun getLocationByProviderName(name: String) = locationManager.getLastKnownLocation(name)
+
         private fun setLocation(lastLocation: Location) {
             val address = getAddress(lastLocation)
             if (address != null && (address.locality != null || address.subAdminArea != null || address.adminArea != null)) {
@@ -104,11 +105,8 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                         address.subAdminArea != null -> address.subAdminArea
                         else -> address.adminArea
                     }
-                val savedLocation = getLocationById(CURRENT_LOCATION_ID)
-                if (savedLocation.name_code != locationName) {
-                    updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
-                    sendIntentToWidgetUpdate()
-                }
+                updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
+                sendUpdateIntents()
             }
         }
 
@@ -137,7 +135,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
             return locale
         }
 
-        private fun sendIntentToWidgetUpdate() {
+        private fun sendUpdateIntents() {
             updateLocationActivityBroadcast(appContext)
             updateWidget(appContext)
             updateCurrentWeather(appContext)
@@ -147,7 +145,21 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (LOCATION_UPDATE_ACTION == intent.action) {
             if (isPermissionsGranted()) {
-                requestLocationUpdates(getProviderName())
+                val providerName = getProviderName()
+                if (isProviderEnable(providerName)) {
+                    if (PASSIVE_PROVIDER == providerName) {
+                        val location = getLocationByProviderName(providerName)
+                        if (location != null) {
+                            setLocation(location)
+                        } else {
+                            updateCurrentWeather(context)
+                        }
+                    } else {
+                        requestLocationUpdate(getProviderName())
+                    }
+                } else {
+                    updateCurrentWeather(context)
+                }
             } else {
                 resetCurrentLocation()
             }

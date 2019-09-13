@@ -15,14 +15,11 @@ import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationZoneIdName
-import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
 import by.rudkouski.widget.repository.WeatherRepository.setHourWeathersByLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
-import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.isWeatherNeedUpdate
-import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.util.JsonUtils.getCurrentWeatherFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getCurrentZoneIdFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getDayForecastFromResponseBody
@@ -33,7 +30,6 @@ import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.ZoneId
 import java.util.*
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
@@ -56,8 +52,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
 
         fun updateCurrentWeather(context: Context) {
-            getPendingIntent(context, CURRENT_WEATHER_UPDATE_ACTION,
-                CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
+            getPendingIntent(context, CURRENT_WEATHER_UPDATE_ACTION, CURRENT_WEATHER_UPDATE_REQUEST_CODE).send()
         }
 
         private fun getPendingIntent(context: Context, action: String, actionCode: Int): PendingIntent {
@@ -87,24 +82,16 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         val locations = getAllUsedLocations()
         if (locations != null) {
             for (location in locations) {
-                if (CURRENT_LOCATION_ID == location.id && !isCurrentWeatherNeedUpdate(location.zoneId)) {
-                    continue
-                }
                 updateWeather(location)
             }
-            sendIntentsForWidgetUpdate(context)
+            sendUpdateIntents(context)
         }
-    }
-
-    private fun isCurrentWeatherNeedUpdate(zoneId: ZoneId): Boolean {
-        val currentWeather = getCurrentWeatherByLocationId(CURRENT_LOCATION_ID)
-        return isWeatherNeedUpdate(currentWeather, zoneId, LOCATION_UPDATE_INTERVAL_IN_MINUTES)
     }
 
     private fun updateCurrentWeather(context: Context) {
         val location = getLocationById(CURRENT_LOCATION_ID)
         updateWeather(location)
-        sendIntentsForWidgetUpdate(context)
+        sendUpdateIntents(context)
     }
 
     private fun updateWeather(location: Location) {
@@ -155,7 +142,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         return null
     }
 
-    private fun sendIntentsForWidgetUpdate(context: Context) {
+    private fun sendUpdateIntents(context: Context) {
         updateWidget(context)
         updateForecastActivityBroadcast(context)
     }
