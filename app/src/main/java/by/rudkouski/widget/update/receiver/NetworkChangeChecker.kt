@@ -6,7 +6,7 @@ import android.net.Network
 import android.net.NetworkRequest
 import by.rudkouski.widget.app.App.Companion.appContext
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import java.util.concurrent.atomic.AtomicBoolean
 
 object NetworkChangeChecker {
@@ -15,7 +15,7 @@ object NetworkChangeChecker {
     private val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            updateAllWeathers(appContext)
+            updateOtherWeathers(appContext)
             updateCurrentLocation(appContext)
         }
 

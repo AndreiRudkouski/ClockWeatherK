@@ -23,7 +23,11 @@ import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationDa
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateCurrentWeather
+import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.view.location.LocationActivity.Companion.updateLocationActivityBroadcast
+import org.threeten.bp.Instant.ofEpochMilli
+import org.threeten.bp.OffsetDateTime.now
+import org.threeten.bp.ZoneId.systemDefault
 import java.io.IOException
 import java.util.*
 import java.util.Locale.getDefault
@@ -77,14 +81,29 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
 
         fun setCurrentLocation() {
             if (isPermissionsGranted()) {
-                val location = locationManager.getLastKnownLocation(getProviderName())
-                if (location != null) {
-                    setLocation(location)
+                updateLocation(getProviderName(), appContext, true)
+            }
+        }
+
+        private fun updateLocation(name: String, context: Context, isRequestNeed: Boolean) {
+            val location = getLocationByProviderName(name)
+            if (isLocationApplicable(location)) {
+                setLocation(location)
+            } else {
+                if (PASSIVE_PROVIDER == name) {
+                    updateCurrentWeather(context)
+                    if (isRequestNeed) {
+                        requestLocationUpdate(GPS_PROVIDER)
+                    }
                 } else {
-                    requestLocationUpdate(GPS_PROVIDER)
+                    requestLocationUpdate(name)
                 }
             }
         }
+
+        private fun isLocationApplicable(location: Location?) =
+            location != null &&
+                ofEpochMilli(location.time).atZone(systemDefault()).toOffsetDateTime().plusMinutes(LOCATION_UPDATE_INTERVAL_IN_MINUTES).isAfter(now())
 
         private fun getProviderName(): String {
             val criteria = Criteria()
@@ -107,6 +126,8 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                     }
                 updateCurrentLocationData(locationName, lastLocation.latitude, lastLocation.longitude)
                 sendUpdateIntents()
+            } else {
+                updateCurrentWeather(appContext)
             }
         }
 
@@ -145,21 +166,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (LOCATION_UPDATE_ACTION == intent.action) {
             if (isPermissionsGranted()) {
-                val providerName = getProviderName()
-                if (isProviderEnable(providerName)) {
-                    if (PASSIVE_PROVIDER == providerName) {
-                        val location = getLocationByProviderName(providerName)
-                        if (location != null) {
-                            setLocation(location)
-                        } else {
-                            updateCurrentWeather(context)
-                        }
-                    } else {
-                        requestLocationUpdate(getProviderName())
-                    }
-                } else {
-                    updateCurrentWeather(context)
-                }
+                updateLocation(getProviderName(), context, false)
             } else {
                 resetCurrentLocation()
             }

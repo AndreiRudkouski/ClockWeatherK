@@ -13,6 +13,7 @@ import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.ForecastRepository.setForecastsByLocationId
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.repository.LocationRepository.isLocationNotUsed
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationZoneIdName
 import by.rudkouski.widget.repository.WeatherRepository.setCurrentWeather
@@ -25,29 +26,30 @@ import by.rudkouski.widget.util.JsonUtils.getCurrentZoneIdFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getDayForecastFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getHourWeathersFromResponseBody
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.updateForecastActivityBroadcast
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.threeten.bp.OffsetDateTime
 import java.util.*
+import java.util.concurrent.Executors.newFixedThreadPool
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
-        private const val WEATHER_UPDATE_REQUEST_CODE = 1002
+        private val executorService = newFixedThreadPool(1)
+
+        private const val OTHER_WEATHER_UPDATE_REQUEST_CODE = 1002
         private const val CURRENT_WEATHER_UPDATE_REQUEST_CODE = 1003
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
 
-        private const val WEATHER_UPDATE_ACTION = "by.rudkouski.widget.WEATHER_UPDATE"
+        private const val OTHER_WEATHER_UPDATE_ACTION = "by.rudkouski.widget.WEATHER_UPDATE"
         private const val CURRENT_WEATHER_UPDATE_ACTION = "by.rudkouski.widget.CURRENT_WEATHER_UPDATE"
 
         fun getWeatherUpdatePendingIntent(context: Context): PendingIntent {
-            return getPendingIntent(context, WEATHER_UPDATE_ACTION, WEATHER_UPDATE_REQUEST_CODE)
+            return getPendingIntent(context, OTHER_WEATHER_UPDATE_ACTION, OTHER_WEATHER_UPDATE_REQUEST_CODE)
         }
 
-        fun updateAllWeathers(context: Context) {
+        fun updateOtherWeathers(context: Context) {
             getWeatherUpdatePendingIntent(context).send()
         }
 
@@ -63,11 +65,11 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     override fun onReceive(context: Context, intent: Intent) {
-        if (WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
-            GlobalScope.launch {
+        if (OTHER_WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
+            executorService.execute {
                 if (isOnline()) {
-                    if (WEATHER_UPDATE_ACTION == intent.action) {
-                        updateAllWeathers(context)
+                    if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
+                        updateOtherWeathers(context)
                     } else {
                         updateCurrentWeather(context)
                     }
@@ -78,20 +80,24 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun updateAllWeathers(context: Context) {
+    private fun updateOtherWeathers(context: Context) {
         val locations = getAllUsedLocations()
         if (locations != null) {
             for (location in locations) {
-                updateWeather(location)
+                if (CURRENT_LOCATION_ID != location.id) {
+                    updateWeather(location)
+                }
             }
             sendUpdateIntents(context)
         }
     }
 
     private fun updateCurrentWeather(context: Context) {
-        val location = getLocationById(CURRENT_LOCATION_ID)
-        updateWeather(location)
-        sendUpdateIntents(context)
+        if (!isLocationNotUsed(CURRENT_LOCATION_ID)) {
+            val location = getLocationById(CURRENT_LOCATION_ID)
+            updateWeather(location)
+            sendUpdateIntents(context)
+        }
     }
 
     private fun updateWeather(location: Location) {

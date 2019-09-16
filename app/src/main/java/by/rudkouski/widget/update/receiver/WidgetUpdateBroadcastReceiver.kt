@@ -11,7 +11,7 @@ import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.WEATHER_UPDATE_INTERVAL_IN_MINUTES
 import org.threeten.bp.OffsetDateTime.now
@@ -35,7 +35,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (ACTION_LOCALE_CHANGED == intent.action) {
-            updateAllWeathers(context)
+            updateOtherWeathers(context)
             updateCurrentLocation(context)
         }
         if (ACTION_SCREEN_ON == intent.action) {
@@ -50,7 +50,7 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
                         }
                     } else {
                         if (isWeatherNeedUpdate(weather, location.zoneId, WEATHER_UPDATE_INTERVAL_IN_MINUTES)) {
-                            updateAllWeathers(context)
+                            updateOtherWeathers(context)
                             return
                         }
                     }

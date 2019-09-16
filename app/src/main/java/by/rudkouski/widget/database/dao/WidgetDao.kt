@@ -6,6 +6,7 @@ import by.rudkouski.widget.entity.Widget
 @Dao
 interface WidgetDao {
 
+    @Transaction
     @Query("SELECT * FROM widgets WHERE widget_id = :widgetId")
     suspend fun getById(widgetId: Int): Widget?
 

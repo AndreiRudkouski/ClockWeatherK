@@ -12,7 +12,7 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.message.Message
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import com.google.android.material.appbar.AppBarLayout
 
 /**
@@ -75,7 +75,7 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
-            updateAllWeathers(context)
+            updateOtherWeathers(context)
             updateCurrentLocation(context)
             val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
             else context.getString(R.string.no_connection))

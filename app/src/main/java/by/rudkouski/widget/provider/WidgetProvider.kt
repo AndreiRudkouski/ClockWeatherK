@@ -31,7 +31,7 @@ import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocat
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsGranted
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
 import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
@@ -164,7 +164,7 @@ class WidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
         updateWidget(context)
-        updateAllWeathers(context)
+        updateOtherWeathers(context)
     }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {

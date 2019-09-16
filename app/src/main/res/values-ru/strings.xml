@@ -67,9 +67,9 @@
     <string name="wind_direction_NNW">С-СЗ</string>
 
     <string name="setting_bold">Жирный текст</string>
-    <string name="setting_bold_description">Жирный текст виджета на основном виде</string>
+    <string name="setting_bold_description">Устанавливае жирный текст для основного вида виджета</string>
     <string name="setting_theme">Темная тема</string>
-    <string name="setting_theme_description">Темная тема для все страниц виджета</string>
+    <string name="setting_theme_description">Устанавливает темную тему для всех страниц виджета</string>
 
     <string name="link"><a href="https://darksky.net/poweredby/">Powered by Dark Sky</a></string>
 </resources>

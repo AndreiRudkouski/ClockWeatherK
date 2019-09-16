@@ -23,7 +23,7 @@ import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.WidgetRepository.setWidgetByIdAndLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.setCurrentLocation
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateAllWeathers
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.view.BaseActivity
 
 class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClickListener {
@@ -93,8 +93,10 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         if (setWidgetByIdAndLocationId(widgetId, locationId)) {
             if (CURRENT_LOCATION_ID == locationId) {
                 setCurrentLocation()
+            } else {
+                updateOtherWeathers(this)
             }
-            updateWidgetAndWeather()
+            updateWidget(this)
             setResultIntent()
         } else {
             finish()
@@ -112,11 +114,6 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
                 initActivity()
             }
         }
-    }
-
-    private fun updateWidgetAndWeather() {
-        updateWidget(this)
-        updateAllWeathers(this)
     }
 
     private fun setResultIntent() {
