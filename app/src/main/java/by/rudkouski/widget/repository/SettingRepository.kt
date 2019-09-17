@@ -12,9 +12,21 @@ object SettingRepository {
 
     private val settingDao = AppDatabase.INSTANCE.settingDao()
 
-    fun getSettingsByWidgetId(widgetId: Int): List<Setting>? {
+    fun getPrivateSettingsByWidgetId(widgetId: Int): List<Setting>? {
+        return runBlocking {
+            settingDao.getPrivateByWidgetId(widgetId)
+        }
+    }
+
+    fun getAllSettingsByWidgetId(widgetId: Int): List<Setting>? {
         return runBlocking {
             settingDao.getAllByWidgetId(widgetId)
+        }
+    }
+
+    fun getSettingByCode(code: Setting.Code): Setting? {
+        return runBlocking {
+            settingDao.getByCode(code.name)
         }
     }
 
@@ -28,7 +40,7 @@ object SettingRepository {
 
     @Transaction
     suspend fun setDefaultSettingsByWidgetId(widgetId: Int) {
-        val defaultSettings: Array<String> = appContext.resources.getStringArray(R.array.default_settings)
+        val defaultSettings: Array<String> = appContext.resources.getStringArray(R.array.default_private_settings)
         for (i in defaultSettings.indices) {
             val settingData = defaultSettings[i].split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             val code = Setting.Code.valueOf(settingData[0].toUpperCase(getDefault()))

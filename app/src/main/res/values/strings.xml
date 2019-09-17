@@ -43,6 +43,7 @@
     <string name="distance_unit">km</string>
     <string name="temperature_unit">\u00B0C</string>
     <string name="percent_unit">%</string>
+    <string name="minute">min</string>
 
     <string name="snow">snow</string>
     <string name="sleet">sleet</string>
@@ -67,9 +68,15 @@
     <string name="wind_direction_NNW">N-NW</string>
 
     <string name="setting_bold">Bold text</string>
-    <string name="setting_bold_description">Set bold text for the main widget view</string>
+    <string name="setting_bold_description">Sets bold text of the main view for this widget</string>
     <string name="setting_theme">Dark theme</string>
-    <string name="setting_theme_description">Set the Dark theme for all widget pages</string>
+    <string name="setting_theme_description">Sets the Dark theme of all pages for this widget</string>
+    <string name="setting_weather">Weather update</string>
+    <string name="setting_weather_description">Sets the time interval of periodic updating the weather for all widgets</string>
+    <string name="setting_location">Location update</string>
+    <string name="setting_location_description">Sets the time interval of periodic updating the current location and its weather for all widgets</string>
+    <string name="setting_exact_location">Exact location</string>
+    <string name="setting_exact_location_description">Sets the location updating whenever the weather updating for all widgets</string>
 
     <string name="link"><a href="https://darksky.net/poweredby/">Powered by Dark Sky</a></string>
 </resources>

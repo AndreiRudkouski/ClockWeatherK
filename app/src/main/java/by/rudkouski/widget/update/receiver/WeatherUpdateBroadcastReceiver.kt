@@ -6,7 +6,11 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import by.rudkouski.widget.app.App
+import by.rudkouski.widget.app.Constants.API_KEY
+import by.rudkouski.widget.app.Constants.CURRENT_WEATHER_UPDATE_ACTION
+import by.rudkouski.widget.app.Constants.CURRENT_WEATHER_UPDATE_REQUEST_CODE
+import by.rudkouski.widget.app.Constants.OTHER_WEATHER_UPDATE_ACTION
+import by.rudkouski.widget.app.Constants.OTHER_WEATHER_UPDATE_REQUEST_CODE
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
@@ -37,13 +41,8 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     companion object {
         private val executorService = newFixedThreadPool(1)
 
-        private const val OTHER_WEATHER_UPDATE_REQUEST_CODE = 1002
-        private const val CURRENT_WEATHER_UPDATE_REQUEST_CODE = 1003
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
-
-        private const val OTHER_WEATHER_UPDATE_ACTION = "by.rudkouski.widget.WEATHER_UPDATE"
-        private const val CURRENT_WEATHER_UPDATE_ACTION = "by.rudkouski.widget.CURRENT_WEATHER_UPDATE"
 
         fun getWeatherUpdatePendingIntent(context: Context): PendingIntent {
             return getPendingIntent(context, OTHER_WEATHER_UPDATE_ACTION, OTHER_WEATHER_UPDATE_REQUEST_CODE)
@@ -130,7 +129,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun getResponseBodyForLocationCoordinates(latitude: Double, longitude: Double): String? {
-        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, App.apiKey, latitude, longitude, Locale.getDefault().language)
+        val request = String.format(Locale.getDefault(), WEATHER_QUERY_BY_COORDINATES, API_KEY, latitude, longitude, Locale.getDefault().language)
         return getResponseBodyForRequest(request)
     }
 
@@ -139,7 +138,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
         val request = Request.Builder().url(req).build()
         client.newCall(request).execute().use { response ->
             if (response.isSuccessful) {
-                val responseBody = response.body()
+                val responseBody = response.body
                 if (responseBody != null) {
                     return responseBody.string()
                 }

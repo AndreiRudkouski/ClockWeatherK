@@ -11,7 +11,7 @@ import java.util.Locale.getDefault
     foreignKeys = [(ForeignKey(onDelete = CASCADE, entity = Widget::class, parentColumns = ["widget_id"], childColumns = ["setting_widget_id"]))],
     indices = [Index(value = ["setting_widget_id"])])
 @TypeConverters(SettingTypeConverter::class, SettingCodeConverter::class)
-data class Setting(@ColumnInfo(name = "setting_name_code")
+data class Setting(@ColumnInfo(name = "setting_code")
                    val code: Code,
                    @ColumnInfo(name = "setting_value")
                    val value: Int,
@@ -33,13 +33,14 @@ data class Setting(@ColumnInfo(name = "setting_name_code")
             context.resources.getIdentifier(code.toString().toLowerCase(getDefault()) + "_description", "string", context.packageName))
     }
 
-    fun getBooleanValue(): Boolean {
-        return if (type == Type.BOOLEAN) value != 0 else false
-    }
+    fun getBooleanValue() = if (type == Type.BOOLEAN) value != 0 else false
 
     enum class Code {
         SETTING_BOLD,
-        SETTING_THEME
+        SETTING_THEME,
+        SETTING_WEATHER,
+        SETTING_LOCATION,
+        SETTING_EXACT_LOCATION
     }
 
     enum class Type {

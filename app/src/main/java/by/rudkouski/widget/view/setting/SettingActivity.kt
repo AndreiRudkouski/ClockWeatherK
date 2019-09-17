@@ -7,7 +7,10 @@ import android.os.Bundle
 import android.widget.ListView
 import androidx.appcompat.widget.Toolbar
 import by.rudkouski.widget.R
-import by.rudkouski.widget.repository.SettingRepository.getSettingsByWidgetId
+import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.entity.Setting
+import by.rudkouski.widget.repository.SettingRepository.getAllSettingsByWidgetId
+import by.rudkouski.widget.repository.WidgetRepository
 import by.rudkouski.widget.view.BaseActivity
 
 class SettingActivity : BaseActivity() {
@@ -23,15 +26,23 @@ class SettingActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val settings = getSettingsByWidgetId(widgetId)
+        val settings = getAllSettingsByWidgetId(widgetId)
         if (settings != null) {
             setContentView(R.layout.setting_activity)
             val toolbar: Toolbar = findViewById(R.id.toolbar_setting)
             setSupportActionBar(toolbar)
             val settingsView: ListView = findViewById(R.id.settings)
-            val adapter = SettingsViewAdapter(this, settings)
+            val adapter = SettingsViewAdapter(this,  correctSettings(settings))
             settingsView.adapter = adapter
         }
+    }
+
+    private fun correctSettings(settings: List<Setting>): List<Setting> {
+        val widget = WidgetRepository.getWidgetById(widgetId)
+        if (Location.CURRENT_LOCATION_ID != widget!!.locationId) {
+            return settings.filter { !it.code.name.contains("location", true) }
+        }
+        return settings.filter { !it.code.name.contains("weather", true) }
     }
 
     override fun onStop() {

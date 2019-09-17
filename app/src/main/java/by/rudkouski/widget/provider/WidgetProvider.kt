@@ -22,11 +22,13 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.RemoteViews
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.Constants.WIDGET_CLOCK_UPDATE_REQUEST_CODE
+import by.rudkouski.widget.app.Constants.WIDGET_UPDATE_ACTION
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Setting
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
-import by.rudkouski.widget.repository.SettingRepository
+import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
@@ -47,9 +49,8 @@ class WidgetProvider : AppWidgetProvider() {
         private const val TIME_FORMAT_12 = "h:mm"
         private const val TIME_FORMAT_24 = "H:mm"
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
-        private const val WIDGET_CLOCK_UPDATE_REQUEST_CODE = 1001
         private const val SYSTEM_TIME_FORMAT_24 = 24
-        private const val WIDGET_UPDATE_ACTION = "by.rudkouski.widget.WIDGET_UPDATE"
+
 
         fun updateWidget(context: Context) {
             val intent = Intent(context, WidgetProvider::class.java)
@@ -80,7 +81,7 @@ class WidgetProvider : AppWidgetProvider() {
         val widget = getWidgetById(widgetId)
         if (widget != null) {
             val location = getLocationById(widget.locationId)
-            val settings = SettingRepository.getSettingsByWidgetId(widgetId)
+            val settings = getPrivateSettingsByWidgetId(widgetId)
             val isBold = settings!!.find { Setting.Code.SETTING_BOLD == it.code }!!.getBooleanValue()
             updateClockAndDate(remoteViews, context, location.zoneId, isBold)
             updateLocation(remoteViews, context, location, isBold)

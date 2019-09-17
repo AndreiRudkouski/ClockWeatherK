@@ -7,7 +7,7 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Setting
-import by.rudkouski.widget.repository.SettingRepository.getSettingsByWidgetId
+import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
 import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
 import by.rudkouski.widget.view.setting.SettingActivity
@@ -24,7 +24,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     private fun changeWidgetTheme() {
-        val settings = getSettingsByWidgetId(widgetId)
+        val settings = getPrivateSettingsByWidgetId(widgetId)
         if (!settings.isNullOrEmpty()) {
             val isBlackTheme = settings.find { Setting.Code.SETTING_THEME == it.code }!!.getBooleanValue()
             val themeId = if (isBlackTheme) resources.getIdentifier("DarkTheme", "style", packageName) else
@@ -50,7 +50,7 @@ abstract class BaseActivity : AppCompatActivity() {
             }
             R.id.setting_menu -> {
                 if (this.componentName.className != SettingActivity::class.java.name) {
-                    if (!getSettingsByWidgetId(widgetId).isNullOrEmpty()) {
+                    if (!getPrivateSettingsByWidgetId(widgetId).isNullOrEmpty()) {
                         val intent = startSettingActivityIntent(this, widgetId)
                         startActivity(intent)
                     }

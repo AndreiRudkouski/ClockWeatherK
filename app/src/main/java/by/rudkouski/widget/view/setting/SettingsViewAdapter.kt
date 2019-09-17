@@ -10,10 +10,11 @@ import by.rudkouski.widget.entity.Setting
 
 class SettingsViewAdapter(private val context: Context, private val settings: List<Setting>) : BaseAdapter() {
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View? {
         val tempConvertView = convertView ?: LayoutInflater.from(context).inflate(R.layout.setting_item, parent, false)
         val view = tempConvertView as SettingItemView
-        view.updateSettingItemView(getItem(position))
+        val setting = getItem(position)
+        view.updateSettingItemView(setting)
         return view
     }
 

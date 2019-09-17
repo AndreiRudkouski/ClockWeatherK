@@ -17,13 +17,16 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.content.ContextCompat.checkSelfPermission
 import by.rudkouski.widget.app.App.Companion.appContext
+import by.rudkouski.widget.app.App.Companion.isLocationExact
+import by.rudkouski.widget.app.App.Companion.locationUpdateInMinutes
+import by.rudkouski.widget.app.Constants.LOCATION_UPDATE_ACTION
+import by.rudkouski.widget.app.Constants.LOCATION_UPDATE_REQUEST_CODE
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.LocationRepository.updateCurrentLocationData
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateCurrentWeather
-import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.LOCATION_UPDATE_INTERVAL_IN_MINUTES
 import by.rudkouski.widget.view.location.LocationActivity.Companion.updateLocationActivityBroadcast
 import org.threeten.bp.Instant.ofEpochMilli
 import org.threeten.bp.OffsetDateTime.now
@@ -36,9 +39,6 @@ import java.util.Locale.getDefault
 class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
 
     companion object {
-        private const val LOCATION_UPDATE_REQUEST_CODE = 1004
-        private const val LOCATION_UPDATE_ACTION = "by.rudkouski.widget.LOCATION_UPDATE"
-
         private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         private val locationChangeListener = object : LocationListener {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -102,8 +102,9 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
         }
 
         private fun isLocationApplicable(location: Location?) =
-            location != null &&
-                ofEpochMilli(location.time).atZone(systemDefault()).toOffsetDateTime().plusMinutes(LOCATION_UPDATE_INTERVAL_IN_MINUTES).isAfter(now())
+            location != null
+                && ofEpochMilli(location.time).atZone(systemDefault()).toOffsetDateTime().plusMinutes(locationUpdateInMinutes).isAfter(now())
+                && !isLocationExact
 
         private fun getProviderName(): String {
             val criteria = Criteria()

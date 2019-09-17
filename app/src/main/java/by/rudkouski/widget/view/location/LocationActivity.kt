@@ -14,6 +14,8 @@ import android.widget.ListView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.Constants.LOCATION_ACTIVITY_UPDATE_WEATHER
+import by.rudkouski.widget.app.Constants.REQUEST_PERMISSION_CODE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
@@ -31,9 +33,6 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
     private lateinit var activityUpdateBroadcastReceiver: LocationActivityUpdateBroadcastReceiver
 
     companion object {
-        private const val REQUEST_PERMISSION_CODE = 12345
-        private const val LOCATION_ACTIVITY_UPDATE_WEATHER = "by.rudkouski.widget.LOCATION_ACTIVITY_UPDATE"
-
         fun startLocationActivityIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, LocationActivity::class.java)
             intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
