@@ -19,7 +19,7 @@ All information is available in two languages English and Russian.
   
   >Linux: /home/Your_Username/.gradle
   
-Inside it, there would be a file named `gradle.properties` (just create it if there isn’t any). After that, add your key to the file as a property with name dark_sky_api_key. The file after adding the key might look something like:
+Inside it, there would be a file named `gradle.properties` (just create it if there isn’t any). After that, add your key to the file as a property with name **dark_sky_api_key**. The file after adding the key might look something like:
 >dark_sky_api_key="your-api-key"
 
 3.	Build the widget
