@@ -1,19 +1,19 @@
-package by.rudkouski.widget.behavior
+package by.rudkouski.widget.view.forecast.behavior
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.support.design.widget.AppBarLayout
-import android.support.design.widget.CoordinatorLayout
 import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.App
 import by.rudkouski.widget.message.Message
-import by.rudkouski.widget.receiver.NetworkChangeChecker
-import by.rudkouski.widget.receiver.WeatherUpdateBroadcastReceiver
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
+import com.google.android.material.appbar.AppBarLayout
 
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".
@@ -75,10 +75,11 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
-            WeatherUpdateBroadcastReceiver.updateWeather(context)
-            val message = SpannableString(if (NetworkChangeChecker.isOnline()) App.appContext.getString(R.string.update)
-            else App.appContext.getString(R.string.no_connection))
-            Message.getShortMessage(message, target, context)
+            updateOtherWeathers(context)
+            updateCurrentLocation(context)
+            val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
+            else context.getString(R.string.no_connection))
+            Message.showShortMessage(message, target, context)
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)

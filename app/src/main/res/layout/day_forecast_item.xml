@@ -7,7 +7,7 @@
               android:clickable="false"
               android:orientation="vertical">
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -106,14 +106,14 @@
                         tools:text="Precipitation: \nrain, 25%"/>
 
                     <TextView
-                        android:id="@+id/feel_day_forecast"
+                        android:id="@+id/perceived_day_forecast"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_height="wrap_content"
                         android:textColor="?colorTextAdd"
                         android:textAppearance="?android:attr/textAppearanceMedium"
                         android:gravity="center"
-                        tools:text="Feels like: \n5\u00B0C / 18\u00B0C"/>
+                        tools:text="Perceived: \n5\u00B0C / 18\u00B0C"/>
 
                 </LinearLayout>
 
@@ -219,6 +219,6 @@
 
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

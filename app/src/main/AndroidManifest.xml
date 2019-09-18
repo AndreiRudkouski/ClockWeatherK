@@ -4,7 +4,7 @@
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
@@ -21,17 +21,25 @@
         <receiver android:name=".provider.WidgetProvider">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
-                <action android:name="by.rudkouski.widget.WIDGET_UPDATE"/>
+                <action android:name="${applicationId}.WIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_info"/>
         </receiver>
         <receiver
-            android:name=".receiver.WeatherUpdateBroadcastReceiver"
+            android:name=".update.receiver.WeatherUpdateBroadcastReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="by.rudkouski.widget.WEATHER_UPDATE"/>
+                <action android:name="${applicationId}.WEATHER_UPDATE"/>
+                <action android:name="${applicationId}.CURRENT_WEATHER_UPDATE"/>
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name=".update.receiver.LocationUpdateBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="${applicationId}.LOCATION_UPDATE"/>
             </intent-filter>
         </receiver>
 
@@ -52,16 +60,18 @@
                       android:scheme="http"/>
             </intent-filter>
         </activity>
+        <activity android:name=".view.weather.HourWeatherActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"/>
         <activity android:name=".view.forecast.ForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>
         <activity android:name=".view.forecast.DayForecastActivity"
                   android:configChanges="orientation|screenSize"
                   android:excludeFromRecents="true"/>
-        <activity
-            android:name="com.rohitss.uceh.UCEDefaultActivity"
-            android:process=":error_activity"/>
-
+        <activity android:name=".view.setting.SettingActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"/>
     </application>
 
 </manifest>

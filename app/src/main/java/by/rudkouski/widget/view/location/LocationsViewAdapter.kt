@@ -10,8 +10,7 @@ import by.rudkouski.widget.entity.Location
 
 class LocationsViewAdapter(private val context: Context,
                            private val locationItemClickListener: OnLocationItemClickListener,
-                           private val locations: List<Location>, private val selectedLocationId: Int) : BaseAdapter(),
-                                                                                                         View.OnClickListener {
+                           private val locations: List<Location>, private val selectedLocationId: Int) : BaseAdapter(), View.OnClickListener {
 
     override fun onClick(view: View) {
         val locationId = getItemId(view.tag as Int).toInt()

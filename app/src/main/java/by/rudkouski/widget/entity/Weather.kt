@@ -1,32 +1,85 @@
 package by.rudkouski.widget.entity
 
+import androidx.room.*
+import by.rudkouski.widget.database.converter.OffsetDateTimeConverter
+import by.rudkouski.widget.database.converter.WeatherTypeConverter
 import com.google.gson.annotations.SerializedName
-import java.util.*
+import org.threeten.bp.OffsetDateTime
 
 /**
  * Contains the weather conditions at the requested location.
  */
-class Weather : WeatherData {
+@Entity(tableName = "weathers",
+    foreignKeys = [(ForeignKey(entity = Location::class, parentColumns = ["location_id"], childColumns = ["weather_location_id"]))],
+    indices = [Index(value = ["weather_location_id"])])
+@TypeConverters(OffsetDateTimeConverter::class, WeatherTypeConverter::class)
+data class Weather(@PrimaryKey(autoGenerate = true)
+                   @ColumnInfo(name = "weather_id")
+                   val id: Int,
+                   @SerializedName("time")
+                   @ColumnInfo(name = "weather_date")
+                   val date: OffsetDateTime,
+                   @SerializedName("summary")
+                   @ColumnInfo(name = "weather_description")
+                   val description: String,
+                   @SerializedName("icon")
+                   @ColumnInfo(name = "weather_icon")
+                   val iconName: String,
+                   @SerializedName("precipIntensity")
+                   @ColumnInfo(name = "weather_precip_intensity")
+                   val precipitationIntensity: Double,
+                   @SerializedName("precipProbability")
+                   @ColumnInfo(name = "weather_precip_probability")
+                   val precipitationProbability: Double,
+                   @SerializedName("precipType")
+                   @ColumnInfo(name = "weather_precip_type")
+                   val precipitationType: String?,
+                   @SerializedName("dewPoint")
+                   @ColumnInfo(name = "weather_dew_point")
+                   val dewPoint: Double,
+                   @SerializedName("humidity")
+                   @ColumnInfo(name = "weather_humidity")
+                   val humidity: Double,
+                   @SerializedName("pressure")
+                   @ColumnInfo(name = "weather_pressure")
+                   val pressure: Double,
+                   @SerializedName("windSpeed")
+                   @ColumnInfo(name = "weather_wind_speed")
+                   val windSpeed: Double,
+                   @SerializedName("windGust")
+                   @ColumnInfo(name = "weather_wind_gust")
+                   val windGust: Double,
+                   @SerializedName("windBearing")
+                   @ColumnInfo(name = "weather_wind_direction")
+                   val windDirection: Int,
+                   @SerializedName("cloudCover")
+                   @ColumnInfo(name = "weather_cloud_cover")
+                   val cloudCover: Double,
+                   @SerializedName("visibility")
+                   @ColumnInfo(name = "weather_visibility")
+                   val visibility: Double,
+                   @SerializedName("ozone")
+                   @ColumnInfo(name = "weather_ozone")
+                   val ozone: Double,
+                   @SerializedName("uvIndex")
+                   @ColumnInfo(name = "weather_uv_index")
+                   val uvIndex: Int,
+                   @SerializedName("temperature")
+                   @ColumnInfo(name = "weather_temp")
+                   val temperature: Double,
+                   @SerializedName("apparentTemperature")
+                   @ColumnInfo(name = "weather_apparent_temp")
+                   val apparentTemperature: Double,
+                   @ColumnInfo(name = "weather_location_id")
+                   var locationId: Int = 0,
+                   @ColumnInfo(name = "weather_type")
+                   var type: Type = Type.HOUR,
+                   @ColumnInfo(name = "weather_update")
+                   var update: OffsetDateTime = OffsetDateTime.now()) {
 
-    @SerializedName("temperature")
-    val temperature: Double
-
-    @SerializedName("apparentTemperature")
-    val apparentTemperature: Double
-
-    constructor(id: Long, date: Calendar, description: String, iconName: String, precipitationIntensity: Double,
-                precipitationProbability: Double, dewPoint: Double, humidity: Double, pressure: Double,
-                windSpeed: Double, windGust: Double, windDirection: Int, cloudCover: Double, visibility: Double,
-                ozone: Double, uvIndex: Int, temperature: Double, apparentTemperature: Double) :
-        super(id, date, description, iconName, precipitationIntensity, precipitationProbability, dewPoint, humidity,
-            pressure, windSpeed, windGust, windDirection, cloudCover, visibility, ozone, uvIndex) {
-        this.temperature = temperature
-        this.apparentTemperature = apparentTemperature
+    enum class Type {
+        HOUR,
+        CURRENT
     }
-
-    constructor(newId: Long, weather: Weather) :
-        this(newId, weather.date, weather.description, weather.iconName, weather.precipitationIntensity,
-            weather.precipitationProbability, weather.dewPoint, weather.humidity, weather.pressure, weather.windSpeed,
-            weather.windGust, weather.windDirection, weather.cloudCover, weather.visibility, weather.ozone,
-            weather.uvIndex, weather.temperature, weather.apparentTemperature)
 }
+

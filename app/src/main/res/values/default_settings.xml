@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="default_private_settings">
+        <item>setting_bold,0,boolean</item>
+        <item>setting_theme,1,boolean</item>
+    </string-array>
+
+    <string-array name="default_common_settings">
+        <item>setting_weather,30,number</item>
+        <item>setting_location,15,number</item>
+        <item>setting_exact_location,0,boolean</item>
+    </string-array>
+</resources>

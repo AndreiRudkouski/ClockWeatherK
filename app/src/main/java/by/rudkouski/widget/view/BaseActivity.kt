@@ -1,40 +1,36 @@
 package by.rudkouski.widget.view
 
-import android.appwidget.AppWidgetManager
-import android.content.Intent
+import android.appwidget.AppWidgetManager.EXTRA_APPWIDGET_ID
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
-import by.rudkouski.widget.database.DBHelper
-import by.rudkouski.widget.provider.WidgetProvider
-import by.rudkouski.widget.view.forecast.DayForecastActivity
+import by.rudkouski.widget.entity.Setting
+import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
 import by.rudkouski.widget.view.location.LocationActivity
+import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
+import by.rudkouski.widget.view.setting.SettingActivity
+import by.rudkouski.widget.view.setting.SettingActivity.Companion.startSettingActivityIntent
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    protected val dbHelper = DBHelper.INSTANCE
     protected var widgetId = 0
-    protected var forecastId = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        widgetId = intent?.extras?.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID) ?: 0
-        forecastId = intent?.extras?.getLong(DayForecastActivity.EXTRA_FORECAST_ID) ?: 0L
-        if (widgetId == 0 && forecastId != 0L) {
-            widgetId = dbHelper.getWidgetIdByForecastId(forecastId)
-        }
+        widgetId = intent?.extras?.getInt(EXTRA_APPWIDGET_ID) ?: 0
         changeWidgetTheme()
         super.onCreate(savedInstanceState)
     }
 
     private fun changeWidgetTheme() {
-        val widget = dbHelper.getWidgetById(widgetId)
-        if (widget != null) {
-            applicationInfo.theme = widget.themeId
-            setTheme(widget.themeId)
+        val settings = getPrivateSettingsByWidgetId(widgetId)
+        if (!settings.isNullOrEmpty()) {
+            val isBlackTheme = settings.find { Setting.Code.SETTING_THEME == it.code }!!.getBooleanValue()
+            val themeId = if (isBlackTheme) resources.getIdentifier("DarkTheme", "style", packageName) else
+                resources.getIdentifier("LightTheme", "style", packageName)
+            applicationInfo.theme = themeId
+            setTheme(themeId)
         }
     }
 
@@ -46,26 +42,19 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.change_location_menu -> {
-                val intent = LocationActivity.startIntent(this, widgetId)
-                startActivity(intent)
+                if (this.componentName.className != LocationActivity::class.java.name) {
+                    val intent = startLocationActivityIntent(this, widgetId)
+                    startActivity(intent)
+                }
                 return true
             }
-            R.id.change_text_menu -> {
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTextBold(widgetId) }
-                WidgetProvider.updateWidget(this)
-                return true
-            }
-            R.id.change_theme_menu -> {
-                val darkThemeId = resources.getIdentifier("DarkTheme", "style", packageName)
-                val lightThemeId = resources.getIdentifier("LightTheme", "style", packageName)
-                val themeId = if (applicationInfo.theme == darkThemeId) lightThemeId else darkThemeId
-                val handler = Handler(Looper.getMainLooper())
-                handler.post { dbHelper.changeWidgetTheme(widgetId, themeId) }
-                WidgetProvider.updateWidget(this)
-                finish()
-                intent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-                startActivity(intent)
+            R.id.setting_menu -> {
+                if (this.componentName.className != SettingActivity::class.java.name) {
+                    if (!getPrivateSettingsByWidgetId(widgetId).isNullOrEmpty()) {
+                        val intent = startSettingActivityIntent(this, widgetId)
+                        startActivity(intent)
+                    }
+                }
                 return true
             }
         }

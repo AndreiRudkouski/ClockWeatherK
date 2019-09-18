@@ -8,12 +8,7 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/change_text_menu"
-        android:title="@string/menu_text"
-        app:showAsAction="never"/>
-
-    <item
-        android:id="@+id/change_theme_menu"
-        android:title="@string/menu_theme"
+        android:id="@+id/setting_menu"
+        android:title="@string/menu_setting"
         app:showAsAction="never"/>
 </menu>

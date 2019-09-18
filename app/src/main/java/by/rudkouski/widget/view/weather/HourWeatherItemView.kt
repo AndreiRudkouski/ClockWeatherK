@@ -8,14 +8,22 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.provider.WidgetProvider
-import by.rudkouski.widget.view.weather.WeatherUtils.getDegreeText
-import java.text.SimpleDateFormat
+import by.rudkouski.widget.provider.WidgetProvider.Companion.chooseSystemTimeFormat
+import by.rudkouski.widget.util.WeatherUtils
+import by.rudkouski.widget.util.WeatherUtils.getDegreeText
+import by.rudkouski.widget.view.weather.HourWeatherActivity.Companion.startHourWeatherActivity
+import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
+import org.threeten.bp.format.DateTimeFormatter.ofPattern
 import java.util.*
 
-class HourWeatherItemView : LinearLayout {
+class HourWeatherItemView : LinearLayout, View.OnClickListener {
 
-    private var isActualWeather: Boolean = false
+    private var widgetId = 0
+    private lateinit var weather: Weather
+
+    companion object {
+        const val FULL_TIME_FORMAT_12_IN_TWO_LINE = "h:mm\na"
+    }
 
     constructor(context: Context) : super(context)
 
@@ -23,32 +31,34 @@ class HourWeatherItemView : LinearLayout {
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    fun updateHourWeatherItemView(weather: Weather) {
-        val view = findViewById<View>(R.id.current_hour_weather)
-        isActualWeather = WidgetProvider.isActualWeather(weather)
-        if (isActualWeather) {
-            setTime(view, weather)
-            setImage(view, weather)
-            setDegree(view, weather)
-        }
+    fun updateHourWeatherItemView(widgetId: Int, weather: Weather) {
+        this.widgetId = widgetId
+        this.weather = weather
+        val view = findViewById<View>(R.id.forecast_hour_weather)
+        setTime(view, weather)
+        setImage(view, weather)
+        setDegree(view, weather)
+        view.setOnClickListener(this)
     }
 
     private fun setTime(view: View, weather: Weather) {
         val timeTextView = view.findViewById<TextView>(R.id.time_hour_weather)
-        val timeFormat = SimpleDateFormat(
-            WidgetProvider.chooseSystemTimeFormat(context, WeatherItemView.FULL_TIME_FORMAT_12,
-                WeatherItemView.TIME_FORMAT_24), Locale.getDefault())
-        timeFormat.timeZone = weather.date.timeZone
-        timeTextView.text = timeFormat.format(weather.date.time)
+        timeTextView.text =
+            weather.date.format(ofPattern(chooseSystemTimeFormat(context, FULL_TIME_FORMAT_12_IN_TWO_LINE, TIME_FORMAT_24), Locale.getDefault()))
     }
 
     private fun setImage(view: View, weather: Weather) {
         val imageView = view.findViewById<ImageView>(R.id.hour_weather_image)
-        imageView.setImageResource(WeatherUtils.getWeatherImageResource(context, weather))
+        imageView.setImageResource(
+            WeatherUtils.getIconWeatherImageResource(context, weather.iconName, weather.cloudCover, weather.precipitationProbability))
     }
 
     private fun setDegree(view: View, weather: Weather) {
         val degreeTextView = view.findViewById<TextView>(R.id.degrees_hour_weather)
-        degreeTextView.text = getDegreeText(weather.temperature)
+        degreeTextView.text = getDegreeText(context, weather.temperature)
+    }
+
+    override fun onClick(view: View) {
+        startHourWeatherActivity(context, widgetId, weather.id)
     }
 }

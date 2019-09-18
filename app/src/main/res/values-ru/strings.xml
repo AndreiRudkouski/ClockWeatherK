@@ -8,6 +8,7 @@
     <string name="default_location">Неизвестно</string>
     <string name="default_weather">Нет данных</string>
     <string name="choose_location">Выберите местоположение</string>
+    <string name="setting">Настройки</string>
 
     <string name="update_weather">ОТПУСТИТЬ ДЛЯ ОБНОВЛЕНИЯ</string>
     <string name="update">обновление…</string>
@@ -20,12 +21,11 @@
     <string name="minsk">Минск</string>
 
     <string name="menu_location">Изменить местоположение</string>
-    <string name="menu_text">Изменить жирность текст</string>
-    <string name="menu_theme">Изменить тему</string>
+    <string name="menu_setting">Настройки</string>
 
     <string name="update_date">Обновлено</string>
     <string name="wind">Ветер</string>
-    <string name="feel">Ощущается</string>
+    <string name="perceived">Ощущается</string>
     <string name="humidity">Влажность</string>
     <string name="pressure">Давление</string>
     <string name="visibility">Видимость</string>
@@ -43,6 +43,7 @@
     <string name="distance_unit">км</string>
     <string name="temperature_unit">\u00B0C</string>
     <string name="percent_unit">%</string>
+    <string name="minute">мин</string>
 
     <string name="snow">снег</string>
     <string name="sleet">мокрый снег</string>
@@ -65,4 +66,17 @@
     <string name="wind_direction_WNW">З-СЗ</string>
     <string name="wind_direction_NW">СЗ</string>
     <string name="wind_direction_NNW">С-СЗ</string>
+
+    <string name="setting_bold">Жирный текст</string>
+    <string name="setting_bold_description">Устанавливае для данного виджета жирный текст основного вида</string>
+    <string name="setting_theme">Темная тема</string>
+    <string name="setting_theme_description">Устанавливает для данного виджета темную тему всех страниц</string>
+    <string name="setting_weather">Обновление погоды</string>
+    <string name="setting_weather_description">Устанавливает для  всех виджетов временной интервал периодического обновления погоды</string>
+    <string name="setting_location">Обновление местоположения</string>
+    <string name="setting_location_description">Устанавливает для всех виджетов временной интервал периодического обновления текущего местоположения и его погоды</string>
+    <string name="setting_exact_location">Точное местоположение</string>
+    <string name="setting_exact_location_description">Устанавливает для всех виджетов обновление местоположения всякий раз при обновлении погоды</string>
+
+    <string name="link"><a href="https://darksky.net/poweredby/">Powered by Dark Sky</a></string>
 </resources>

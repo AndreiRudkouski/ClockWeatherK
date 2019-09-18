@@ -10,6 +10,7 @@
     <dimen name="middle_text_size">14sp</dimen>
     <dimen name="big_text_size">18sp</dimen>
     <dimen name="widget_vertical_margin">-5dp</dimen>
+    <dimen name="no_data_vertical_margin">-40dp</dimen>
     <dimen name="shadow_padding">4dp</dimen>
     <dimen name="bottom_padding">7dp</dimen>
     <dimen name="degrees_text_margin">11dp</dimen>
@@ -20,6 +21,7 @@
     <dimen name="card_view_height">80dp</dimen>
     <dimen name="top_padding">10dp</dimen>
     <dimen name="divider_indent">5dp</dimen>
+    <dimen name="spinner_end_padding">-10dp</dimen>
 
     <dimen name="hour_weather_padding_horizontal">12dp</dimen>
     <dimen name="hour_weather_padding_top">10dp</dimen>

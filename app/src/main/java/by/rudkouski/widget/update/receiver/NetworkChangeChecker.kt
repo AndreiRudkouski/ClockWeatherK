@@ -1,27 +1,30 @@
-package by.rudkouski.widget.receiver
+package by.rudkouski.widget.update.receiver
 
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
-import by.rudkouski.widget.app.App
+import by.rudkouski.widget.app.App.Companion.appContext
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import java.util.concurrent.atomic.AtomicBoolean
 
 object NetworkChangeChecker {
 
     private val isRegistered = AtomicBoolean(false)
-    private val connectivityManager = App.appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            WeatherUpdateBroadcastReceiver.updateWeather(App.appContext)
+            updateOtherWeathers(appContext)
+            updateCurrentLocation(appContext)
         }
 
         override fun onLost(network: Network) {
-            unregisterReceiver()
+            unregisterNetworkChangeReceiver()
         }
     }
 
-    fun registerReceiver() {
+    fun registerNetworkChangeReceiver() {
         if (!isRegistered.get()) {
             val builder = NetworkRequest.Builder()
             connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
@@ -29,9 +32,9 @@ object NetworkChangeChecker {
         }
     }
 
-    fun unregisterReceiver() {
+    fun unregisterNetworkChangeReceiver() {
         if (isRegistered.get()) {
-            val connectivityManager = App.appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
             connectivityManager.unregisterNetworkCallback(networkCallbacks)
             isRegistered.set(false)
         }
