@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Forecast
 
-class ForecastAdapter(private val widgetId: Int, private val forecasts: List<Forecast>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
+class ForecastAdapter(val widgetId: Int, private val forecasts: List<Forecast>) : RecyclerView.Adapter<ForecastAdapter.ForecastViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ForecastViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.forecast_item, parent, false)

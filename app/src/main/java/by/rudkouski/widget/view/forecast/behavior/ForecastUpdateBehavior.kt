@@ -8,11 +8,15 @@ import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
 import android.widget.TextView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message
+import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
+import by.rudkouski.widget.view.forecast.ForecastAdapter
 import com.google.android.material.appbar.AppBarLayout
 
 /**
@@ -75,8 +79,11 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
     override fun onStopNestedScroll(coordinatorLayout: CoordinatorLayout, abl: AppBarLayout, target: View, type: Int) {
         super.onStopNestedScroll(coordinatorLayout, abl, target, type)
         if (target.paddingTop > UPDATE_Y / PADDING_SCALE && !isFirstTouch) {
-            updateOtherWeathers(context)
-            updateCurrentLocation(context)
+            val adapter = (target as RecyclerView).adapter as ForecastAdapter
+            val locationId = getWidgetById(adapter.widgetId)?.locationId
+            if (locationId != null) {
+                if (CURRENT_LOCATION_ID == locationId) updateCurrentLocation(context) else updateOtherWeathers(context)
+            }
             val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
             else context.getString(R.string.no_connection))
             Message.showShortMessage(message, target, context)

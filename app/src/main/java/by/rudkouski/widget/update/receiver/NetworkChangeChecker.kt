@@ -1,22 +1,19 @@
 package by.rudkouski.widget.update.receiver
 
+import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import by.rudkouski.widget.app.App.Companion.appContext
-import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
-import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
-import java.util.concurrent.atomic.AtomicBoolean
 
 object NetworkChangeChecker {
 
-    private val isRegistered = AtomicBoolean(false)
+    private val observers = HashSet<NetworkObserver>()
     private val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            updateOtherWeathers(appContext)
-            updateCurrentLocation(appContext)
+            observers.forEach { it.startUpdate(appContext) }
         }
 
         override fun onLost(network: Network) {
@@ -24,20 +21,16 @@ object NetworkChangeChecker {
         }
     }
 
-    fun registerNetworkChangeReceiver() {
-        if (!isRegistered.get()) {
-            val builder = NetworkRequest.Builder()
-            connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
-            isRegistered.set(true)
-        }
+    fun registerNetworkChangeReceiver(observer: NetworkObserver) {
+        val builder = NetworkRequest.Builder()
+        connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
+        observers.add(observer)
     }
 
     fun unregisterNetworkChangeReceiver() {
-        if (isRegistered.get()) {
-            val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-            connectivityManager.unregisterNetworkCallback(networkCallbacks)
-            isRegistered.set(false)
-        }
+        val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        connectivityManager.unregisterNetworkCallback(networkCallbacks)
+        observers.clear()
     }
 
     private fun isNetworkAvailable(): Boolean {
@@ -46,4 +39,8 @@ object NetworkChangeChecker {
     }
 
     fun isOnline() = isNetworkAvailable()
+
+    interface NetworkObserver {
+        fun startUpdate(context: Context)
+    }
 }
