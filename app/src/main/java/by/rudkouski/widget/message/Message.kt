@@ -13,12 +13,13 @@ import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isLocationEnabled
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.snackbar.Snackbar.LENGTH_SHORT
 
 object Message {
 
-    fun showShortMessage(message: SpannableString, target: View, context: Context) {
+    fun showMessage(message: SpannableString, target: View, context: Context, length: Int) {
         message.setSpan(ForegroundColorSpan(getLightTextColor(context)), 0, message.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        Snackbar.make(target, message, Snackbar.LENGTH_SHORT).show()
+        Snackbar.make(target, message, length).show()
     }
 
     fun showNetworkAndLocationEnableMessage(view: View, locationId: Int, context: Context) {
@@ -33,7 +34,7 @@ object Message {
             message.append(SpannableString(context.getString(R.string.no_location)))
         }
         if (!TextUtils.isEmpty(message)) {
-            showShortMessage(SpannableString.valueOf(message), view, context)
+            showMessage(SpannableString.valueOf(message), view, context, LENGTH_SHORT)
         }
     }
 

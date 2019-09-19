@@ -16,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
 import by.rudkouski.widget.app.Constants.LOCATION_ACTIVITY_UPDATE_WEATHER
 import by.rudkouski.widget.app.Constants.REQUEST_PERMISSION_CODE
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
@@ -25,6 +26,7 @@ import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.WidgetRepository.setWidgetByIdAndLocationId
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.setCurrentLocation
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.view.BaseActivity
 
@@ -77,6 +79,9 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         if (isPermissionsDenied()) {
             locations = locations.filter { location -> location.id != CURRENT_LOCATION_ID }
         } else {
+            if (CURRENT_LOCATION == locations.find { CURRENT_LOCATION_ID == it.id }?.name_code) {
+                updateCurrentLocation(this)
+            }
             showNetworkAndLocationEnableMessage(locationsView, CURRENT_LOCATION_ID, this)
         }
         locationsView.adapter = LocationsViewAdapter(this, this, locations, getSelectedLocationId())
@@ -109,6 +114,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
                     setCurrentLocation()
                 } else {
                     resetCurrentLocation()
+                    updateWidget(this)
                 }
                 initActivity()
             }

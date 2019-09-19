@@ -6,8 +6,14 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import by.rudkouski.widget.R
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Setting
+import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
+import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
+import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
+import by.rudkouski.widget.view.forecast.ForecastActivity
 import by.rudkouski.widget.view.location.LocationActivity
 import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
 import by.rudkouski.widget.view.setting.SettingActivity
@@ -19,8 +25,20 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         widgetId = intent?.extras?.getInt(EXTRA_APPWIDGET_ID) ?: 0
+        checkPermission()
         changeWidgetTheme()
         super.onCreate(savedInstanceState)
+    }
+
+    private fun checkPermission() {
+        if (this.componentName.className == ForecastActivity::class.java.name) {
+            val locationId = getWidgetById(widgetId)?.locationId
+            if (locationId != null && CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
+                resetCurrentLocation()
+                updateWidget(this)
+                finish()
+            }
+        }
     }
 
     private fun changeWidgetTheme() {

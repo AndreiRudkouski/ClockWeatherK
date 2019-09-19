@@ -11,13 +11,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.message.Message
+import by.rudkouski.widget.message.Message.showMessage
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.view.forecast.ForecastAdapter
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
 
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".
@@ -86,7 +87,7 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
             }
             val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
             else context.getString(R.string.no_connection))
-            Message.showShortMessage(message, target, context)
+            showMessage(message, target, context, LENGTH_LONG)
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)
