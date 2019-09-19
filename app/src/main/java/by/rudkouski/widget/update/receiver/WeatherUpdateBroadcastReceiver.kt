@@ -38,11 +38,15 @@ import java.util.concurrent.Executors.newFixedThreadPool
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
-    companion object {
+    companion object : NetworkChangeChecker.NetworkObserver {
         private val executorService = newFixedThreadPool(1)
 
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
+
+        override fun startUpdate(context: Context) {
+            updateOtherWeathers(context)
+        }
 
         fun getWeatherUpdatePendingIntent(context: Context): PendingIntent {
             return getPendingIntent(context, OTHER_WEATHER_UPDATE_ACTION, OTHER_WEATHER_UPDATE_REQUEST_CODE)
@@ -66,14 +70,10 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (OTHER_WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
             executorService.execute {
-                if (isOnline()) {
-                    if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
-                        updateOtherWeathers(context)
-                    } else {
-                        updateCurrentWeather(context)
-                    }
+                if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
+                    if (isOnline()) updateOtherWeathers(context) else registerNetworkChangeReceiver(Companion)
                 } else {
-                    registerNetworkChangeReceiver()
+                    if (isOnline()) updateCurrentWeather(context) else registerNetworkChangeReceiver(LocationUpdateBroadcastReceiver.Companion)
                 }
             }
         }

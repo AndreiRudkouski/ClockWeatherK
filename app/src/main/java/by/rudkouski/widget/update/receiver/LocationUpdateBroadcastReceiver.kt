@@ -38,7 +38,7 @@ import java.util.Locale.getDefault
 @SuppressLint("MissingPermission")
 class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
 
-    companion object {
+    companion object: NetworkChangeChecker.NetworkObserver {
         private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         private val locationChangeListener = object : LocationListener {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -52,6 +52,10 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                     setLocation(location)
                 }
             }
+        }
+
+        override fun startUpdate(context: Context) {
+            updateCurrentLocation(context)
         }
 
         fun getLocationUpdatePendingIntent(context: Context): PendingIntent {
@@ -146,7 +150,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                     Log.e(LocationUpdateBroadcastReceiver::class.java.simpleName, e.toString())
                 }
             } else {
-                registerNetworkChangeReceiver()
+                registerNetworkChangeReceiver(Companion)
             }
             return null
         }
