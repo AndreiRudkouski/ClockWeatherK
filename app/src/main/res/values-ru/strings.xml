@@ -24,6 +24,7 @@
     <string name="menu_setting">Настройки</string>
 
     <string name="update_date">Обновлено</string>
+    <string name="just_now">только что</string>
     <string name="wind">Ветер</string>
     <string name="perceived">Ощущается</string>
     <string name="humidity">Влажность</string>
@@ -39,11 +40,13 @@
     <string name="sunset">Закат</string>
 
     <string name="speed_unit">м/с</string>
-    <string name="pressure_unit">гПа</string>
+    <string name="pressure_unit">мм рт. ст.</string>
     <string name="distance_unit">км</string>
     <string name="temperature_unit">\u00B0C</string>
     <string name="percent_unit">%</string>
+    <string name="hour">ч</string>
     <string name="minute">мин</string>
+    <string name="ago">назад</string>
 
     <string name="snow">снег</string>
     <string name="sleet">мокрый снег</string>

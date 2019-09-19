@@ -16,6 +16,7 @@ object WeatherUtils {
 
     private const val WEATHER_DEGREE_FORMAT = "%1\$d%2\$s"
     private const val DETERMINATION_PATTERN = "%1\$s: %2\$s"
+    const val PRESSURE_GPA_TO_MM_HG = 1.333
 
     fun getIconWeatherImageResource(context: Context, iconName: String, cloudCover: Double, precipitationProbability: Double): Int {
         var postFix = ""
@@ -106,7 +107,7 @@ object WeatherUtils {
     fun setPressureText(view: View, pressure: Double, identifier: Int) {
         val description = getSpannableStringDescription(view.context, R.string.pressure)
         val value = getSpannableStringValue(view.context,
-            "${mathRound(pressure)} ${view.context.getString(R.string.pressure_unit)}")
+            "${mathRound(pressure / PRESSURE_GPA_TO_MM_HG)} ${view.context.getString(R.string.pressure_unit)}")
         setDataToView(view, identifier, description, value)
     }
 
