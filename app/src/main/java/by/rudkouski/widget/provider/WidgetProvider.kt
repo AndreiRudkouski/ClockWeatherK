@@ -28,6 +28,7 @@ import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Setting
+import by.rudkouski.widget.repository.ForecastRepository.getForecastsByLocationId
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
@@ -149,12 +150,16 @@ class WidgetProvider : AppWidgetProvider() {
         remoteViews.setOnClickPendingIntent(R.id.date_widget, createDatePendingIntent(context, widgetId))
         remoteViews.setOnClickPendingIntent(R.id.location_widget, createLocationPendingIntent(context, widgetId))
         remoteViews.setOnClickPendingIntent(R.id.weather_widget, createForecastPendingIntent(context, widgetId))
-        if (CURRENT_LOCATION_ID != locationId || (CURRENT_LOCATION_ID == locationId && isPermissionsGranted())) {
+        if (isPendingIntentEnable(locationId)) {
             remoteViews.setOnClickPendingIntent(R.id.no_data_widget, createForecastPendingIntent(context, widgetId))
         } else {
             remoteViews.setOnClickPendingIntent(R.id.no_data_widget, null)
         }
     }
+
+    private fun isPendingIntentEnable(locationId: Int) =
+        (CURRENT_LOCATION_ID != locationId || (CURRENT_LOCATION_ID == locationId && isPermissionsGranted())) &&
+            (getCurrentWeatherByLocationId(locationId) != null || !getForecastsByLocationId(locationId).isNullOrEmpty())
 
     private fun createClockPendingIntent(context: Context, widgetId: Int): PendingIntent {
         val clockIntent = Intent(ACTION_SHOW_ALARMS)

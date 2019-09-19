@@ -8,7 +8,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.provider.WidgetProvider.Companion.chooseSystemTimeFormat
+import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.util.WeatherUtils.PRESSURE_GPA_TO_MM_HG
 import by.rudkouski.widget.util.WeatherUtils.convertDoubleToPercents
 import by.rudkouski.widget.util.WeatherUtils.convertToDeterminationPattern
 import by.rudkouski.widget.util.WeatherUtils.convertWindDirection
@@ -16,8 +17,8 @@ import by.rudkouski.widget.util.WeatherUtils.getDegreeText
 import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.util.WeatherUtils.mathRound
 import by.rudkouski.widget.util.WeatherUtils.setDataToView
-import org.threeten.bp.format.DateTimeFormatter.ofPattern
-import java.util.*
+import org.threeten.bp.Duration.between
+import org.threeten.bp.OffsetDateTime.now
 
 class WeatherItemView : LinearLayout {
 
@@ -31,8 +32,6 @@ class WeatherItemView : LinearLayout {
         const val TIME_FORMAT_24 = "H:mm"
         const val FULL_TIME_FORMAT_12 = "h:mm a"
 
-        private const val ENUMERATION_PATTERN = "%1\$s, %2\$s"
-        private const val DATE_FORMAT_WITHOUT_YEAR = "dd MMM"
         private const val NOT_UPDATED = " -- "
     }
 
@@ -63,10 +62,34 @@ class WeatherItemView : LinearLayout {
     private fun setUpdateDateText(view: View, weather: Weather?) {
         val updateDateTextView = view.findViewById<TextView>(R.id.update_date_current_weather)
         updateDateTextView.visibility = VISIBLE
-        val timeFormat = chooseSystemTimeFormat(context, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
-        val dateWithTimeFormat = String.format(Locale.getDefault(), ENUMERATION_PATTERN, DATE_FORMAT_WITHOUT_YEAR, timeFormat)
-        val dateText = if (weather != null) weather.update.format(ofPattern(dateWithTimeFormat, Locale.getDefault())) else NOT_UPDATED
+        val dateText = getDurationUpdate(weather)
         updateDateTextView.text = convertToDeterminationPattern(context.getString(R.string.update_date), dateText)
+    }
+
+    private fun getDurationUpdate(weather: Weather?): String {
+        if (weather != null) {
+            val duration = between(weather.update, now(getLocationById(weather.locationId).zoneId))
+            val hours = duration.toHours()
+            val minutes = duration.toMinutes()
+
+            if (hours == 0L && minutes == 0L) {
+                return context.getString(R.string.just_now)
+            }
+
+            val result = StringBuilder()
+            if (hours > 0) {
+                result.append("$hours ${context.getString(R.string.hour)}")
+                val minutesInHour = minutes / (hours * 60)
+                if (minutesInHour > 0) {
+                    result.append(" $minutesInHour ${context.getString(R.string.minute)}")
+                }
+            } else {
+                result.append("$minutes ${context.getString(R.string.minute)}")
+            }
+            return result.append(" ${context.getString(R.string.ago)}").toString()
+        } else {
+            return NOT_UPDATED
+        }
     }
 
     private fun setImage(view: View, weather: Weather) {
@@ -107,7 +130,7 @@ class WeatherItemView : LinearLayout {
 
     private fun setPressureText(view: View, weather: Weather) {
         val description = context.getString(R.string.pressure)
-        val value = "${mathRound(weather.pressure)} ${context.getString(
+        val value = "${mathRound(weather.pressure / PRESSURE_GPA_TO_MM_HG)} ${context.getString(
             R.string.pressure_unit)}"
         setDataToView(view, R.id.pressure_current_weather, description, value)
     }

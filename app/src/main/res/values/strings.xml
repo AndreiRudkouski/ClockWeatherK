@@ -24,6 +24,7 @@
     <string name="menu_setting">Settings</string>
 
     <string name="update_date">Updated</string>
+    <string name="just_now">just now</string>
     <string name="wind">Wind</string>
     <string name="perceived">Perceived</string>
     <string name="humidity">Humidity</string>
@@ -39,11 +40,13 @@
     <string name="sunset">Sunset</string>
 
     <string name="speed_unit">m/s</string>
-    <string name="pressure_unit">hPa</string>
+    <string name="pressure_unit">mm Hg</string>
     <string name="distance_unit">km</string>
     <string name="temperature_unit">\u00B0C</string>
     <string name="percent_unit">%</string>
+    <string name="hour">h</string>
     <string name="minute">min</string>
+    <string name="ago">ago</string>
 
     <string name="snow">snow</string>
     <string name="sleet">sleet</string>
