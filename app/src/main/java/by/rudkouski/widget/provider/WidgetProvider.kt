@@ -25,14 +25,18 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.app.Constants.WIDGET_CLOCK_UPDATE_REQUEST_CODE
 import by.rudkouski.widget.app.Constants.WIDGET_UPDATE_ACTION
 import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Setting
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
+import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.deleteWidgetById
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsGranted
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.util.WeatherUtils.getIconWeatherImageResource
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
@@ -80,7 +84,19 @@ class WidgetProvider : AppWidgetProvider() {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
         val widget = getWidgetById(widgetId)
         if (widget != null) {
-            val location = getLocationById(widget.locationId)
+            val location = {
+                if (CURRENT_LOCATION_ID == widget.locationId) {
+                    if (isPermissionsDenied()) {
+                        resetCurrentLocation()
+                    } else {
+                        val loc = getLocationById(widget.locationId)
+                        if (CURRENT_LOCATION == loc.name_code) {
+                            updateCurrentLocation(context)
+                        }
+                    }
+                }
+                getLocationById(widget.locationId)
+            }.invoke()
             val settings = getPrivateSettingsByWidgetId(widgetId)
             val isBold = settings!!.find { Setting.Code.SETTING_BOLD == it.code }!!.getBooleanValue()
             updateClockAndDate(remoteViews, context, location.zoneId, isBold)
