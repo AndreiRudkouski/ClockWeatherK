@@ -94,7 +94,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     private fun updateCurrentWeather(context: Context) {
         if (!isLocationNotUsed(CURRENT_LOCATION_ID)) {
             val location = getLocationById(CURRENT_LOCATION_ID)
-            updateWeather(location)
+            updateWeather(location!!)
             sendUpdateIntents(context)
         }
     }

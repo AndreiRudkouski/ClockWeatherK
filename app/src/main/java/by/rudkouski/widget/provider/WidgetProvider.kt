@@ -44,8 +44,9 @@ import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecas
 import by.rudkouski.widget.view.location.LocationActivity.Companion.startLocationActivityIntent
 import org.threeten.bp.OffsetDateTime.now
 import org.threeten.bp.ZoneId
+import org.threeten.bp.ZoneId.systemDefault
 import org.threeten.bp.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale.getDefault
 import kotlin.math.roundToInt
 
 class WidgetProvider : AppWidgetProvider() {
@@ -84,36 +85,35 @@ class WidgetProvider : AppWidgetProvider() {
     private fun updateWidget(context: Context, widgetId: Int): RemoteViews {
         val remoteViews = RemoteViews(context.packageName, R.layout.widget)
         val widget = getWidgetById(widgetId)
-        if (widget != null) {
-            val location = {
-                if (CURRENT_LOCATION_ID == widget.locationId) {
-                    if (isPermissionsDenied()) {
-                        resetCurrentLocation()
-                    } else {
-                        val loc = getLocationById(widget.locationId)
-                        if (CURRENT_LOCATION == loc.name_code) {
-                            updateCurrentLocation(context)
-                        }
+        val locationId = widget?.locationId ?: 0
+        val location = {
+            if (CURRENT_LOCATION_ID == locationId) {
+                if (isPermissionsDenied()) {
+                    resetCurrentLocation()
+                } else {
+                    val loc = getLocationById(locationId)
+                    if (CURRENT_LOCATION == loc!!.name_code) {
+                        updateCurrentLocation(context)
                     }
                 }
-                getLocationById(widget.locationId)
-            }.invoke()
-            val settings = getPrivateSettingsByWidgetId(widgetId)
-            val isBold = settings!!.find { Setting.Code.SETTING_BOLD == it.code }!!.getBooleanValue()
-            updateClockAndDate(remoteViews, context, location.zoneId, isBold)
-            updateLocation(remoteViews, context, location, isBold)
-            updateWeather(remoteViews, context, location.id, isBold)
-            setPendingIntents(remoteViews, context, widgetId, location.id)
-        }
+            }
+            getLocationById(locationId)
+        }.invoke()
+        val settings = getPrivateSettingsByWidgetId(widgetId)
+        val isBold = settings?.find { Setting.Code.SETTING_BOLD == it.code }?.getBooleanValue() ?: false
+        updateClockAndDate(remoteViews, context, location?.zoneId ?: systemDefault(), isBold)
+        updateLocation(remoteViews, context, location, isBold)
+        updateWeather(remoteViews, context, locationId, isBold)
+        setPendingIntents(remoteViews, context, widgetId, locationId)
         return remoteViews
     }
 
     private fun updateClockAndDate(remoteViews: RemoteViews, context: Context, zoneId: ZoneId, isBold: Boolean) {
         val currentTime = now(zoneId)
         val timeFormat =
-            currentTime.format(DateTimeFormatter.ofPattern(chooseSystemTimeFormat(context, TIME_FORMAT_12, TIME_FORMAT_24), Locale.getDefault()))
+            currentTime.format(DateTimeFormatter.ofPattern(chooseSystemTimeFormat(context, TIME_FORMAT_12, TIME_FORMAT_24), getDefault()))
         remoteViews.setTextViewText(R.id.clock_widget, timeFormat)
-        val dateFormat = currentTime.format(DateTimeFormatter.ofPattern(DATE_WITH_DAY_SHORT_FORMAT, Locale.getDefault()))
+        val dateFormat = currentTime.format(DateTimeFormatter.ofPattern(DATE_WITH_DAY_SHORT_FORMAT, getDefault()))
         val spanDateText = createSpannableString(dateFormat, isBold)
         remoteViews.setTextViewText(R.id.date_widget, spanDateText)
     }
@@ -124,8 +124,8 @@ class WidgetProvider : AppWidgetProvider() {
         return spanString
     }
 
-    private fun updateLocation(remoteViews: RemoteViews, context: Context, location: Location, isBold: Boolean) {
-        val spanLocationText = createSpannableString("  ${location.getName(context)}", isBold)
+    private fun updateLocation(remoteViews: RemoteViews, context: Context, location: Location?, isBold: Boolean) {
+        val spanLocationText = createSpannableString("  ${location?.getName(context) ?: context.getString(R.string.default_location)}", isBold)
         remoteViews.setTextViewText(R.id.location_widget, spanLocationText)
     }
 
