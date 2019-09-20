@@ -9,8 +9,10 @@ import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Setting
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
+import by.rudkouski.widget.repository.ForecastRepository.getForecastsByLocationId
 import by.rudkouski.widget.repository.LocationRepository.resetCurrentLocation
 import by.rudkouski.widget.repository.SettingRepository.getPrivateSettingsByWidgetId
+import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.isPermissionsDenied
 import by.rudkouski.widget.view.forecast.ForecastActivity
@@ -33,7 +35,9 @@ abstract class BaseActivity : AppCompatActivity() {
     private fun checkPermission() {
         if (this.componentName.className == ForecastActivity::class.java.name) {
             val locationId = getWidgetById(widgetId)?.locationId
-            if (locationId != null && CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) {
+            if (locationId == null || ((CURRENT_LOCATION_ID == locationId && isPermissionsDenied()) ||
+                    (getCurrentWeatherByLocationId(locationId) == null && getForecastsByLocationId(locationId).isNullOrEmpty()))
+            ) {
                 resetCurrentLocation()
                 updateWidget(this)
                 finish()

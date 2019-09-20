@@ -36,7 +36,7 @@ object WeatherRepository {
             val weathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.CURRENT.name)
             if (!weathers.isNullOrEmpty()) {
                 val currentWeather = weathers[0]
-                val zoneId = getLocationById(locationId).zoneId
+                val zoneId = getLocationById(locationId)!!.zoneId
                 val locationTime = now(zoneId)
                 if (currentWeather.date.hour != locationTime.hour) {
                     return@runBlocking updateSuitableWeatherAsCurrent(locationId, currentWeather, locationTime)

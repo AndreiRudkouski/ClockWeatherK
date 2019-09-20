@@ -68,7 +68,7 @@ class WeatherItemView : LinearLayout {
 
     private fun getDurationUpdate(weather: Weather?): String {
         if (weather != null) {
-            val duration = between(weather.update, now(getLocationById(weather.locationId).zoneId))
+            val duration = between(weather.update, now(getLocationById(weather.locationId)!!.zoneId))
             val hours = duration.toHours()
             val minutes = duration.toMinutes()
 

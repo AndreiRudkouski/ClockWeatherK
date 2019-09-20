@@ -26,7 +26,7 @@ object LocationRepository {
         }
     }
 
-    fun getLocationById(locationId: Int): Location {
+    fun getLocationById(locationId: Int): Location? {
         return runBlocking {
             locationDao.getById(locationId)
         }
@@ -42,7 +42,7 @@ object LocationRepository {
     fun updateCurrentLocationData(name: String, latitude: Double, longitude: Double) {
         runBlocking {
             val savedLocation = locationDao.getById(CURRENT_LOCATION_ID)
-            val updatedLocation = savedLocation.copy(name_code = name, longitude = longitude, latitude = latitude)
+            val updatedLocation = savedLocation!!.copy(name_code = name, longitude = longitude, latitude = latitude)
             locationDao.update(updatedLocation)
         }
     }
@@ -51,7 +51,7 @@ object LocationRepository {
     fun updateCurrentLocationZoneIdName(zoneId: ZoneId) {
         runBlocking {
             val savedLocation = locationDao.getById(CURRENT_LOCATION_ID)
-            val updatedLocation = savedLocation.copy(zoneId = zoneId)
+            val updatedLocation = savedLocation!!.copy(zoneId = zoneId)
             locationDao.update(updatedLocation)
         }
     }

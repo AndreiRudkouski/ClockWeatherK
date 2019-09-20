@@ -76,7 +76,7 @@ class ForecastActivity : BaseActivity() {
         hourWeatherRecycler.adapter = adapter
         val widget = getWidgetById(widgetId)
         if (widget != null) {
-            val title = getLocationById(widget.locationId).getName(this)
+            val title = getLocationById(widget.locationId)!!.getName(this)
             toolbarLayout.title = title
             val weather = getCurrentWeatherByLocationId(widget.locationId)
             weatherView.updateWeatherItemView(weather)
