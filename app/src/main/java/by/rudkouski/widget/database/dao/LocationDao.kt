@@ -17,7 +17,7 @@ interface LocationDao {
 
     @Transaction
     @Query("SELECT * FROM locations WHERE location_id = :locationId")
-    suspend fun getById(locationId: Int): Location
+    suspend fun getById(locationId: Int): Location?
 
     @Transaction
     @Query(

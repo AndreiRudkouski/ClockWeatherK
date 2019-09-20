@@ -11,16 +11,12 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField 'String', "ApiKey", dark_sky_api_key
     }
     buildTypes {
-        debug {
-            buildConfigField 'String', "ApiKey", dark_sky_api_key
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField 'String', "ApiKey", dark_sky_api_key
         }
     }
 }
