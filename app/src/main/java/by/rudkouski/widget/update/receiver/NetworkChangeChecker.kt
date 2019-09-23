@@ -11,6 +11,7 @@ object NetworkChangeChecker {
 
     private val observers = HashSet<NetworkObserver>()
     private val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val networkRequest = NetworkRequest.Builder().build()
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             observers.forEach { it.startUpdate(appContext) }
@@ -22,23 +23,21 @@ object NetworkChangeChecker {
     }
 
     fun registerNetworkChangeReceiver(observer: NetworkObserver) {
-        val builder = NetworkRequest.Builder()
-        connectivityManager.registerNetworkCallback(builder.build(), networkCallbacks)
+        if (observers.isEmpty()) {
+            connectivityManager.registerNetworkCallback(networkRequest, networkCallbacks)
+        }
         observers.add(observer)
     }
 
     fun unregisterNetworkChangeReceiver() {
-        val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         connectivityManager.unregisterNetworkCallback(networkCallbacks)
         observers.clear()
     }
 
-    private fun isNetworkAvailable(): Boolean {
+    fun isOnline(): Boolean {
         val activeNetworkInfo = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
-
-    fun isOnline() = isNetworkAvailable()
 
     interface NetworkObserver {
         fun startUpdate(context: Context)

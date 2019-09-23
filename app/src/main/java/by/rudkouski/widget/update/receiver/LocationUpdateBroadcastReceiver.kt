@@ -50,6 +50,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
             override fun onLocationChanged(location: Location?) {
                 if (location != null) {
                     setLocation(location)
+                    locationManager.removeUpdates(this)
                 }
             }
         }
