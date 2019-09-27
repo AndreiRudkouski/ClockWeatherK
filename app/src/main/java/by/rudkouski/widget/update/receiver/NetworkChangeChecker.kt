@@ -6,6 +6,11 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkRequest
 import by.rudkouski.widget.app.App.Companion.appContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import java.lang.Exception
+import java.net.URL
 
 object NetworkChangeChecker {
 
@@ -14,11 +19,10 @@ object NetworkChangeChecker {
     private val networkRequest = NetworkRequest.Builder().build()
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            observers.forEach { it.startUpdate(appContext) }
-        }
-
-        override fun onLost(network: Network) {
-            unregisterNetworkChangeReceiver()
+            if (isInternetAvailable(network)) {
+                observers.forEach { it.startUpdate(appContext) }
+                unregisterNetworkChangeReceiver()
+            }
         }
     }
 
@@ -35,8 +39,25 @@ object NetworkChangeChecker {
     }
 
     fun isOnline(): Boolean {
-        val activeNetworkInfo = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+        val activeNetwork = connectivityManager.activeNetwork
+        return isInternetAvailable(activeNetwork)
+    }
+
+    private fun isInternetAvailable(network: Network?): Boolean {
+        if (network != null) {
+            return runBlocking {
+                withContext(Dispatchers.IO) {
+                    try {
+                        val connection = network.openConnection(URL("https://www.google.com"))
+                        connection.connect()
+                        true
+                    } catch (ex: Exception) {
+                        false
+                    }
+                }
+            }
+        }
+        return false
     }
 
     interface NetworkObserver {
