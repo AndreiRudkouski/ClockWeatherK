@@ -14,7 +14,7 @@ import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.message.Message.showMessage
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
-import by.rudkouski.widget.update.receiver.NetworkChangeChecker
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.view.forecast.ForecastAdapter
 import com.google.android.material.appbar.AppBarLayout
@@ -85,8 +85,7 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
             if (locationId != null) {
                 if (CURRENT_LOCATION_ID == locationId) updateCurrentLocation(context) else updateOtherWeathers(context)
             }
-            val message = SpannableString(if (NetworkChangeChecker.isOnline()) context.getString(R.string.update)
-            else context.getString(R.string.no_connection))
+            val message = SpannableString(if (isOnline()) context.getString(R.string.update) else context.getString(R.string.no_connection))
             showMessage(message, target, context, LENGTH_LONG)
         }
 

@@ -27,6 +27,8 @@ import by.rudkouski.widget.util.WeatherUtils.setUvIndexText
 import by.rudkouski.widget.util.WeatherUtils.setVisibilityText
 import by.rudkouski.widget.util.WeatherUtils.setWindText
 import by.rudkouski.widget.view.BaseActivity
+import by.rudkouski.widget.view.forecast.DayForecastActivity.Companion.FULL_TIME_FORMAT_12
+import by.rudkouski.widget.view.forecast.DayForecastActivity.Companion.TIME_FORMAT_24
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
 import org.threeten.bp.OffsetDateTime
@@ -88,7 +90,7 @@ class HourWeatherActivity : BaseActivity() {
     }
 
     private fun getFormatDateTime(date: OffsetDateTime): String {
-        val timeFormat = chooseSystemTimeFormat(this, WeatherItemView.FULL_TIME_FORMAT_12, WeatherItemView.TIME_FORMAT_24)
+        val timeFormat = chooseSystemTimeFormat(this, FULL_TIME_FORMAT_12, TIME_FORMAT_24)
         return date.format(DateTimeFormatter.ofPattern("$DATE_WITH_DAY_SHORT_FORMAT, $timeFormat", Locale.getDefault()))
     }
 

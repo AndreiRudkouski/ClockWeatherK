@@ -11,6 +11,8 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.entity.Location
+import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
@@ -18,6 +20,10 @@ import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
 import by.rudkouski.widget.repository.WeatherRepository.getHourWeathersByLocationIdAndTimeInterval
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
+import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
+import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
+import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
+import by.rudkouski.widget.update.receiver.WidgetUpdateBroadcastReceiver.isWeatherNeedUpdate
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastFragment.Companion.newForecastFragmentInstance
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
@@ -76,12 +82,23 @@ class ForecastActivity : BaseActivity() {
         hourWeatherRecycler.adapter = adapter
         val widget = getWidgetById(widgetId)
         if (widget != null) {
-            val title = getLocationById(widget.locationId)!!.getName(this)
-            toolbarLayout.title = title
+            val location = getLocationById(widget.locationId)
+            toolbarLayout.title = location!!.getName(this)
             val weather = getCurrentWeatherByLocationId(widget.locationId)
+            updateWeatherIfNeed(weather, location)
             weatherView.updateWeatherItemView(weather)
             hourWeatherViewUpdate(weather, adapter)
             showNetworkAndLocationEnableMessage(weatherView, widget.locationId, this)
+        }
+    }
+
+    private fun updateWeatherIfNeed(weather: Weather?, location: Location) {
+        if (isOnline() && isWeatherNeedUpdate(weather, location)) {
+            if (CURRENT_LOCATION_ID == location.id) {
+                updateCurrentLocation(this)
+            } else {
+                updateOtherWeathers(this)
+            }
         }
     }
 

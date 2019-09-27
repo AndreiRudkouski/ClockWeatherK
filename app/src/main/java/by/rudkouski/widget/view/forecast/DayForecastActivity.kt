@@ -30,8 +30,6 @@ import by.rudkouski.widget.util.WeatherUtils.setWindText
 import by.rudkouski.widget.view.BaseActivity
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.startForecastActivityIntent
 import by.rudkouski.widget.view.forecast.ForecastItemView.Companion.DATE_WITH_DAY_SHORT_FORMAT
-import by.rudkouski.widget.view.weather.WeatherItemView.Companion.FULL_TIME_FORMAT_12
-import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
 import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
@@ -41,6 +39,8 @@ class DayForecastActivity : BaseActivity() {
 
     companion object {
         private const val EXTRA_FORECAST_ID = "forecastId"
+        const val TIME_FORMAT_24 = "H:mm"
+        const val FULL_TIME_FORMAT_12 = "h:mm a"
 
         fun startDayForecastActivity(context: Context, widgetId: Int, forecastId: Int) {
             val intent = Intent(context, DayForecastActivity::class.java)

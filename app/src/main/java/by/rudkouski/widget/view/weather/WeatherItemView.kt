@@ -29,9 +29,6 @@ class WeatherItemView : LinearLayout {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     companion object {
-        const val TIME_FORMAT_24 = "H:mm"
-        const val FULL_TIME_FORMAT_12 = "h:mm a"
-
         private const val NOT_UPDATED = " -- "
     }
 

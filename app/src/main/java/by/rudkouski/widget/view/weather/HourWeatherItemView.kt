@@ -11,8 +11,8 @@ import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.provider.WidgetProvider.Companion.chooseSystemTimeFormat
 import by.rudkouski.widget.util.WeatherUtils
 import by.rudkouski.widget.util.WeatherUtils.getDegreeText
+import by.rudkouski.widget.view.forecast.DayForecastActivity.Companion.TIME_FORMAT_24
 import by.rudkouski.widget.view.weather.HourWeatherActivity.Companion.startHourWeatherActivity
-import by.rudkouski.widget.view.weather.WeatherItemView.Companion.TIME_FORMAT_24
 import org.threeten.bp.format.DateTimeFormatter.ofPattern
 import java.util.*
 

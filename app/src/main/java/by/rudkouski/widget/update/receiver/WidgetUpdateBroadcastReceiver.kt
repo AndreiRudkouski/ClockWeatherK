@@ -9,6 +9,7 @@ import by.rudkouski.widget.app.App.Companion.locationUpdateInMinutes
 import by.rudkouski.widget.app.App.Companion.weatherUpdateInMinutes
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
+import by.rudkouski.widget.entity.Weather
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllUsedLocations
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
@@ -40,10 +41,10 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         if (ACTION_SCREEN_ON == intent.action) {
             val locations = getAllUsedLocations()
             if (!locations.isNullOrEmpty()) {
-                if (locations.any { CURRENT_LOCATION_ID == it.id && isWeatherNeedUpdate(it, locationUpdateInMinutes)}) {
+                if (locations.any { CURRENT_LOCATION_ID == it.id && isLocationWeatherNeedUpdate(it)}) {
                     updateCurrentLocation(context)
                 }
-                if (locations.any { CURRENT_LOCATION_ID != it.id && isWeatherNeedUpdate(it, weatherUpdateInMinutes)}) {
+                if (locations.any { CURRENT_LOCATION_ID != it.id && isLocationWeatherNeedUpdate(it)}) {
                     updateOtherWeathers(context)
                 }
             }
@@ -52,8 +53,13 @@ object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
         updateWidget(context)
     }
 
-    private fun isWeatherNeedUpdate(location: Location, interval: Long): Boolean {
+    private fun isLocationWeatherNeedUpdate(location: Location): Boolean {
         val weather = getCurrentWeatherByLocationId(location.id)
+        return isWeatherNeedUpdate(weather, location)
+    }
+
+    fun isWeatherNeedUpdate(weather: Weather?, location: Location): Boolean {
+        val interval = if (CURRENT_LOCATION_ID == location.id) locationUpdateInMinutes else weatherUpdateInMinutes
          return weather == null || weather.update.plusMinutes(interval).isBefore(now(location.zoneId))
     }
 
