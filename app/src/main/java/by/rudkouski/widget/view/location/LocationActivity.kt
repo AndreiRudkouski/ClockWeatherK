@@ -130,9 +130,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     private inner class LocationActivityUpdateBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (LOCATION_ACTIVITY_UPDATE_ACTION == intent.action) {
-                initActivity()
-            }
+            initActivity()
         }
     }
 }

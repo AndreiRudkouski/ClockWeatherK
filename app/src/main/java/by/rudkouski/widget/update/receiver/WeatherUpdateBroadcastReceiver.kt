@@ -69,10 +69,14 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         if (OTHER_WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
             GlobalScope.launch {
-                if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
-                    if (isOnline()) updateOtherWeathers(context) else registerNetworkChangeReceiver(Companion)
-                } else {
-                    if (isOnline()) updateCurrentWeather(context) else registerNetworkChangeReceiver(LocationUpdateBroadcastReceiver.Companion)
+                try {
+                    if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
+                        if (isOnline()) updateOtherWeathers(context) else registerNetworkChangeReceiver(Companion)
+                    } else {
+                        if (isOnline()) updateCurrentWeather(context) else registerNetworkChangeReceiver(LocationUpdateBroadcastReceiver.Companion)
+                    }
+                } catch (e: Throwable) {
+                    Log.e(this.javaClass.simpleName, e.message ?: "Error during updating weather")
                 }
             }
         }
@@ -95,27 +99,23 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
             resetCurrentLocation()
             return
         }
-        try {
-            val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
-            if (responseBody != null) {
-                val zoneId =
-                    if (location.id == CURRENT_LOCATION_ID) {
-                        val currentZoneId = getCurrentZoneIdFromResponseBody(responseBody)
-                        updateCurrentLocationZoneIdName(currentZoneId)
-                        currentZoneId
-                    } else {
-                        location.zoneId
-                    }
-                val updateTime = OffsetDateTime.now(zoneId)
-                val currentWeather = getCurrentWeatherFromResponseBody(responseBody, location.id, zoneId, updateTime)
-                setCurrentWeather(currentWeather, location.id)
-                val hourWeathers = getHourWeathersFromResponseBody(responseBody, location.id, zoneId, updateTime)
-                setHourWeathersByLocationId(hourWeathers, location.id)
-                val forecasts = getDayForecastFromResponseBody(responseBody, location.id, zoneId)
-                setForecastsByLocationId(forecasts, location.id)
-            }
-        } catch (e: Throwable) {
-            Log.e(this.javaClass.simpleName, e.message ?: "Error during updating weather")
+        val responseBody = getResponseBodyForLocationCoordinates(location.latitude, location.longitude)
+        if (responseBody != null) {
+            val zoneId =
+                if (location.id == CURRENT_LOCATION_ID) {
+                    val currentZoneId = getCurrentZoneIdFromResponseBody(responseBody)
+                    updateCurrentLocationZoneIdName(currentZoneId)
+                    currentZoneId
+                } else {
+                    location.zoneId
+                }
+            val updateTime = OffsetDateTime.now(zoneId)
+            val currentWeather = getCurrentWeatherFromResponseBody(responseBody, location.id, zoneId, updateTime)
+            setCurrentWeather(currentWeather, location.id)
+            val hourWeathers = getHourWeathersFromResponseBody(responseBody, location.id, zoneId, updateTime)
+            setHourWeathersByLocationId(hourWeathers, location.id)
+            val forecasts = getDayForecastFromResponseBody(responseBody, location.id, zoneId)
+            setForecastsByLocationId(forecasts, location.id)
         }
     }
 

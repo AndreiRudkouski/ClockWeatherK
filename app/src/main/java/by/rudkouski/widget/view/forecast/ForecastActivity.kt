@@ -123,13 +123,8 @@ class ForecastActivity : BaseActivity() {
     }
 
     private inner class ForecastActivityUpdateBroadcastReceiver : BroadcastReceiver() {
-        var isExecuted = false
-
         override fun onReceive(context: Context, intent: Intent) {
-            if (FORECAST_ACTIVITY_UPDATE_ACTION == intent.action && !isExecuted) {
-                updateActivity()
-                isExecuted = true
-            }
+            updateActivity()
         }
     }
 }

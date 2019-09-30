@@ -50,8 +50,8 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
 
             override fun onLocationChanged(location: Location?) {
                 if (location != null) {
-                    setLocation(location)
                     locationManager.removeUpdates(this)
+                    setLocation(location)
                 }
             }
         }
@@ -77,9 +77,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                 || checkSelfPermission(appContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PERMISSION_DENIED
         }
 
-        fun isLocationEnabled() = isProviderEnable(GPS_PROVIDER)
-
-        private fun isProviderEnable(name: String) = locationManager.isProviderEnabled(name)
+        fun isLocationEnabled() = locationManager.isProviderEnabled(GPS_PROVIDER)
 
         private fun requestLocationUpdate(provider: String) {
             locationManager.requestSingleUpdate(provider, locationChangeListener, Looper.getMainLooper())

@@ -36,7 +36,7 @@
                 android:layout_marginEnd="@dimen/forecast_padding_horizontal"
                 android:layout_marginStart="@dimen/forecast_padding_horizontal"
                 android:contentDescription="@string/weather_image_description"
-                tools:src="@mipmap/partly_cloudy_night"/>
+                tools:src="@drawable/partly_cloudy_night"/>
 
             <TextView
                 android:id="@+id/date_forecast"

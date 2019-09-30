@@ -29,7 +29,7 @@
                     android:layout_height="@dimen/image_height"
                     android:layout_gravity="center_horizontal"
                     android:contentDescription="@string/weather_image_description"
-                    tools:src="@mipmap/partly_cloudy_night"/>
+                    tools:src="@drawable/partly_cloudy_night"/>
 
                 <TextView
                     android:id="@+id/description_hour_weather"

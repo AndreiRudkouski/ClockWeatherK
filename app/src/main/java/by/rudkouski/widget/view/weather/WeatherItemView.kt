@@ -76,7 +76,7 @@ class WeatherItemView : LinearLayout {
             val result = StringBuilder()
             if (hours > 0) {
                 result.append("$hours ${context.getString(R.string.hour)}")
-                val minutesInHour = minutes / (hours * 60)
+                val minutesInHour = minutes % (hours * 60)
                 if (minutesInHour > 0) {
                     result.append(" $minutesInHour ${context.getString(R.string.minute)}")
                 }

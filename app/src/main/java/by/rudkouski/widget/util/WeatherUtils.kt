@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.View
 import android.widget.TextView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.Constants.PREFIX
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -32,8 +33,7 @@ object WeatherUtils {
                 postFix = if (precipitationProbability >= 0.5) "_mostly" else "_less"
             }
         }
-        return context.resources.getIdentifier(preFix + iconName.replace("-", "_") + postFix, "mipmap",
-            context.packageName)
+        return context.resources.getIdentifier(PREFIX +":drawable/" + preFix + iconName.replace("-", "_") + postFix, null, null)
     }
 
     fun convertDoubleToPercents(context: Context, double: Double) =

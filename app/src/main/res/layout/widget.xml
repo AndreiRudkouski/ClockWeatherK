@@ -75,7 +75,7 @@
             android:layout_width="@dimen/image_small_width"
             android:layout_height="@dimen/image_small_height"
             android:contentDescription="@string/weather_image_description"
-            tools:src="@mipmap/partly_cloudy_night" />
+            tools:src="@drawable/partly_cloudy_night" />
 
         <TextView
             android:id="@+id/degrees_widget"
