@@ -11,10 +11,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
+import by.rudkouski.widget.app.Constants.FORECAST_ACTIVITY_UPDATE_ACTION
 import by.rudkouski.widget.entity.Location
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
 import by.rudkouski.widget.entity.Weather
-import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
+import by.rudkouski.widget.message.Message.asyncCheckConnectionsAndShowMessage
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getLocationById
 import by.rudkouski.widget.repository.WeatherRepository.getCurrentWeatherByLocationId
@@ -29,6 +30,8 @@ import by.rudkouski.widget.view.forecast.ForecastFragment.Companion.newForecastF
 import by.rudkouski.widget.view.weather.HourWeatherAdapter
 import by.rudkouski.widget.view.weather.WeatherItemView
 import com.google.android.material.appbar.CollapsingToolbarLayout
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class ForecastActivity : BaseActivity() {
 
@@ -36,8 +39,6 @@ class ForecastActivity : BaseActivity() {
     private val hourWeathers = ArrayList<Weather>()
 
     companion object {
-        private const val FORECAST_ACTIVITY_UPDATE_ACTION = "by.rudkouski.widget.FORECAST_ACTIVITY_UPDATE"
-
         fun startForecastActivityIntent(context: Context, widgetId: Int): Intent {
             val intent = Intent(context, ForecastActivity::class.java)
             intent.putExtra(EXTRA_APPWIDGET_ID, widgetId)
@@ -85,19 +86,21 @@ class ForecastActivity : BaseActivity() {
             val location = getLocationById(widget.locationId)
             toolbarLayout.title = location!!.getName(this)
             val weather = getCurrentWeatherByLocationId(widget.locationId)
-            updateWeatherIfNeed(weather, location)
             weatherView.updateWeatherItemView(weather)
             hourWeatherViewUpdate(weather, adapter)
-            showNetworkAndLocationEnableMessage(weatherView, widget.locationId, this)
+            asyncCheckConnectionsAndShowMessage(target = weatherView, context = this, locationId = widget.locationId)
+            updateWeatherIfNeed(this, weather, location)
         }
     }
 
-    private fun updateWeatherIfNeed(weather: Weather?, location: Location) {
-        if (isOnline() && isWeatherNeedUpdate(weather, location)) {
-            if (CURRENT_LOCATION_ID == location.id) {
-                updateCurrentLocation(this)
-            } else {
-                updateOtherWeathers(this)
+    private fun updateWeatherIfNeed(context: Context, weather: Weather?, location: Location) {
+        GlobalScope.launch {
+            if (isOnline() && isWeatherNeedUpdate(weather, location)) {
+                if (CURRENT_LOCATION_ID == location.id) {
+                    updateCurrentLocation(context)
+                } else {
+                    updateOtherWeathers(context)
+                }
             }
         }
     }
@@ -120,8 +123,13 @@ class ForecastActivity : BaseActivity() {
     }
 
     private inner class ForecastActivityUpdateBroadcastReceiver : BroadcastReceiver() {
+        var isExecuted = false
+
         override fun onReceive(context: Context, intent: Intent) {
-            updateActivity()
+            if (FORECAST_ACTIVITY_UPDATE_ACTION == intent.action && !isExecuted) {
+                updateActivity()
+                isExecuted = true
+            }
         }
     }
 }

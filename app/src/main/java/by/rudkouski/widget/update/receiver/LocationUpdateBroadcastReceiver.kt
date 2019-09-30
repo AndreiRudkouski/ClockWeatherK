@@ -28,6 +28,7 @@ import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.NetworkChangeChecker.registerNetworkChangeReceiver
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateCurrentWeather
 import by.rudkouski.widget.view.location.LocationActivity.Companion.updateLocationActivityBroadcast
+import kotlinx.coroutines.runBlocking
 import org.threeten.bp.Instant.ofEpochMilli
 import org.threeten.bp.OffsetDateTime.now
 import org.threeten.bp.ZoneId.systemDefault
@@ -38,7 +39,7 @@ import java.util.Locale.getDefault
 @SuppressLint("MissingPermission")
 class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
 
-    companion object: NetworkChangeChecker.NetworkObserver {
+    companion object : NetworkChangeChecker.NetworkObserver {
         private val locationManager = appContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         private val locationChangeListener = object : LocationListener {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
@@ -93,7 +94,7 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
         private fun updateLocation(name: String, context: Context, isRequestNeed: Boolean) {
             val location = getLocationByProviderName(name)
             if (isLocationApplicable(location)) {
-                setLocation(location)
+                setLocation(location!!)
             } else {
                 if (PASSIVE_PROVIDER == name) {
                     updateCurrentWeather(context)
@@ -138,22 +139,24 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
         }
 
         private fun getAddress(location: Location): Address? {
-            if (isOnline()) {
-                val longitude = location.longitude
-                val latitude = location.latitude
-                val geoCoder = Geocoder(appContext, getCurrentLocale())
-                try {
-                    val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
-                    if (addresses != null && addresses.size > 0) {
-                        return addresses[0]
+            return runBlocking {
+                if (isOnline()) {
+                    val longitude = location.longitude
+                    val latitude = location.latitude
+                    val geoCoder = Geocoder(appContext, getCurrentLocale())
+                    try {
+                        val addresses = geoCoder.getFromLocation(latitude, longitude, 1)
+                        if (addresses != null && addresses.size > 0) {
+                            return@runBlocking addresses[0]
+                        }
+                    } catch (e: IOException) {
+                        Log.e(LocationUpdateBroadcastReceiver::class.java.simpleName, e.toString())
                     }
-                } catch (e: IOException) {
-                    Log.e(LocationUpdateBroadcastReceiver::class.java.simpleName, e.toString())
+                } else {
+                    registerNetworkChangeReceiver(Companion)
                 }
-            } else {
-                registerNetworkChangeReceiver(Companion)
+                return@runBlocking null
             }
-            return null
         }
 
         private fun getCurrentLocale(): Locale {

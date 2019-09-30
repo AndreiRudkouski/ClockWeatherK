@@ -30,17 +30,16 @@ import by.rudkouski.widget.util.JsonUtils.getCurrentZoneIdFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getDayForecastFromResponseBody
 import by.rudkouski.widget.util.JsonUtils.getHourWeathersFromResponseBody
 import by.rudkouski.widget.view.forecast.ForecastActivity.Companion.updateForecastActivityBroadcast
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import org.threeten.bp.OffsetDateTime
 import java.util.*
-import java.util.concurrent.Executors.newFixedThreadPool
 
 class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     companion object : NetworkChangeChecker.NetworkObserver {
-        private val executorService = newFixedThreadPool(1)
-
         /*There is used Dark Sky API as data provider(https://darksky.net)*/
         private const val WEATHER_QUERY_BY_COORDINATES = "https://api.darksky.net/forecast/%1\$s/%2\$s,%3\$s?lang=%4\$s&units=si"
 
@@ -69,7 +68,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         if (OTHER_WEATHER_UPDATE_ACTION == intent.action || CURRENT_WEATHER_UPDATE_ACTION == intent.action) {
-            executorService.execute {
+            GlobalScope.launch {
                 if (OTHER_WEATHER_UPDATE_ACTION == intent.action) {
                     if (isOnline()) updateOtherWeathers(context) else registerNetworkChangeReceiver(Companion)
                 } else {
@@ -80,15 +79,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
     }
 
     private fun updateOtherWeathers(context: Context) {
-        val locations = getAllUsedLocations()
-        if (locations != null) {
-            for (location in locations) {
-                if (CURRENT_LOCATION_ID != location.id) {
-                    updateWeather(location)
-                }
-            }
-            sendUpdateIntents(context)
-        }
+        getAllUsedLocations()?.filter { CURRENT_LOCATION_ID != it.id }?.forEach { updateWeather(it) }?.also { sendUpdateIntents(context) }
     }
 
     private fun updateCurrentWeather(context: Context) {
@@ -124,7 +115,7 @@ class WeatherUpdateBroadcastReceiver : BroadcastReceiver() {
                 setForecastsByLocationId(forecasts, location.id)
             }
         } catch (e: Throwable) {
-            Log.e(this.javaClass.simpleName, e.message)
+            Log.e(this.javaClass.simpleName, e.message ?: "Error during updating weather")
         }
     }
 

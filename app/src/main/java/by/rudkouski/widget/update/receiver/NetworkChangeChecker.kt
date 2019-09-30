@@ -9,7 +9,6 @@ import by.rudkouski.widget.app.App.Companion.appContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import java.net.InetSocketAddress
 import java.net.Socket
 
@@ -25,7 +24,7 @@ object NetworkChangeChecker {
     private val networkRequest = NetworkRequest.Builder().build()
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
-            if (isInternetAvailable()) {
+            if (runBlocking { isInternetAvailable() }) {
                 observers.forEach { it.startUpdate(appContext) }
                 unregisterNetworkChangeReceiver()
             }
@@ -44,23 +43,21 @@ object NetworkChangeChecker {
         observers.clear()
     }
 
-    fun isOnline(): Boolean {
+    suspend fun isOnline(): Boolean {
         val activeNetwork = connectivityManager.activeNetwork
         return activeNetwork != null && isInternetAvailable()
     }
 
-    private fun isInternetAvailable(): Boolean {
-        return runBlocking {
-            withContext(Dispatchers.IO) {
-                try {
-                    val sockAddress = InetSocketAddress(HOST_NAME, DNS_PORT)
-                    val sock = Socket()
-                    sock.connect(sockAddress, TIMEOUT_MILLIS)
-                    sock.close()
-                    true
-                } catch (ex: Exception) {
-                    false
-                }
+    private suspend fun isInternetAvailable(): Boolean {
+        return withContext(Dispatchers.IO) {
+            try {
+                val sockAddress = InetSocketAddress(HOST_NAME, DNS_PORT)
+                val sock = Socket()
+                sock.connect(sockAddress, TIMEOUT_MILLIS)
+                sock.close()
+                return@withContext true
+            } catch (ex: Exception) {
+                return@withContext false
             }
         }
     }

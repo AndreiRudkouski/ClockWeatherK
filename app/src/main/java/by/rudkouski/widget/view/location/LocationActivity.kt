@@ -14,11 +14,11 @@ import android.widget.ListView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import by.rudkouski.widget.R
-import by.rudkouski.widget.app.Constants.LOCATION_ACTIVITY_UPDATE_WEATHER
+import by.rudkouski.widget.app.Constants.LOCATION_ACTIVITY_UPDATE_ACTION
 import by.rudkouski.widget.app.Constants.REQUEST_PERMISSION_CODE
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.message.Message.showNetworkAndLocationEnableMessage
+import by.rudkouski.widget.message.Message.asyncCheckConnectionsAndShowMessage
 import by.rudkouski.widget.provider.WidgetProvider.Companion.updateWidget
 import by.rudkouski.widget.repository.LocationRepository.getAllLocations
 import by.rudkouski.widget.repository.LocationRepository.getLocationByWidgetId
@@ -42,7 +42,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         }
 
         fun updateLocationActivityBroadcast(context: Context) {
-            val intent = Intent(LOCATION_ACTIVITY_UPDATE_WEATHER)
+            val intent = Intent(LOCATION_ACTIVITY_UPDATE_ACTION)
             context.sendBroadcast(intent)
         }
     }
@@ -51,7 +51,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         super.onCreate(savedInstanceState)
         setContentView(R.layout.location_activity)
         activityUpdateBroadcastReceiver = LocationActivityUpdateBroadcastReceiver()
-        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(LOCATION_ACTIVITY_UPDATE_WEATHER))
+        registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(LOCATION_ACTIVITY_UPDATE_ACTION))
         if (isPermissionsDenied()) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 REQUEST_PERMISSION_CODE)
@@ -82,7 +82,7 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
             if (CURRENT_LOCATION == locations.find { CURRENT_LOCATION_ID == it.id }?.name_code) {
                 updateCurrentLocation(this)
             }
-            showNetworkAndLocationEnableMessage(locationsView, CURRENT_LOCATION_ID, this)
+            asyncCheckConnectionsAndShowMessage(target = locationsView, context = this, locationId = CURRENT_LOCATION_ID)
         }
         locationsView.adapter = LocationsViewAdapter(this, this, locations, getSelectedLocationId())
     }
@@ -130,7 +130,9 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
 
     private inner class LocationActivityUpdateBroadcastReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            initActivity()
+            if (LOCATION_ACTIVITY_UPDATE_ACTION == intent.action) {
+                initActivity()
+            }
         }
     }
 }

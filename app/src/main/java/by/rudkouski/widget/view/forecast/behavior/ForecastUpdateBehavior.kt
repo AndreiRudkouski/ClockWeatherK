@@ -2,7 +2,6 @@ package by.rudkouski.widget.view.forecast.behavior
 
 import android.animation.ValueAnimator
 import android.content.Context
-import android.text.SpannableString
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.SCROLL_AXIS_VERTICAL
@@ -11,14 +10,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import by.rudkouski.widget.R
 import by.rudkouski.widget.entity.Location.Companion.CURRENT_LOCATION_ID
-import by.rudkouski.widget.message.Message.showMessage
+import by.rudkouski.widget.message.Message.asyncCheckConnectionsAndShowMessage
 import by.rudkouski.widget.repository.WidgetRepository.getWidgetById
 import by.rudkouski.widget.update.receiver.LocationUpdateBroadcastReceiver.Companion.updateCurrentLocation
-import by.rudkouski.widget.update.receiver.NetworkChangeChecker.isOnline
 import by.rudkouski.widget.update.receiver.WeatherUpdateBroadcastReceiver.Companion.updateOtherWeathers
 import by.rudkouski.widget.view.forecast.ForecastAdapter
+import by.rudkouski.widget.view.weather.WeatherItemView
 import com.google.android.material.appbar.AppBarLayout
-import com.google.android.material.snackbar.Snackbar.LENGTH_LONG
+import com.google.android.material.snackbar.Snackbar
 
 /**
  * The class is used to set behavior for [AppBarLayout] with id "appBar_forecast" from "..\res\day_forecast_item\forecast_activity.xml".
@@ -84,16 +83,14 @@ class ForecastUpdateBehavior(val context: Context, attrs: AttributeSet) : AppBar
             val locationId = getWidgetById(adapter.widgetId)?.locationId
             if (locationId != null) {
                 if (CURRENT_LOCATION_ID == locationId) updateCurrentLocation(context) else updateOtherWeathers(context)
+                asyncCheckConnectionsAndShowMessage(gpsCheck = false, target = target.rootView.findViewById<WeatherItemView>(R.id.current_weather),
+                    context = context, locationId = locationId, defaultMessage = context.getString(R.string.update), length = Snackbar.LENGTH_LONG)
             }
-            val message = SpannableString(if (isOnline()) context.getString(R.string.update) else context.getString(R.string.no_connection))
-            showMessage(message, target, context, LENGTH_LONG)
         }
 
         val animation = ValueAnimator.ofInt(target.paddingTop, 0)
         animation.duration = ANIMATION_DURATION.toLong()
-        animation.addUpdateListener {
-            changeSettingAfterUpdate(abl, target, java.lang.Float.parseFloat(animation.animatedValue.toString()))
-        }
+        animation.addUpdateListener { changeSettingAfterUpdate(abl, target, java.lang.Float.parseFloat(animation.animatedValue.toString())) }
         animation.start()
         isFirstTouch = true
     }
