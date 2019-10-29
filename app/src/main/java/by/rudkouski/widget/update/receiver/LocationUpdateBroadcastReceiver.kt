@@ -77,7 +77,9 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                 || checkSelfPermission(appContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PERMISSION_DENIED
         }
 
-        fun isLocationEnabled() = locationManager.isProviderEnabled(GPS_PROVIDER)
+        fun isLocationEnabled() = isLocationEnabled(GPS_PROVIDER)
+
+        private fun isLocationEnabled(name: String) = locationManager.isProviderEnabled(name)
 
         private fun requestLocationUpdate(provider: String) {
             locationManager.requestSingleUpdate(provider, locationChangeListener, Looper.getMainLooper())
@@ -101,6 +103,9 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
                     }
                 } else {
                     requestLocationUpdate(name)
+                    if (!isLocationEnabled(name)) {
+                        updateCurrentWeather(context)
+                    }
                 }
             }
         }

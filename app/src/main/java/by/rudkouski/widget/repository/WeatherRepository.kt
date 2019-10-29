@@ -19,9 +19,7 @@ object WeatherRepository {
     fun setCurrentWeather(currentWeather: Weather, locationId: Int) {
         runBlocking {
             val savedWeathers = weatherDao.getAllByLocationIdAndType(locationId, Weather.Type.CURRENT.name)
-            if (!savedWeathers.isNullOrEmpty()) {
-                weatherDao.delete(savedWeathers[0])
-            }
+            savedWeathers?.forEach { weatherDao.delete(it) }
             weatherDao.insert(currentWeather)
         }
     }

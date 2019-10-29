@@ -11,6 +11,7 @@ import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.startLocation
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.startWeatherUpdateScheduler
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.stopLocationUpdateScheduler
 import by.rudkouski.widget.update.scheduler.UpdateWeatherScheduler.stopWeatherUpdateScheduler
+import com.rohitss.uceh.UCEHandler
 
 class App : Application() {
 
@@ -31,6 +32,7 @@ class App : Application() {
         startWeatherUpdateScheduler()
         startLocationUpdateScheduler()
         setCurrentLocation()
+        UCEHandler.Builder(applicationContext).setUCEHEnabled(false).build()
     }
 
     override fun onTerminate() {

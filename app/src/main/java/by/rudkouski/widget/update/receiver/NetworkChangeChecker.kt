@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.Network
+import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.util.Log
 import by.rudkouski.widget.app.App.Companion.appContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -23,10 +25,12 @@ object NetworkChangeChecker {
     private val connectivityManager = appContext.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val networkRequest = NetworkRequest.Builder().build()
     private val networkCallbacks = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            if (runBlocking { isInternetAvailable() }) {
-                observers.forEach { it.startUpdate(appContext) }
-                unregisterNetworkChangeReceiver()
+        override fun onCapabilitiesChanged(network: Network, networkCapabilities: NetworkCapabilities) {
+            runBlocking {
+                if (isInternetAvailable()) {
+                    observers.forEach { it.startUpdate(appContext) }
+                    unregisterNetworkChangeReceiver()
+                }
             }
         }
     }
@@ -38,8 +42,12 @@ object NetworkChangeChecker {
         observers.add(observer)
     }
 
-    fun unregisterNetworkChangeReceiver() {
-        connectivityManager.unregisterNetworkCallback(networkCallbacks)
+    private fun unregisterNetworkChangeReceiver() {
+        try {
+            connectivityManager.unregisterNetworkCallback(networkCallbacks)
+        } catch (ex: Exception) {
+            Log.w(this.javaClass.simpleName, "NetworkCallback for network was not registered or already unregistered")
+        }
         observers.clear()
     }
 
