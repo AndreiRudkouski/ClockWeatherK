@@ -71,7 +71,7 @@
     <string name="wind_direction_NNW">С-СЗ</string>
 
     <string name="setting_bold">Жирный текст</string>
-    <string name="setting_bold_description">Устанавливае для данного виджета жирный текст основного вида</string>
+    <string name="setting_bold_description">Устанавливает для данного виджета жирный текст основного вида</string>
     <string name="setting_theme">Темная тема</string>
     <string name="setting_theme_description">Устанавливает для данного виджета темную тему всех страниц</string>
     <string name="setting_weather">Обновление погоды</string>

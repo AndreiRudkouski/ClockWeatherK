@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:background="@android:color/black">
 
-    <TextView
+    <TextClock
         android:id="@+id/clock_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -22,7 +22,9 @@
         android:text="@string/default_clock"
         android:textColor="@android:color/white"
         android:textSize="@dimen/clock_text_size"
-        tools:ignore="RtlSymmetry" />
+        tools:ignore="RtlSymmetry"
+        android:format12Hour="h:mm"
+        android:format24Hour="H:mm"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"

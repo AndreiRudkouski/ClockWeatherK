@@ -53,8 +53,13 @@ class LocationActivity : BaseActivity(), LocationsViewAdapter.OnLocationItemClic
         activityUpdateBroadcastReceiver = LocationActivityUpdateBroadcastReceiver()
         registerReceiver(activityUpdateBroadcastReceiver, IntentFilter(LOCATION_ACTIVITY_UPDATE_ACTION))
         if (isPermissionsDenied()) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                REQUEST_PERMISSION_CODE)
+            val permissions = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            } else {
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            }
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION_CODE)
         } else {
             initActivity()
         }
