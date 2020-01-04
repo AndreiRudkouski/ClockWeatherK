@@ -52,8 +52,6 @@ import kotlin.math.roundToInt
 class WidgetProvider : AppWidgetProvider() {
 
     companion object {
-        private const val TIME_FORMAT_12 = "h:mm"
-        private const val TIME_FORMAT_24 = "H:mm"
         private const val DATE_WITH_DAY_SHORT_FORMAT = "EEE, dd MMM"
         private const val SYSTEM_TIME_FORMAT_24 = 24
 
@@ -101,18 +99,16 @@ class WidgetProvider : AppWidgetProvider() {
         }.invoke()
         val settings = getPrivateSettingsByWidgetId(widgetId)
         val isBold = settings?.find { Setting.Code.SETTING_BOLD == it.code }?.getBooleanValue() ?: false
-        updateClockAndDate(remoteViews, context, location?.zoneId ?: systemDefault(), isBold)
+        updateClockAndDate(remoteViews, location?.zoneId ?: systemDefault(), isBold)
         updateLocation(remoteViews, context, location, isBold)
         updateWeather(remoteViews, context, locationId, isBold)
         setPendingIntents(remoteViews, context, widgetId, locationId)
         return remoteViews
     }
 
-    private fun updateClockAndDate(remoteViews: RemoteViews, context: Context, zoneId: ZoneId, isBold: Boolean) {
+    private fun updateClockAndDate(remoteViews: RemoteViews, zoneId: ZoneId, isBold: Boolean) {
+        remoteViews.setString(R.id.clock_widget, "setTimeZone", zoneId.id)
         val currentTime = now(zoneId)
-        val timeFormat =
-            currentTime.format(DateTimeFormatter.ofPattern(chooseSystemTimeFormat(context, TIME_FORMAT_12, TIME_FORMAT_24), getDefault()))
-        remoteViews.setTextViewText(R.id.clock_widget, timeFormat)
         val dateFormat = currentTime.format(DateTimeFormatter.ofPattern(DATE_WITH_DAY_SHORT_FORMAT, getDefault()))
         val spanDateText = createSpannableString(dateFormat, isBold)
         remoteViews.setTextViewText(R.id.date_widget, spanDateText)

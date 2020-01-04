@@ -75,6 +75,8 @@ class LocationUpdateBroadcastReceiver : BroadcastReceiver() {
         fun isPermissionsDenied(): Boolean {
             return checkSelfPermission(appContext, Manifest.permission.ACCESS_FINE_LOCATION) == PERMISSION_DENIED
                 || checkSelfPermission(appContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PERMISSION_DENIED
+                || (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q
+                && checkSelfPermission(appContext, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PERMISSION_DENIED)
         }
 
         fun isLocationEnabled() = isLocationEnabled(GPS_PROVIDER)

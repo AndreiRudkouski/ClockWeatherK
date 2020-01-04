@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Гадзіннік &amp; Надвор\'е</string>
+    <string name="weather_image_description">Надвор\'е</string>
+    <string name="toolbar_image_forecast_description">Бягучае надвор\'е</string>
+    <string name="default_clock">12:12</string>
+    <string name="default_day">Ау, 22 Сак</string>
+    <string name="default_location">Невядома</string>
+    <string name="default_weather">Няма дадзеных</string>
+    <string name="choose_location">Выберыце месціва</string>
+    <string name="setting">Налады</string>
+
+    <string name="update_weather">АДПУСЦІЦЬ ДЛЯ АБНАЎЛЕННЯ</string>
+    <string name="update">абнаўленне…</string>
+    <string name="no_connection">не сеткавага злучэння</string>
+    <string name="no_location">няма злучэння з геададзенымі</string>
+
+    <string name="current_location">Бягучае месціва</string>
+    <string name="amsterdam">Амстэрдам</string>
+    <string name="zaslavl">Заслаўе</string>
+    <string name="minsk">Мінск</string>
+
+    <string name="menu_location">Змяніць месціва</string>
+    <string name="menu_setting">Налады</string>
+
+    <string name="update_date">Абноўлена</string>
+    <string name="just_now">толькі што</string>
+    <string name="wind">Вецер</string>
+    <string name="perceived">Адчуваецца</string>
+    <string name="humidity">Вільготнасць</string>
+    <string name="pressure">Ціск</string>
+    <string name="visibility">Бачнасць</string>
+    <string name="cloud_cover">Хмарнасць</string>
+    <string name="uv_index">УФ індэкс</string>
+    <string name="precipitationProbability">Ападкі</string>
+    <string name="dewPoint">Кропка расы</string>
+    <string name="gust">парывы</string>
+    <string name="windless">зацішна</string>
+    <string name="sunrise">Узыход</string>
+    <string name="sunset">Заход</string>
+
+    <string name="speed_unit">м/с</string>
+    <string name="pressure_unit">мм рт. сл.</string>
+    <string name="distance_unit">км</string>
+    <string name="temperature_unit">\u00B0C</string>
+    <string name="percent_unit">%</string>
+    <string name="hour">г</string>
+    <string name="minute">хв</string>
+    <string name="ago">назад</string>
+
+    <string name="snow">снег</string>
+    <string name="sleet">мокры снег</string>
+    <string name="rain">дождж</string>
+    <string name="no_rain">без ападкаў</string>
+
+    <string name="wind_direction_N">С</string>
+    <string name="wind_direction_NNE">С-СВ</string>
+    <string name="wind_direction_NE">СВ</string>
+    <string name="wind_direction_ENE">В-СВ</string>
+    <string name="wind_direction_E">В</string>
+    <string name="wind_direction_ESE">В-ЮВ</string>
+    <string name="wind_direction_SE">ЮВ</string>
+    <string name="wind_direction_SSE">Ю-ЮВ</string>
+    <string name="wind_direction_S">Ю</string>
+    <string name="wind_direction_SSW">Ю-ЮЗ</string>
+    <string name="wind_direction_SW">ЮЗ</string>
+    <string name="wind_direction_WSW">З-ЮЗ</string>
+    <string name="wind_direction_W">З</string>
+    <string name="wind_direction_WNW">З-СЗ</string>
+    <string name="wind_direction_NW">СЗ</string>
+    <string name="wind_direction_NNW">С-СЗ</string>
+
+    <string name="setting_bold">Тлусты тэкст</string>
+    <string name="setting_bold_description">Усталёўвае для дадзенага віджэта тлусты тэкст асноўнага выгляду</string>
+    <string name="setting_theme">Цёмная тэма</string>
+    <string name="setting_theme_description">Усталёўвае для дадзенага віджэта цёмную тэму ўсіх старонак</string>
+    <string name="setting_weather">Абнаўленне надвор\'я</string>
+    <string name="setting_weather_description">Усталёўвае для ўсіх віджэтаў часавы інтэрвал перыядычнага абнаўлення надвор\'я</string>
+    <string name="setting_location">Абнаўленне месціва</string>
+    <string name="setting_location_description">Усталёўвае для ўсіх віджэтаў часавы інтэрвал перыядычнага абнаўлення бягучага месціва і яго надвор\'я</string>
+    <string name="setting_exact_location">Дакладнае месціва</string>
+    <string name="setting_exact_location_description">Усталёўвае для ўсіх віджэтаў абнаўленне месціва кожны раз пры абнаўленні надвор\'я</string>
+
+    <string name="link"><a href="https://darksky.net/poweredby/">Powered by Dark Sky</a></string>
+</resources>

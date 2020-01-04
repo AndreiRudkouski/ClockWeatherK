@@ -20,10 +20,9 @@ import org.threeten.bp.OffsetDateTime.now
 object WidgetUpdateBroadcastReceiver : BroadcastReceiver() {
 
     private val intentFilter: IntentFilter =
-        IntentFilter().also { it.addAction(ACTION_TIME_TICK) }.also { it.addAction(ACTION_TIMEZONE_CHANGED) }
-            .also { it.addAction(ACTION_TIME_CHANGED) }.also { it.addAction(ACTION_DATE_CHANGED) }
-            .also { it.addAction(ACTION_SCREEN_ON) }.also { it.addAction(ACTION_LOCALE_CHANGED) }
-            .also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
+        IntentFilter().also { it.addAction(ACTION_TIMEZONE_CHANGED) }.also { it.addAction(ACTION_TIME_CHANGED) }
+            .also { it.addAction(ACTION_DATE_CHANGED) }.also { it.addAction(ACTION_SCREEN_ON) }
+            .also { it.addAction(ACTION_LOCALE_CHANGED) }.also { it.addAction(ACTION_MY_PACKAGE_REPLACED) }
 
     fun registerWidgetUpdateReceiver(context: Context) {
         context.registerReceiver(this, intentFilter)

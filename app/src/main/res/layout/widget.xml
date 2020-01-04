@@ -8,10 +8,11 @@
     android:orientation="vertical"
     tools:background="@android:color/black">
 
-    <TextView
+    <TextClock
         android:id="@+id/clock_widget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:format12Hour="h:mm"
         android:gravity="center"
         android:includeFontPadding="false"
         android:paddingEnd="@dimen/bottom_padding"
